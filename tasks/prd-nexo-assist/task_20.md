@@ -31,11 +31,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 20.1 Remover `status-page.tsx`, `use-api-health.ts` e `modules/tickets/`.
-- [ ] 20.2 `lib/http.ts` com interceptor de `ApiError` e redirecionamento em 401.
-- [ ] 20.3 `test/server.ts` (MSW) e `test/render.tsx` (providers reais).
-- [ ] 20.4 Rotas, `RequireRole` e `AppShell` (sidebar, barra superior com "Assistente online" e "Sair"), com os tokens de cor e tipografia do protótipo.
-- [ ] 20.5 `modules/identity`: `login`, `logout`, `getMe`, `useSession`, `useLogin`, `useLogout`, `LoginPage` (`LoginHero`, `LoginForm`) e `ProfilePage` (`ProfileCard`).
+- [x] 20.1 Remover `status-page.tsx`, `use-api-health.ts` e `modules/tickets/`.
+- [x] 20.2 `lib/http.ts` com interceptor de `ApiError` e redirecionamento em 401.
+- [x] 20.3 `test/server.ts` (MSW) e `test/render.tsx` (providers reais).
+- [x] 20.4 Rotas, `RequireRole` e `AppShell` (sidebar, barra superior com "Assistente online" e "Sair"), com os tokens de cor e tipografia do protótipo.
+- [x] 20.5 `modules/identity`: `login`, `logout`, `getMe`, `useSession`, `useLogin`, `useLogout`, `LoginPage` (`LoginHero`, `LoginForm`) e `ProfilePage` (`ProfileCard`).
 
 ## Detalhes de implementação
 
@@ -53,7 +53,7 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-27 — redireciona por papel após o login e mostra o perfil com redefinir senha desabilitado.
+- [x] TI-27 — redireciona por papel após o login e mostra o perfil com redefinir senha desabilitado.
 
 ## Arquivos relevantes
 

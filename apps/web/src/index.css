@@ -1,13 +1,28 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
-@import '@fontsource-variable/geist';
+@import '@fontsource-variable/schibsted-grotesk';
+@import '@fontsource-variable/newsreader';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-heading: var(--font-sans);
-  --font-sans: 'Geist Variable', sans-serif;
+  --font-sans: 'Schibsted Grotesk Variable', sans-serif;
+  --font-display: 'Newsreader Variable', serif;
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-desk: var(--desk);
+  --color-paper: var(--paper);
+  --color-cta: var(--cta);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-text: var(--primary-text);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-text: var(--success-text);
+  --color-warning: var(--warning);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,38 +64,51 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ink: #1b2431;
+  --ink-2: #3d4656;
+  --ink-3: #5b6472;
+  --rule: #e6e8ec;
+  --desk: #f6f7f9;
+  --paper: #ffffff;
+  --cta: #0062c4;
+  --primary-soft: #0285f712;
+  --primary-text: #0069c7;
+  --success: #00bd6c;
+  --success-soft: #00bd6c14;
+  --success-text: #00804a;
+  --warning: #f5a500;
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--cta);
+  --primary-foreground: #ffffff;
+  --secondary: var(--desk);
+  --secondary-foreground: var(--ink);
+  --muted: var(--desk);
+  --muted-foreground: var(--ink-3);
+  --accent: var(--primary-soft);
+  --accent-foreground: var(--primary-text);
+  --destructive: #c4161d;
+  --border: var(--rule);
+  --input: #1b24311f;
+  --ring: var(--cta);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--cta);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--primary-soft);
+  --sidebar-accent-foreground: var(--primary-text);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--cta);
 }
 
 .dark {
