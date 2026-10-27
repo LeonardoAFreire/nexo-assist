@@ -81,12 +81,15 @@ describe('WebStaticModule', () => {
     expect(unknown.headers.get('content-type')).toContain('application/json');
   });
 
-  it('não serve o front quando SERVE_WEB_DIR não está definido', async () => {
-    const started = await startApp(undefined);
-    app = started.app;
-    const root = await fetch(`${started.url}/`);
-    const health = await fetch(`${started.url}/api/health`);
-    expect(root.status).toBe(NOT_FOUND_STATUS);
-    expect(health.status).toBe(OK_STATUS);
-  });
+  it.each([undefined, ''])(
+    'não serve o front quando SERVE_WEB_DIR está ausente ou vazio (%j)',
+    async (missingDir) => {
+      const started = await startApp(missingDir);
+      app = started.app;
+      const root = await fetch(`${started.url}/`);
+      const health = await fetch(`${started.url}/api/health`);
+      expect(root.status).toBe(NOT_FOUND_STATUS);
+      expect(health.status).toBe(OK_STATUS);
+    },
+  );
 });

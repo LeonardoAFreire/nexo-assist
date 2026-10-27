@@ -5,7 +5,7 @@ import { AppConfig } from '@nexo/shared/config';
 const API_ROUTES_PATTERN = '/api{*any}';
 
 export function buildWebStaticOptions(webDir: string | undefined): ServeStaticModuleOptions[] {
-  if (webDir === undefined) {
+  if (!webDir) {
     return [];
   }
   return [{ rootPath: webDir, exclude: [API_ROUTES_PATTERN] }];
