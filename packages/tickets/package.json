@@ -17,9 +17,11 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.5.0",
     "@nestjs/common": "^12.2.0",
     "@nexo/contracts": "workspace:*",
     "@nexo/shared": "workspace:*",
+    "date-fns": "^4.4.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
