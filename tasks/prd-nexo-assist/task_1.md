@@ -29,11 +29,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 1.1 Criar `docker-compose.yml` com `postgres:17` e volume nomeado.
-- [ ] 1.2 Atualizar `.env.example` com todas as variáveis da tabela "Parâmetros fixos" da TechSpec, com valores fictícios.
-- [ ] 1.3 Estender `env.schema.ts` com as variáveis novas, `DATABASE_URL` para Postgres e as validações condicionais (`scripted`, chave do OpenRouter, `debug` em produção).
-- [ ] 1.4 Configurar `vitest.config.ts` dos pacotes Nest com `unplugin-swc` e cobertura de `src/core/**`.
-- [ ] 1.5 Atualizar `.claude/rules/folder-structure.md` com os subpaths de `shared` (`auth`, `resilience`, `database/testing`), `drizzle/` por domínio e `packages/agent/evals/`.
+- [x] 1.1 Criar `docker-compose.yml` com `postgres:17` e volume nomeado.
+- [x] 1.2 Atualizar `.env.example` com todas as variáveis da tabela "Parâmetros fixos" da TechSpec, com valores fictícios.
+- [x] 1.3 Estender `env.schema.ts` com as variáveis novas, `DATABASE_URL` para Postgres e as validações condicionais (`scripted`, chave do OpenRouter, `debug` em produção).
+- [x] 1.4 Configurar `vitest.config.ts` dos pacotes Nest com `unplugin-swc` e cobertura de `src/core/**`.
+- [x] 1.5 Atualizar `.claude/rules/folder-structure.md` com os subpaths de `shared` (`auth`, `resilience`, `database/testing`), `drizzle/` por domínio e `packages/agent/evals/`.
 
 ## Detalhes de implementação
 
@@ -49,7 +49,7 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] Estender `env.schema.test.ts`: falta de `OPENROUTER_API_KEY` com `openrouter`, `scripted` em produção, `debug` em produção e padrões aplicados.
+- [x] Estender `env.schema.test.ts`: falta de `OPENROUTER_API_KEY` com `openrouter`, `scripted` em produção, `debug` em produção e padrões aplicados.
 
 ## Arquivos relevantes
 
