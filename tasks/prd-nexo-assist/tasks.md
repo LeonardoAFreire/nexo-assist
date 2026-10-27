@@ -15,7 +15,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [ ] 9.0 `tickets`: persistência, seed, simulador do legado, leitura HTTP e listener de transferência
 - [ ] 10.0 Domínio `knowledge`: artigos, busca em português e seed
 - [x] 11.0 `agent/core`: fundações (`LlmClient`, fake, `StepRecorder`) e tools de consulta
-- [ ] 12.0 `agent/core`: tools de proposta e `DecisionBuilder`
+- [x] 12.0 `agent/core`: tools de proposta e `DecisionBuilder`
 - [ ] 13.0 `agent/core`: entendimento, política de turno, contexto, laço e `AgentService`
 - [ ] 14.0 `agent/persistence`: `MastraLlmClient`, decoradores resilientes, `agent.runs` e módulo
 - [x] 15.0 `chat/core`: estado da conversa, limite, matchers, opção rápida e ações pendentes
