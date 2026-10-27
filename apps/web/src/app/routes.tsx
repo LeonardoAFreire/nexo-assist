@@ -1,5 +1,6 @@
 import { Navigate, type RouteObject } from 'react-router';
 import { routePaths } from '@/lib/routes';
+import { ChatPage } from '@/modules/chat';
 import { LoginPage, ProfilePage } from '@/modules/identity';
 import { AppShell } from './app-shell';
 import { PlaceholderPage } from './placeholder-page';
@@ -17,7 +18,7 @@ export const appRoutes: RouteObject[] = [
           { path: routePaths.profile, element: <ProfilePage /> },
           {
             element: <RequireRole roles={['employee']} />,
-            children: [{ path: routePaths.chat, element: <PlaceholderPage title="Atendimento" /> }],
+            children: [{ path: routePaths.chat, element: <ChatPage /> }],
           },
           {
             element: <RequireRole roles={['analyst']} />,

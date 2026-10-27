@@ -2,6 +2,7 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 import { http as mswHttp } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { http } from '@/lib/http';
+import { currentConversationMock } from '@/test/chat-api-mock';
 import {
   identityApiMock,
   makeAnalyst,
@@ -22,7 +23,7 @@ async function signIn(app: RenderedApp, email: string): Promise<void> {
 }
 
 async function signedInAs(email: string): Promise<RenderedApp> {
-  server.use(...identityApiMock([makeSessionUser(), makeAnalyst()]));
+  server.use(...identityApiMock([makeSessionUser(), makeAnalyst()]), currentConversationMock());
   const app = renderApp('/login');
   await signIn(app, email);
   return app;
@@ -82,7 +83,10 @@ describe('identity (TI-27)', () => {
   it('volta ao login quando uma chamada responde 401 durante a sessão', async () => {
     const app = await signedInAs(EMPLOYEE_EMAIL);
     await screen.findByRole('heading', { name: 'Atendimento' });
-    server.use(mswHttp.get(apiUrl('/tickets'), () => unauthenticatedResponse()));
+    server.use(
+      mswHttp.get(apiUrl('/tickets'), () => unauthenticatedResponse()),
+      mswHttp.get(apiUrl('/auth/me'), () => unauthenticatedResponse()),
+    );
     await act(() => http.get('/tickets').catch(() => undefined));
     expect(await screen.findByRole('heading', { name: 'Entrar' })).toBeVisible();
     expect(app.currentPath()).toBe('/login');
