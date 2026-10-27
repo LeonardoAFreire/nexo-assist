@@ -18,7 +18,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [ ] 12.0 `agent/core`: tools de proposta e `DecisionBuilder`
 - [ ] 13.0 `agent/core`: entendimento, política de turno, contexto, laço e `AgentService`
 - [ ] 14.0 `agent/persistence`: `MastraLlmClient`, decoradores resilientes, `agent.runs` e módulo
-- [ ] 15.0 `chat/core`: estado da conversa, limite, matchers, opção rápida e ações pendentes
+- [x] 15.0 `chat/core`: estado da conversa, limite, matchers, opção rápida e ações pendentes
 - [ ] 16.0 `chat/core`: transferência, console e `SendEmployeeMessage`
 - [ ] 17.0 `chat/persistence`: schema, repositórios e seed do console
 - [ ] 18.0 `chat/http` do funcionário: mensagens por SSE, retry e ações pendentes
