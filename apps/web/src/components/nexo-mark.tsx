@@ -10,7 +10,6 @@ const MARK_PATH =
 export function NexoMark({ className }: NexoMarkProps) {
   return (
     <svg viewBox="0 0 28 28" aria-hidden="true" className={cn('size-5 shrink-0', className)}>
-      <rect y="1.6471" width="28" height="24.7059" className="fill-white/70" />
       <path d={MARK_PATH} className="fill-current" />
     </svg>
   );

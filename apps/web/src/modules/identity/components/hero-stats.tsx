@@ -24,7 +24,7 @@ export function HeroStats() {
           )}
         >
           <dt className="text-[13.5px] text-white/55">{stat.label}</dt>
-          <dd className="flex items-center gap-2 font-display text-[34px] leading-none">
+          <dd className="flex items-center gap-2 font-display text-[34px] leading-none tracking-[-0.018em]">
             {stat.value}
             {stat.live && <span className="size-2 rounded-full bg-success" />}
           </dd>

@@ -1,31 +1,32 @@
-import { Eye, EyeOff, LockKeyhole } from 'lucide-react';
+import { LockKeyhole } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FieldFrame } from './field-frame.js';
+import { ForgotPasswordButton } from './forgot-password-button.js';
+import { PasswordVisibilityToggle } from './password-visibility-toggle.js';
 
 type PasswordFieldProps = {
   value: string;
   onChange: (value: string) => void;
+  onForgot: () => void;
 };
 
-export function PasswordField({ value, onChange }: PasswordFieldProps) {
+export function PasswordField({ value, onChange, onForgot }: PasswordFieldProps) {
   const [isVisible, setIsVisible] = useState(false);
   const toggle = (
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      aria-label={isVisible ? 'Ocultar senha' : 'Mostrar senha'}
-      aria-pressed={isVisible}
-      onClick={() => setIsVisible((current: boolean) => !current)}
-      className="text-ink-3 [&_svg]:size-4"
-    >
-      {isVisible ? <EyeOff /> : <Eye />}
-    </Button>
+    <PasswordVisibilityToggle
+      isVisible={isVisible}
+      onToggle={() => setIsVisible((current: boolean) => !current)}
+    />
   );
   return (
-    <FieldFrame inputId="password" label="Senha" icon={<LockKeyhole />} trailing={toggle}>
+    <FieldFrame
+      inputId="password"
+      label="Senha"
+      icon={<LockKeyhole />}
+      action={<ForgotPasswordButton onClick={onForgot} />}
+      trailing={toggle}
+    >
       <Input
         id="password"
         type={isVisible ? 'text' : 'password'}

@@ -11,6 +11,7 @@ export function RememberField({ checked, onChange }: RememberFieldProps) {
     <div className="flex items-center gap-[9px] pt-0.5">
       <Checkbox
         id="remember"
+        className="size-[18px] rounded-[6px] data-checked:border-cta data-checked:bg-cta [&_span>svg]:size-3"
         checked={checked}
         onCheckedChange={(state: boolean | 'indeterminate') => onChange(state === true)}
       />
