@@ -1,5 +1,10 @@
 import type { DuplicateCheck, PriorityAssessment, TicketDetail, TicketsApi } from '@nexo/contracts';
 import { filterByScope } from '../../core/tools/filter-by-scope.js';
+import {
+  type ScriptedTicketRules,
+  resolveAssessment,
+  resolveDuplicateCheck,
+} from './scripted-ticket-rules.js';
 
 export type OwnedTicket = {
   requesterId: string;
@@ -11,7 +16,10 @@ function notSupported(): never {
 }
 
 export class InMemoryTicketsApi implements TicketsApi {
-  constructor(private readonly owned: OwnedTicket[]) {}
+  constructor(
+    private readonly owned: OwnedTicket[],
+    private readonly rules: ScriptedTicketRules = {},
+  ) {}
 
   async listOwn(input: Parameters<TicketsApi['listOwn']>[0]): Promise<TicketDetail[]> {
     return filterByScope(this.ticketsOf(input.requesterId), input.scope);
@@ -29,12 +37,12 @@ export class InMemoryTicketsApi implements TicketsApi {
     );
   }
 
-  findDuplicates(): Promise<DuplicateCheck> {
-    return notSupported();
+  async findDuplicates(): Promise<DuplicateCheck> {
+    return resolveDuplicateCheck(this.rules);
   }
 
-  assessPriority(): Promise<PriorityAssessment> {
-    return notSupported();
+  async assessPriority(): Promise<PriorityAssessment> {
+    return resolveAssessment(this.rules);
   }
 
   contactDeadline(): Promise<string> {

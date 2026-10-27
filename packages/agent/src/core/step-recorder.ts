@@ -11,10 +11,15 @@ type StepOutcome = Pick<AgentStep, 'kind' | 'label' | 'result' | 'status'>;
 
 export class StepRecorder {
   private readonly recorded: AgentStep[] = [];
+  private readonly appliedRules: string[] = [];
   private attempts = FIRST_ATTEMPT;
 
   get steps(): AgentStep[] {
     return [...this.recorded];
+  }
+
+  get rules(): string[] {
+    return [...this.appliedRules];
   }
 
   readonly onAttemptFailed = (failure: AttemptFailure): void => {
@@ -35,6 +40,7 @@ export class StepRecorder {
       const { stepKind: kind } = tool;
       const label = tool.stepLabel(parsedInput, output);
       const result = tool.stepResult(parsedInput, output);
+      this.appliedRules.push(...(tool.rules?.(parsedInput, output) ?? []));
       this.finish({ context, startedAt }, { kind, label, result, status: 'ok' });
       return output;
     } catch (error: unknown) {
