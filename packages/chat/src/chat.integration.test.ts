@@ -1,8 +1,10 @@
-import { Global, Module, type INestApplicationContext } from '@nestjs/common';
+import { Module, type INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppConfig } from '@nexo/shared/config';
-import { DATABASE } from '@nexo/shared/database';
 import { createTestDatabase, type TestDatabase } from '@nexo/shared/database/testing';
+import { RecordingEventPublisher } from './core/testing/recording-event-publisher.js';
+import { ScriptedAgentApi } from './core/testing/fake-agent-api.js';
+import { EchoTicketsApi } from './http/testing/echo-tickets-api.js';
+import { chatTestImports } from './http/testing/chat-test-support.js';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ChatModule } from './chat.module.js';
 import {
@@ -18,24 +20,17 @@ function compareText(first: string, second: string): number {
   return first.localeCompare(second);
 }
 
-function buildSupportModule(testDatabase: TestDatabase, seed: boolean) {
-  @Global()
-  @Module({
-    providers: [
-      { provide: DATABASE, useValue: testDatabase.database },
-      { provide: AppConfig, useValue: { get: () => seed } },
-    ],
-    exports: [DATABASE, AppConfig],
-  })
-  class SupportModule {}
-  return SupportModule;
-}
-
 async function startApp(
   testDatabase: TestDatabase,
-  seed: boolean,
+  seedDemoData: boolean,
 ): Promise<INestApplicationContext> {
-  @Module({ imports: [buildSupportModule(testDatabase, seed), ChatModule] })
+  const doubles = {
+    database: testDatabase,
+    agent: new ScriptedAgentApi(),
+    tickets: new EchoTicketsApi(),
+    events: new RecordingEventPublisher(),
+  };
+  @Module({ imports: [...chatTestImports(doubles, { seedDemoData }), ChatModule] })
   class TestAppModule {}
   return NestFactory.createApplicationContext(TestAppModule, { logger: false });
 }
