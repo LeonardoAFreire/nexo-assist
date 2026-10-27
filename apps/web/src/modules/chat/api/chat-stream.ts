@@ -1,5 +1,6 @@
 import { apiErrorSchema, type ChatStreamEvent } from '@nexo/contracts';
 import { ApiRequestError } from '@/lib/api-request-error';
+import { notifyIfUnauthenticated } from '@/lib/http';
 import { parseStreamEvent } from './parse-stream-event.js';
 import { readEventStream } from './read-event-stream.js';
 
@@ -17,7 +18,9 @@ async function toRequestError(response: Response): Promise<ApiRequestError> {
   const error = parsed.success
     ? parsed.data.error
     : { code: 'internal_error' as const, message: UNAVAILABLE_MESSAGE };
-  return new ApiRequestError({ ...error, status: response.status });
+  const requestError = new ApiRequestError({ ...error, status: response.status });
+  notifyIfUnauthenticated(requestError);
+  return requestError;
 }
 
 function toUnavailableError(cause: unknown): ApiRequestError {

@@ -8,7 +8,12 @@ function withoutFailedTail(timeline: ChatMessage[]): ChatMessage[] {
   return hasFailedTail ? timeline.slice(0, -1) : timeline;
 }
 
-function updateView(
+export function appendUnique(timeline: ChatMessage[], message: ChatMessage): ChatMessage[] {
+  const others = timeline.filter((current: ChatMessage) => current.id !== message.id);
+  return [...others, message];
+}
+
+export function updateView(
   queryClient: QueryClient,
   update: (view: EmployeeConversationView) => EmployeeConversationView,
 ): void {
@@ -20,7 +25,11 @@ function updateView(
 export function applyEventToCache(queryClient: QueryClient, event: ChatStreamEvent): void {
   if (event.event === 'message.accepted') {
     const { message, usage } = event.data;
-    updateView(queryClient, (view) => ({ ...view, usage, timeline: [...view.timeline, message] }));
+    updateView(queryClient, (view) => ({
+      ...view,
+      usage,
+      timeline: appendUnique(view.timeline, message),
+    }));
   }
   if (event.event === 'turn.completed') {
     const { message, conversation, usage } = event.data;
@@ -28,7 +37,7 @@ export function applyEventToCache(queryClient: QueryClient, event: ChatStreamEve
       ...view,
       conversation,
       usage,
-      timeline: [...withoutFailedTail(view.timeline), message],
+      timeline: appendUnique(withoutFailedTail(view.timeline), message),
     }));
   }
   if (event.event === 'turn.skipped') {
