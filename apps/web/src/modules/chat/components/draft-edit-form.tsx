@@ -1,6 +1,8 @@
 import type { EditPendingActionRequest, PendingAction, TicketDraft } from '@nexo/contracts';
 import { Button } from '@/components/ui/button';
 import { useDraftForm } from '../hooks/use-draft-form.js';
+import { useEscapeKey } from '../hooks/use-escape-key.js';
+import { useFocusFirstField } from '../hooks/use-focus-first-field.js';
 import type { PendingActionApi } from '../hooks/use-pending-action.js';
 import { actionTitle } from './action-title.js';
 import { DraftEditFields } from './draft-edit-fields.js';
@@ -15,8 +17,11 @@ type DraftEditFormProps = {
 export function DraftEditForm({ action, draft, api, onClose }: DraftEditFormProps) {
   const onSave = (changes: EditPendingActionRequest) => api.edit(changes, onClose);
   const form = useDraftForm({ draft, onSave, onClose });
+  const formRef = useFocusFirstField();
+  useEscapeKey(onClose);
   return (
     <form
+      ref={formRef}
       aria-label={`Editar ${actionTitle(action)}`}
       onSubmit={form.submit}
       className="flex max-w-[600px] flex-col gap-3 rounded-2xl border border-primary/30 bg-paper p-4 shadow-sm"

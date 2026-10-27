@@ -1,5 +1,5 @@
 import type { PendingAction } from '@nexo/contracts';
-import type { ReactNode } from 'react';
+import type { ReactNode, Ref } from 'react';
 import { useChatActions } from '../hooks/chat-actions-context.js';
 import { useConfirmShortcut } from '../hooks/use-confirm-shortcut.js';
 import type { PendingActionApi } from '../hooks/use-pending-action.js';
@@ -10,6 +10,7 @@ type ActionFrameProps = {
   action: PendingAction;
   api: PendingActionApi;
   onEdit: (() => void) | null;
+  editButtonRef?: Ref<HTMLButtonElement>;
   children: ReactNode;
 };
 
@@ -24,7 +25,7 @@ function ActionHeader({ title }: { title: string }) {
   );
 }
 
-export function ActionFrame({ action, api, onEdit, children }: ActionFrameProps) {
+export function ActionFrame({ action, api, onEdit, editButtonRef, children }: ActionFrameProps) {
   const { busy } = useChatActions();
   const disabled = busy || api.isPending;
   useConfirmShortcut(!disabled, () => api.confirm('shortcut'));
@@ -42,6 +43,7 @@ export function ActionFrame({ action, api, onEdit, children }: ActionFrameProps)
         onConfirm={() => api.confirm('button')}
         onCancel={api.cancel}
         onEdit={onEdit}
+        editButtonRef={editButtonRef}
       />
       {api.errorMessage ? (
         <p role="alert" className="text-sm text-destructive">

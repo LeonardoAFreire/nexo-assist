@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import { Button } from '@/components/ui/button';
 
 type ActionButtonsProps = {
@@ -5,22 +6,32 @@ type ActionButtonsProps = {
   onConfirm: () => void;
   onCancel: () => void;
   onEdit: (() => void) | null;
+  editButtonRef?: Ref<HTMLButtonElement>;
 };
 
 type EditButtonProps = {
   disabled: boolean;
   onEdit: () => void;
+  buttonRef?: Ref<HTMLButtonElement>;
 };
 
-function EditButton({ disabled, onEdit }: EditButtonProps) {
+function EditButton({ disabled, onEdit, buttonRef }: EditButtonProps) {
   return (
-    <Button type="button" variant="outline" disabled={disabled} onClick={onEdit} className="h-9">
+    <Button
+      ref={buttonRef}
+      type="button"
+      variant="outline"
+      disabled={disabled}
+      onClick={onEdit}
+      className="h-9"
+    >
       Editar
     </Button>
   );
 }
 
-export function ActionButtons({ disabled, onConfirm, onCancel, onEdit }: ActionButtonsProps) {
+export function ActionButtons(props: ActionButtonsProps) {
+  const { disabled, onConfirm, onCancel, onEdit, editButtonRef } = props;
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button
@@ -35,7 +46,7 @@ export function ActionButtons({ disabled, onConfirm, onCancel, onEdit }: ActionB
           Ctrl+Enter
         </kbd>
       </Button>
-      {onEdit ? <EditButton disabled={disabled} onEdit={onEdit} /> : null}
+      {onEdit ? <EditButton disabled={disabled} onEdit={onEdit} buttonRef={editButtonRef} /> : null}
       <Button type="button" variant="ghost" disabled={disabled} onClick={onCancel} className="h-9">
         Cancelar
       </Button>
