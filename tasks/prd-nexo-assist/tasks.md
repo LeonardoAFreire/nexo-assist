@@ -12,7 +12,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [x] 6.0 Domínio `identity`: login, sessão, perfil e seed
 - [x] 7.0 `tickets/core`: regras do Anexo A (prioridade, prazos, vencimento, reabertura, duplicidade)
 - [x] 8.0 `tickets/core`: casos de uso, numeração e `TicketsService`
-- [ ] 9.0 `tickets`: persistência, seed, simulador do legado, leitura HTTP e listener de transferência
+- [x] 9.0 `tickets`: persistência, seed, simulador do legado, leitura HTTP e listener de transferência
 - [x] 10.0 Domínio `knowledge`: artigos, busca em português e seed
 - [x] 11.0 `agent/core`: fundações (`LlmClient`, fake, `StepRecorder`) e tools de consulta
 - [x] 12.0 `agent/core`: tools de proposta e `DecisionBuilder`
