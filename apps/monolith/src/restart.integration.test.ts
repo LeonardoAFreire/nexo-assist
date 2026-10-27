@@ -67,6 +67,15 @@ async function currentView(cookie: string): Promise<EmployeeConversationView> {
   return (await response.json()) as EmployeeConversationView;
 }
 
+async function interruptLastTurn(): Promise<void> {
+  await database?.database.execute(
+    "delete from chat.messages where id = (select id from chat.messages where author = 'agent' order by created_at desc limit 1)",
+  );
+  await database?.database.execute(
+    "update chat.conversations set turn_lock_until = now() + interval '2 minutes' where state <> 'closed'",
+  );
+}
+
 function pendingDraftOf(view: EmployeeConversationView): PendingAction | undefined {
   const parts = view.timeline.flatMap((message) => message.parts);
   const actions = parts.flatMap((part) => (part.type === 'pending_action' ? [part.action] : []));
@@ -107,5 +116,23 @@ describe('reinício da aplicação sobre o mesmo banco', () => {
     const created = await fetch(`${running?.baseUrl}/tickets`, { headers: jsonHeaders(cookie) });
     const titles = ((await created.json()) as TicketDetail[]).map((ticket) => ticket.title);
     expect(titles).toContain('VPN com erro 809 ao conectar');
+  });
+
+  it('libera a conversa e permite refazer a resposta de um turno cortado pela queda', async () => {
+    await shutdown();
+    await boot();
+    const cookie = await loginAsAna();
+    await say(cookie, 'Como está o INC-20311?');
+    await interruptLastTurn();
+    await shutdown();
+    await boot();
+    const view = await currentView(cookie);
+    expect(view.turnInProgress).toBe(false);
+    expect(view.timeline.at(-1)).toMatchObject({ author: 'agent', status: 'failed' });
+    const retried = await fetch(`${running?.baseUrl}/conversations/current/turns/retry`, {
+      method: 'POST',
+      headers: jsonHeaders(cookie),
+    });
+    expect(await retried.text()).toContain('event: turn.completed');
   });
 });

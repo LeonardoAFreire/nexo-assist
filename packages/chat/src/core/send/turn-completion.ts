@@ -30,23 +30,37 @@ export async function completeTurn(
   };
 }
 
+export type FailedMessageInput = {
+  conversationId: string;
+  text: string;
+  createdAt: string;
+};
+
+export function buildFailedMessage(input: FailedMessageInput): ChatMessage {
+  return {
+    id: randomUUID(),
+    conversationId: input.conversationId,
+    author: 'agent',
+    authorName: null,
+    authorLevel: null,
+    text: input.text,
+    parts: [],
+    turn: null,
+    status: 'failed',
+    createdAt: input.createdAt,
+  };
+}
+
 export async function failTurn(
   deps: EmployeeTurnDeps,
   input: FailedTurnInput,
 ): Promise<ChatStreamEvent> {
   const { conversation, failure } = input;
-  const message: ChatMessage = {
-    id: randomUUID(),
+  const message = buildFailedMessage({
     conversationId: conversation.id,
-    author: 'agent',
-    authorName: null,
-    authorLevel: null,
     text: failure.message,
-    parts: [],
-    turn: null,
-    status: 'failed',
     createdAt: deps.clock.now().toISOString(),
-  };
+  });
   await deps.messages.save(message);
   deps.notifier.messageCreated({ conversation, message });
   const error = { code: failure.code, message: failure.message };

@@ -6,12 +6,16 @@ import {
   SESSION_USAGE_REPOSITORY,
   type SessionUsageRepository,
 } from './core/allowance/session-usage-repository.js';
-import { CLOCK } from './core/clock/clock.js';
+import { CLOCK, type Clock } from './core/clock/clock.js';
 import { SystemClock } from './core/clock/system-clock.js';
-import { CONVERSATION_REPOSITORY } from './core/conversation/conversation-repository.js';
+import {
+  CONVERSATION_REPOSITORY,
+  type ConversationRepository,
+} from './core/conversation/conversation-repository.js';
 import { ConversationEventsHub } from './core/events/conversation-events-hub.js';
-import { MESSAGE_REPOSITORY } from './core/messages/message-repository.js';
+import { MESSAGE_REPOSITORY, type MessageRepository } from './core/messages/message-repository.js';
 import { PENDING_ACTION_REPOSITORY } from './core/pending-actions/pending-action-repository.js';
+import { RecoverInterruptedTurns } from './core/send/recover-interrupted-turns.js';
 import { AnalystProfilePipe } from './http/analyst-profile.pipe.js';
 import { ConsoleActionsController } from './http/console-actions.controller.js';
 import { ConsoleController } from './http/console.controller.js';
@@ -28,6 +32,7 @@ import { DrizzleConversationRepository } from './persistence/drizzle-conversatio
 import { DrizzleMessageRepository } from './persistence/drizzle-message.repository.js';
 import { DrizzlePendingActionRepository } from './persistence/drizzle-pending-action.repository.js';
 import { DrizzleSessionUsageRepository } from './persistence/drizzle-session-usage.repository.js';
+import { InterruptedTurnsRecovery } from './persistence/interrupted-turns-recovery.js';
 
 @Module({
   controllers: [
@@ -42,6 +47,16 @@ import { DrizzleSessionUsageRepository } from './persistence/drizzle-session-usa
     ChatMigrator,
     ConsoleSeedStore,
     ConsoleSeeder,
+    InterruptedTurnsRecovery,
+    {
+      provide: RecoverInterruptedTurns,
+      inject: [CONVERSATION_REPOSITORY, MESSAGE_REPOSITORY, CLOCK],
+      useFactory: (
+        conversations: ConversationRepository,
+        messages: MessageRepository,
+        clock: Clock,
+      ) => new RecoverInterruptedTurns({ conversations, messages, clock }),
+    },
     EmployeeSessionPipe,
     AnalystProfilePipe,
     UserThrottlerGuard,
