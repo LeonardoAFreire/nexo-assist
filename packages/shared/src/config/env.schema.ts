@@ -1,15 +1,25 @@
 import { z } from 'zod';
+import { envFields } from './env.fields.js';
 
-const MIN_SECRET_LENGTH = 32;
-const DEFAULT_PORT = 3000;
+type EnvInput = z.infer<z.ZodObject<typeof envFields>>;
 
-export const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-  PORT: z.coerce.number().int().positive().default(DEFAULT_PORT),
-  WEB_ORIGIN: z.string().url(),
-  JWT_SECRET: z.string().min(MIN_SECRET_LENGTH),
-  DATABASE_URL: z.string().min(1),
-  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
-});
+function addIssue(context: z.RefinementCtx, path: string, message: string): void {
+  context.addIssue({ code: 'custom', path: [path], message });
+}
+
+function validateConditionals(env: EnvInput, context: z.RefinementCtx): void {
+  const isProduction = env.NODE_ENV === 'production';
+  if (env.LLM_PROVIDER === 'openrouter' && !env.OPENROUTER_API_KEY) {
+    addIssue(context, 'OPENROUTER_API_KEY', 'obrigatória quando LLM_PROVIDER=openrouter');
+  }
+  if (env.LLM_PROVIDER === 'scripted' && isProduction) {
+    addIssue(context, 'LLM_PROVIDER', 'scripted não é permitido em produção');
+  }
+  if (env.LOG_LEVEL === 'debug' && isProduction) {
+    addIssue(context, 'LOG_LEVEL', 'debug não é permitido em produção');
+  }
+}
+
+export const envSchema = z.object(envFields).superRefine(validateConditionals);
 
 export type Env = z.infer<typeof envSchema>;
