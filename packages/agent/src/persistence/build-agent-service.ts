@@ -30,5 +30,6 @@ export function buildAgentService(deps: AgentServiceDeps): AgentService {
     clock: new SystemClock(),
     tools: createToolRegistry({ tickets, knowledge }),
     settings: buildAgentSettings(config),
+    logger,
   });
 }

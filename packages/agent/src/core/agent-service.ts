@@ -1,4 +1,5 @@
 import type { AgentApi, AgentTurnEvent, AgentTurnInput } from '@nexo/contracts';
+import { failureLogFields } from './failure-log-fields.js';
 import { TurnEventQueue } from './turn-event-queue.js';
 import { TurnRunner, type TurnRunnerDeps } from './turn-runner.js';
 import { TurnSession } from './turn-session.js';
@@ -24,7 +25,11 @@ export class AgentService implements AgentApi {
   private async execute(input: AgentTurnInput, turn: TurnSession): Promise<void> {
     try {
       await this.runner.run(input, turn);
-    } catch {
+    } catch (error: unknown) {
+      this.deps.logger?.warn(
+        failureLogFields(input.conversationId, error),
+        'turno do agent falhou',
+      );
       turn.emit({ type: 'failed', code: 'agent_unavailable', retryable: true });
     }
   }

@@ -1,4 +1,5 @@
 import type { AgentTurnEvent, AgentTurnInput, KnowledgeApi, TicketsApi } from '@nexo/contracts';
+import type { AgentLogger } from '../../core/agent-logger.js';
 import { AgentService } from '../../core/agent-service.js';
 import { DEFAULT_TOKEN_PRICING, type AgentSettings } from '../../core/agent-settings.js';
 import { createToolRegistry } from '../../core/tool-registry.js';
@@ -24,6 +25,7 @@ export type AgentHarnessOptions = {
   knowledge?: KnowledgeApi;
   runs?: InMemoryAgentRunRepository;
   settings?: Partial<AgentSettings>;
+  logger?: AgentLogger;
 };
 
 export function makeAgentHarness(options: AgentHarnessOptions) {
@@ -34,7 +36,7 @@ export function makeAgentHarness(options: AgentHarnessOptions) {
   const knowledge = options.knowledge ?? new InMemoryKnowledgeApi([]);
   const settings = { ...DEFAULT_SETTINGS, ...options.settings };
   const tools = createToolRegistry({ tickets, knowledge });
-  const service = new AgentService({ llm, runs, clock, tools, settings });
+  const service = new AgentService({ llm, runs, clock, tools, settings, logger: options.logger });
 
   async function collect(overrides: Partial<AgentTurnInput> = {}): Promise<AgentTurnEvent[]> {
     const events: AgentTurnEvent[] = [];

@@ -1,30 +1,21 @@
 import type { AgentTurnInput, Understanding } from '@nexo/contracts';
-import type { AgentRunRepository } from './agent-run-repository.js';
-import type { AgentSettings } from './agent-settings.js';
-import type { AgentTool } from './agent-tool.js';
 import { BUDGET_UNDERSTANDING } from './budget-understanding.js';
 import { BudgetGuard } from './budget-guard.js';
-import type { Clock } from './clock.js';
 import { ContextBuilder } from './context-builder.js';
 import { BUDGET_DEGRADATION, type Degradation, toDegradation } from './degradation.js';
 import { HANDOFF_TEXT, requestHandoff } from './fixed-replies.js';
 import { wasImpactAsked } from './impact-history.js';
-import type { LlmClient, LlmMessage } from './llm-client.js';
+import type { LlmMessage } from './llm-client.js';
 import { PromptCatalog } from './prompt-catalog.js';
 import { ResponseLoop } from './response-loop.js';
 import { TurnFinisher } from './turn-finisher.js';
 import { TurnPolicy } from './turn-policy.js';
+import type { TurnRunnerDeps } from './turn-runner-deps.js';
 import type { RespondableRoute } from './turn-route.js';
 import type { TurnSession } from './turn-session.js';
 import { UnderstandingStep } from './understanding-step.js';
 
-export type TurnRunnerDeps = {
-  llm: LlmClient;
-  runs: AgentRunRepository;
-  clock: Clock;
-  tools: AgentTool[];
-  settings: AgentSettings;
-};
+export type { TurnRunnerDeps };
 
 export class TurnRunner {
   private readonly budget: BudgetGuard;
