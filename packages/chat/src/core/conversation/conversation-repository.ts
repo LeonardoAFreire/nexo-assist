@@ -23,4 +23,5 @@ export interface ConversationRepository {
   saveWhenState(input: SaveWhenStateInput): Promise<boolean>;
   acquireTurnLock(input: AcquireTurnLockInput): Promise<Conversation | null>;
   releaseTurnLock(conversationId: string): Promise<void>;
+  markAnalystRead(conversationId: string, readAt: string): Promise<Conversation | null>;
 }

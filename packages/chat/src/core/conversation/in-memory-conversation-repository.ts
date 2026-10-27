@@ -60,6 +60,16 @@ export class InMemoryConversationRepository implements ConversationRepository {
       this.stored.set(conversationId, { ...current, turnLockUntil: null });
     }
   }
+
+  async markAnalystRead(conversationId: string, readAt: string): Promise<Conversation | null> {
+    const current = this.stored.get(conversationId);
+    if (current === undefined) {
+      return null;
+    }
+    const read = { ...current, analystReadAt: readAt };
+    this.stored.set(conversationId, read);
+    return new Conversation(read);
+  }
 }
 
 function isLocked(props: ConversationProps, now: string): boolean {

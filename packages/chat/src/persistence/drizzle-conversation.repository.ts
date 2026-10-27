@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DATABASE, type Database } from '@nexo/shared/database';
-import { and, eq, isNull, lte, ne, or } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import { Conversation } from '../core/conversation/conversation.js';
 import type {
   AcquireTurnLockInput,
@@ -12,6 +12,7 @@ import {
   toConversationProps,
   toConversationRow,
 } from './conversation-mapper.js';
+import { acquireLock, releaseLock, updateAnalystRead } from './conversation-column-updates.js';
 import { conversationsTable } from './conversations.table.js';
 
 function toConversation(row: ConversationRow | undefined): Conversation | null {
@@ -74,24 +75,14 @@ export class DrizzleConversationRepository implements ConversationRepository {
   }
 
   async acquireTurnLock(input: AcquireTurnLockInput): Promise<Conversation | null> {
-    const now = new Date(input.now);
-    const rows = await this.database
-      .update(conversationsTable)
-      .set({ turnLockUntil: new Date(input.until) })
-      .where(
-        and(
-          eq(conversationsTable.id, input.conversationId),
-          or(isNull(conversationsTable.turnLockUntil), lte(conversationsTable.turnLockUntil, now)),
-        ),
-      )
-      .returning();
-    return toConversation(rows[0]);
+    return toConversation(await acquireLock(this.database, input));
+  }
+
+  async markAnalystRead(conversationId: string, readAt: string): Promise<Conversation | null> {
+    return toConversation(await updateAnalystRead(this.database, { conversationId, readAt }));
   }
 
   async releaseTurnLock(conversationId: string): Promise<void> {
-    await this.database
-      .update(conversationsTable)
-      .set({ turnLockUntil: null })
-      .where(eq(conversationsTable.id, conversationId));
+    await releaseLock(this.database, conversationId);
   }
 }
