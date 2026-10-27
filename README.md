@@ -121,7 +121,7 @@ Princípios que valem mais que o prompt:
 | `@nexo/monolith`  | 10     |
 | `@nexo/web`       | 56     |
 
-`pnpm e2e` roda três jornadas no navegador com Playwright (abertura de chamado, chamado de terceiro e transferência para o analista), contra um banco `nexo_e2e` próprio e o modelo roteirizado. É preciso ter o Postgres do `docker compose` no ar e instalar o Chromium uma vez (`pnpm --filter @nexo/e2e exec playwright install chromium`).
+`pnpm e2e` roda quatro jornadas no navegador com Playwright (abertura de chamado, chamado de terceiro, transferência para o analista e o chat em 375 px), contra um banco `nexo_e2e` próprio e o modelo roteirizado. É preciso ter o Postgres do `docker compose` no ar e instalar o Chromium uma vez (`pnpm --filter @nexo/e2e exec playwright install chromium`).
 
 ### Evals
 
@@ -137,52 +137,53 @@ Metas: confirmação antes de escrever, privacidade, escopo e transparência val
 
 <!-- evals:start -->
 
-Rodada final, com `deepseek/deepseek-v4-flash-0731` como modelo de resposta e como roteador: 18 cenários × 2 execuções (36 turnos), **34 aprovados e nenhuma falha de disponibilidade**.
+Rodada final, com `openai/gpt-6-luna` como modelo de resposta e `deepseek/deepseek-v4-flash-0731` como roteador: 18 cenários × 2 execuções (36 turnos), **35 aprovados**.
 
 | Meta                          | Resultado  | Meta do PRD |
 | ----------------------------- | ---------- | ----------- |
 | Resolução sem fila            | 100% (8/8) | 90%         |
-| Chamados bem abertos          | 50% (2/4)  | 90%         |
+| Chamados bem abertos          | 100% (4/4) | 90%         |
 | Sem duplicidade               | 100% (8/8) | 100%        |
 | Confirmação antes de escrever | 100%       | 100%        |
-| Encaminhamento certo          | 100% (8/8) | 100%        |
+| Encaminhamento certo          | 88% (7/8)  | 100%        |
 | Escopo                        | 100% (4/4) | 100%        |
 | Privacidade                   | 100% (4/4) | 100%        |
 | Transparência                 | 100%       | 100%        |
 
-- **Latência do primeiro trecho:** p50 de 2,9 s (meta de 2 s, **acima**) e p95 de 3,9 s (meta de 5 s, dentro).
-- **Custo médio por turno:** US$ 0,0013. Para 10 mensagens, a estimativa é de US$ 0,013 (meta de US$ 0,02, dentro).
-- **Abaixo da meta, sem ajuste forçado:** "chamados bem abertos". Em `erro-809-windows-11` o modelo às vezes não pergunta quem é afetado, e em `abertura-coleta-minima` às vezes cita "impede uma pessoa de trabalhar" em vez do compromisso do dia. É variação do modelo, e o critério não foi afrouxado para passar.
-
-Antes dos ajustes de prompt e das tools, o mesmo modelo aprovava 26 de 36 turnos. As causas encontradas foram: a busca da central usada nos evals devolvia artigos errados; `buscar_chamados` não explicava o `scope`, então o modelo abria um chamado novo em vez de reabrir; o modelo usava `perguntar_opcoes` para pedir uma permissão que as tools de proposta já pedem; e a descrição de `consultar_chamado` insinuava que o chamado de terceiro existia. As regras do service desk seguem no código.
+- **Latência do primeiro trecho:** p50 de 5,0 s (meta de 2 s, **acima**) e p95 de 6,5 s (meta de 5 s, **acima**). A rodada anterior, com o DeepSeek e antes da exigência de tool finalizadora, tinha p50 de 2,9 s. A hipótese é que, sem a narração antes das tools (que o prompt já proibia), o primeiro texto só chega depois delas; a variação dos provedores no dia também pesa (vi picos de 8,7 s num provedor lento do OpenRouter). Não isolei as duas causas.
+- **Custo médio por turno:** US$ 0,0009. Para 10 mensagens, a estimativa é de US$ 0,0093 (meta de US$ 0,02, dentro).
+- **Abaixo da meta, sem ajuste forçado:** encaminhamento certo (88%). Em `critico-equipe` o modelo, numa das duas execuções, fez a pergunta que falta em vez de propor o chamado crítico. É variação do modelo, e o critério não foi afrouxado.
+- O que mudou desde a rodada anterior (DeepSeek, 34/36, chamados bem abertos em 50%): a pergunta "quem é afetado" passou a ser garantida pelo código, e cada intenção só encerra o turno depois de uma tool finalizadora (propor, perguntar, transferir ou consultar), porque o modelo às vezes escrevia o "rascunho" em texto, sem chamar a tool, e inventava prazo.
 <!-- evals:end -->
 
 ## Escolha do modelo e do OpenRouter
 
 O **OpenRouter** dá uma API única para vários modelos e provedores. Trocar de modelo é mudar uma variável de ambiente (`LLM_MODEL`, `LLM_ROUTER_MODEL`), e o roteamento entre provedores dá resiliência a limites de taxa (429). A chamada ao modelo acontece só no backend, atrás da porta `LlmClient`, e o Mastra fica isolado em `agent/persistence`.
 
-Modelo de resposta e roteador escolhidos: **`deepseek/deepseek-v4-flash-0731`**, a US$ 0,04 a 0,14 por milhão de tokens na entrada e US$ 0,13 a 0,28 na saída, conforme o provedor. Há cerca de 28 provedores no OpenRouter para ele, o que absorve 429 de um deles.
+Modelo de resposta escolhido: **`openai/gpt-6-luna`**, a US$ 0,10 por milhão de tokens na entrada e US$ 0,50 na saída. Roteador mantido em **`deepseek/deepseek-v4-flash-0731`** (US$ 0,12 e US$ 0,24). O raciocínio não é obrigatório em nenhum dos dois (`reasoning.mandatory: false` no catálogo) e fica desligado (`reasoning.enabled=false`).
 
-Na primeira rodada, comparei três candidatos em 18 cenários com 2 execuções cada (36 turnos por candidato), antes dos ajustes de prompt:
+Comparação final, com o código atual, 18 cenários × 2 execuções (36 turnos por candidato) e o roteador fixo:
 
-| Candidato                         | Turnos aprovados |
-| --------------------------------- | ---------------- |
-| `deepseek/deepseek-v4-flash`      | 20/36            |
-| `deepseek/deepseek-v4-flash-0731` | 26/36            |
-| `qwen/qwen3.8-flash`              | 27/36            |
+| Modelo de resposta                | Aprovados | Primeiro trecho p50 / p95 | Custo por turno | Observação                                                                 |
+| --------------------------------- | --------- | ------------------------- | --------------- | -------------------------------------------------------------------------- |
+| `openai/gpt-6-luna`               | 35/36     | 5,0 s / 6,5 s             | US$ 0,0009      | Todas as metas, menos encaminhamento (88%)                                 |
+| `anthropic/claude-haiku-5.5`      | 29/36     | 4,4 s / 7,6 s             | US$ 0,0022      | Chamados bem abertos em 25% (perguntou de novo o Windows que já foi dito); 10 mensagens custam US$ 0,022, acima da meta |
+| `deepseek/deepseek-v4-flash-0731` | 34/36     | 5,3 s / 10,2 s            | US$ 0,0015      | 3 turnos sem resposta por indisponibilidade do provedor                    |
+| `inception/mercury-2.5`           | 22/36     | 5,6 s / 15,2 s            | US$ 0,0013      | Falhou em privacidade e em chamados bem abertos                            |
 
-Depois dos ajustes de prompt e de descrição das tools, o DeepSeek 0731 chegou a 34/36 na rodada final (resultados acima). Aprendizados da escolha:
+Luna como roteador também foi testado e ficou mais lento (p50 de 6,9 s) sem ganho de qualidade. A escolha seguiu aprovação, latência e custo, nessa ordem: o Luna empata ou ganha em aprovação, custa menos e não teve falha de disponibilidade. Nenhum candidato chega aos 2 s de latência do PRD, porque o turno tem uma chamada de roteador e, em geral, três a quatro chamadas do laço. Trocar de modelo é mudar `LLM_MODEL` no `.env`. Aprendizados da escolha:
 
-- **Modelos de raciocínio consomem `max_tokens` pensando e devolvem texto vazio.** Por isso o raciocínio é desligado (`reasoning.enabled=false`).
-- O **Gemini 2.5 Flash-Lite foi descartado como roteador**: levou 429 do Google em 11 de 20 chamadas.
-- O roteador, uma chamada sequencial antes das tools, é o principal custo de latência. Com o DeepSeek 0731 nos dois papéis, o primeiro trecho ficou em p50 de 2,9 s, contra cerca de 4 s com roteadores mais lentos.
+- **Modelos de raciocínio consomem `max_tokens` pensando e devolvem texto vazio.** Por isso o raciocínio é desligado.
+- O **Gemini 2.5 Flash-Lite foi descartado como roteador** (429 do Google em 11 de 20 chamadas) e o **Gemini 3.8 Flash**, por ter raciocínio obrigatório e custar cerca de oito vezes mais.
 - Modelos com poucos provedores sofrem com limite de taxa; a redundância de provedores do OpenRouter pesa mais na escolha do que uns décimos de segundo.
+- Cenário que reprova em todos os modelos aponta primeiro para a tool: `reabertura-fora-do-prazo` reprovava em todos porque a exigência de tool finalizadora lia o resultado da tool sem o embrulho `{ type: "json", value }` do `prepareStep`.
 
 O custo por turno é registrado em `agent.runs`, a partir do usage accounting do OpenRouter ou, na falta dele, de uma tabela de preços por modelo (`model-prices.ts`). Os valores medidos por conversa entram no bloco de resultados acima.
 
 ## Trade-offs
 
-- **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro trecho da resposta chega em **p50 de 2,9 s e p95 de 3,9 s**, acima da meta de 2 s do PRD. É um trade-off assumido e registrado.
+- **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro trecho da resposta chega em **p50 de 5,0 s e p95 de 6,5 s**, acima das metas do PRD (2 s e 5 s). É um trade-off assumido e registrado.
+- **Tool obrigatória até a finalizadora** (`toolChoice: required` no `prepareStep`): garante que o agent nunca escreva um "rascunho" ou uma "proposta" em texto sem a tool, ao custo de o primeiro texto só chegar depois das tools.
 - **Postgres com um schema por domínio e Drizzle**, em vez de um banco sem serviço (SQLite): a regra "cada domínio só acessa as próprias tabelas" fica visível no banco e o deploy cabe num Postgres gerenciado. Custa um `docker compose up -d`. Nos testes, PGlite dá Postgres de verdade sem Docker.
 - **SSE em vez de WebSocket:** o tráfego é quase todo servidor para cliente, passa por proxies HTTP comuns e usa o cookie de sessão. O hub de eventos é em memória, então vale para uma instância; a evolução é `LISTEN/NOTIFY`.
 - **Tickets dentro do monólito, como "legado":** o agent só o consome por interface, com decorador resiliente. Virar app dedicada exige apenas trocar o provedor do token por um cliente HTTP.
@@ -195,7 +196,7 @@ Controles pensados para o ambiente publicado (RF56):
 - **Chaves só em variáveis de ambiente.** `.env` fora do Git; `.env.example` com valores fictícios; `VITE_*` é público e nunca recebe chave. A configuração é validada na inicialização e a API falha rápido se faltar algo.
 - **Rate limit por usuário** nos endpoints de chat (`CHAT_RATE_LIMIT_PER_MINUTE`, padrão 12 por minuto).
 - **30 mensagens por sessão.** Ao chegar no limite, a API responde sem chamar o modelo e orienta o funcionário a falar com um analista.
-- **Teto diário de custo** (`LLM_DAILY_BUDGET_USD`, padrão US$ 2): somado a partir de `agent.runs`; ao atingi-lo, o turno termina sem chamar o modelo. Há também um orçamento de tokens por conversa. Em produção, configure ainda um limite de crédito na própria chave do OpenRouter.
+- **Teto diário de custo** (`LLM_DAILY_BUDGET_USD`, padrão US$ 2): somado a partir de `agent.runs`; ao atingi-lo, o turno termina sem chamar o modelo. Há também um orçamento de **600.000 tokens de entrada por conversa** (cada turno consome cerca de 13 mil, porque o laço reenvia o contexto e os schemas das tools a cada passo); a conversa atravessa sessões, então ao esgotá-lo o agent responde sem chamar o modelo e oferece o analista. Em produção, configure ainda um limite de crédito na própria chave do OpenRouter.
 - **Em `NODE_ENV=production` a configuração recusa**: `LLM_PROVIDER=scripted`, `LOG_LEVEL=debug` e o `JWT_SECRET` de exemplo; o segredo precisa ter ao menos 32 caracteres. O cookie de sessão sai `HttpOnly; Secure; SameSite=Lax`.
 - Origem do `web` definida em CORS (`WEB_ORIGIN`), limite de corpo da requisição e nenhuma mensagem de erro com stack, SQL ou detalhe do provedor.
 
