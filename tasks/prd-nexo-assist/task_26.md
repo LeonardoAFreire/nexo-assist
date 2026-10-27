@@ -32,10 +32,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 - [x] 26.1 Runner dos evals e os critérios de pontuação.
 - [x] 26.2 Cenários com gabarito.
 - [x] 26.3 Script `report`.
-- [ ] 26.4 Rodar com 2 ou 3 modelos candidatos, escolher e registrar os padrões no `.env.example`.
+- [x] 26.4 Rodar com 2 ou 3 modelos candidatos, escolher e registrar os padrões no `.env.example`.
 - [x] 26.5 Ajustar prompts e descrições das tools onde os evals falharem, sem mover regras do código para o prompt.
 
-> **Pendente (aguarda `OPENROUTER_API_KEY`):** as subtarefas 26.4 e 26.5 exigem o modelo real e não foram feitas. O runner, os cenários e o `report` (26.1 a 26.3) foram validados sem chave com `--dry-run` (roteiros de ensaio) e com testes unitários. Para concluir: preencher a chave no `.env`, rodar `pnpm --filter @nexo/agent eval --model <modelo> --runs 3` com 2 ou 3 modelos candidatos, escolher `LLM_MODEL` e `LLM_ROUTER_MODEL`, registrar os padrões no `.env.example`, ajustar prompts onde os critérios falharem e publicar o resultado no README (CA-40).
+> **Concluída:** candidatos comparados na primeira rodada (DeepSeek V4 Flash, DeepSeek V4 Flash 0731 e Qwen 3.8 Flash, 18 cenários × 2 execuções). Escolha: `deepseek/deepseek-v4-flash-0731` para `LLM_MODEL` e `LLM_ROUTER_MODEL`, registrada no `.env.example`. Rodada final após os ajustes de prompt (26.5): 34 de 36 execuções aprovadas, 0 falhas de disponibilidade, primeiro trecho p50 de 2,9 s e p95 de 3,9 s, custo de US$ 0,0013 por turno. Abaixo da meta: chamados bem abertos (50%, por variação do modelo em `erro-809-windows-11` e `abertura-coleta-minima`) e latência p50 (meta de 2 s). Os números entram no README na tarefa 27.0.
 
 ## Detalhes de implementação
 
@@ -59,7 +59,7 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Evals
 
-- [ ] Todos os cenários listados, com o resultado salvo para o README.
+- [x] Todos os cenários listados, com o resultado salvo para o README.
 
 ## Arquivos relevantes
 
