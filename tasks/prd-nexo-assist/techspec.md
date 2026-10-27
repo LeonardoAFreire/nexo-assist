@@ -254,7 +254,7 @@ Convenções: ids `uuid`; datas em ISO 8601 UTC no contrato, formatadas em `pt-B
 | `department` | `string \| null` | sim | Ex.: "Financeiro" |
 | `supportLevel` | `'N1' \| 'N2' \| null` | sim | Só para analistas |
 | `initials` | `string` | sim | Avatar |
-| `session` | `{ messagesUsed: number; messagesLimit: number; expiresAt: string }` | sim | Contador da sessão (RF13) |
+| `session` | `{ expiresAt: string }` | sim | Expiração da sessão. O contador de mensagens (RF13) vem de `EmployeeConversationView.usage`, porque é dado do `chat` e o `identity` não o consome |
 
 ```text
 {
@@ -265,7 +265,7 @@ Convenções: ids `uuid`; datas em ISO 8601 UTC no contrato, formatadas em `pt-B
   "department": "Financeiro",
   "supportLevel": null,
   "initials": "AS",
-  "session": { "messagesUsed": 18, "messagesLimit": 30, "expiresAt": "2026-10-27T21:00:00.000Z" }
+  "session": { "expiresAt": "2026-10-27T21:00:00.000Z" }
 }
 ```
 
@@ -708,7 +708,7 @@ Todos sob `/api`. Os erros seguem `ApiError`. Toda rota, exceto `login`, `health
 | --- | --- | --- |
 | `POST` | `/api/auth/login` | Entra e grava o cookie de sessão |
 | `POST` | `/api/auth/logout` | Encerra a sessão |
-| `GET` | `/api/auth/me` | Usuário e contador da sessão |
+| `GET` | `/api/auth/me` | Usuário e expiração da sessão |
 | `GET` | `/api/conversations/current` | Conversa atual e histórico do funcionário |
 | `POST` | `/api/conversations/current/messages` | Envia mensagem; resposta em SSE |
 | `POST` | `/api/conversations/current/turns/retry` | Refaz o último turno que falhou; SSE |
