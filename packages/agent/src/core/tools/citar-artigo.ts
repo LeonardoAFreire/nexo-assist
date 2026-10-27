@@ -27,7 +27,9 @@ function citeArticle(input: CitarArtigoInput, context: TurnContext): CitarArtigo
     throw new ArticleNotSearchedError();
   }
   const citation = { ...input, title: article.title };
-  context.emit({ type: 'part', part: { type: 'article_citation', ...citation } });
+  if (!context.articles.markCited(input.articleId)) {
+    context.emit({ type: 'part', part: { type: 'article_citation', ...citation } });
+  }
   return citation;
 }
 

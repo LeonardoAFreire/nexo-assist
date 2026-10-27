@@ -33,6 +33,16 @@ describe('citar_artigo', () => {
     ]);
   });
 
+  it('não repete o cartão quando o modelo cita o mesmo artigo de novo no turno', async () => {
+    const { context, events } = makeTurnContext();
+    context.articles.remember([makeArticle()]);
+    const tool = createCitarArtigoTool();
+    await tool.execute(citation, context);
+    const again = await tool.execute({ ...citation, reason: 'mesmo artigo, outro texto' }, context);
+    expect(again.title).toBe('VPN com erro 809');
+    expect(events).toHaveLength(1);
+  });
+
   it('descreve se o artigo se aplica', () => {
     const tool = createCitarArtigoTool();
     const output = { ...citation, title: 'VPN com erro 809', applies: true };
