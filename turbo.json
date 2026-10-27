@@ -5,6 +5,8 @@
     "typecheck": { "dependsOn": ["^build"] },
     "lint": { "dependsOn": ["^build"] },
     "test": { "dependsOn": ["^build"] },
-    "dev": { "dependsOn": ["^build"], "cache": false, "persistent": true }
+    "dev": { "dependsOn": ["^build"], "cache": false, "persistent": true },
+    "eval": { "dependsOn": ["^build"], "cache": false },
+    "report": { "dependsOn": ["^build"], "cache": false }
   }
 }

@@ -1,5 +1,7 @@
 node_modules
 dist
+dist-evals
+packages/agent/evals/results/
 .turbo
 .env
 .env.*

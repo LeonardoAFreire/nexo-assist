@@ -13,8 +13,10 @@
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "oxlint --type-aware src",
-    "test": "vitest run --passWithNoTests"
+    "lint": "oxlint --type-aware src evals",
+    "test": "vitest run --passWithNoTests",
+    "eval": "tsc -p tsconfig.evals.json && node dist-evals/evals/run-evals.js",
+    "report": "tsc -p tsconfig.evals.json && node dist-evals/evals/report.js"
   },
   "dependencies": {
     "@mastra/core": "1.79.0",

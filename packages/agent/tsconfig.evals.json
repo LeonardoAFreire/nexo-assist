@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist-evals"
+  },
+  "include": ["src", "evals"],
+  "exclude": ["src/**/*.test.ts", "evals/**/*.test.ts"]
+}
