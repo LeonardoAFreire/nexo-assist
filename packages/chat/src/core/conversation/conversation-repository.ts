@@ -1,6 +1,8 @@
 import type { ConversationState } from '@nexo/contracts';
 import type { Conversation } from './conversation.js';
 
+export const CONVERSATION_REPOSITORY = Symbol('CONVERSATION_REPOSITORY');
+
 export type AcquireTurnLockInput = {
   conversationId: string;
   now: string;
