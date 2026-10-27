@@ -10,6 +10,7 @@ import type { EvalSummary, GoalOutcome, ScenarioSummary } from './summary-types.
 const SCENARIO_COLUMN = 30;
 const GOAL_COLUMN = 18;
 const RESULT_COLUMN = 14;
+const NO_SCENARIOS_TEXT = 'sem cenários nesta execução';
 
 function scenarioLine(scenario: ScenarioSummary): string {
   const rate = percentText(scenario.passedRuns / scenario.runs);
@@ -29,7 +30,8 @@ function goalLine(outcome: GoalOutcome): string {
     padRight(percentText(outcome.rate), GOAL_COLUMN),
     padRight(`meta ${percentText(outcome.minRate)}`, RESULT_COLUMN),
   ];
-  return `${cells.join('')}${verdictText(outcome.met)}`;
+  const verdict = outcome.rate === null ? NO_SCENARIOS_TEXT : verdictText(outcome.met);
+  return `${cells.join('')}${verdict}`;
 }
 
 function performanceLines(summary: EvalSummary): string[] {

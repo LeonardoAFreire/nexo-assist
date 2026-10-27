@@ -88,5 +88,6 @@ describe('summarize', () => {
     expect(text).toContain('Resolução sem fila');
     expect(text).toContain('Primeiro trecho p50: 1000 ms');
     expect(text).toContain('Estimativa para 10 mensagens');
+    expect(text).toContain('sem cenários nesta execução');
   });
 });
