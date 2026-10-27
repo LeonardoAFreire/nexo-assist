@@ -23,6 +23,7 @@ describe('transferir_para_analista', () => {
   it('rejeita motivo desconhecido, resumo vazio e argumentos extras', () => {
     const { inputSchema } = createTransferirParaAnalistaTool();
     expect(inputSchema.safeParse({ reason: 'tedio', summary: 'x' }).success).toBe(false);
+    expect(inputSchema.safeParse({ reason: 'overdue', summary: 'x' }).success).toBe(false);
     expect(inputSchema.safeParse({ reason: 'requested', summary: ' ' }).success).toBe(false);
     expect(
       inputSchema.safeParse({ reason: 'requested', summary: 'x', requesterId: 'y' }).success,

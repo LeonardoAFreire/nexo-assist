@@ -14,8 +14,10 @@ export const HANDOFF_REASON_LABELS: Record<HandoffReason, string> = {
   failure: 'falha repetida',
 };
 
+const requestableReasonSchema = handoffReasonSchema.exclude(['overdue']);
+
 const inputSchema = z.strictObject({
-  reason: handoffReasonSchema,
+  reason: requestableReasonSchema,
   summary: z.string().trim().min(1).max(SUMMARY_MAX_LENGTH),
 });
 const outputSchema = z.object({ reason: handoffReasonSchema });
@@ -43,7 +45,7 @@ export function createTransferirParaAnalistaTool(): AgentTool<
   return {
     name: 'transferir_para_analista',
     description:
-      'Transfere a conversa para um analista humano, com o motivo e um resumo do caso para que o analista não recomece a conversa. A transferência é executada pelo sistema.',
+      'Transfere a conversa para um analista humano, com o motivo e um resumo do caso para que o analista não recomece a conversa. A transferência é executada pelo sistema. Não use para chamado vencido: nesse caso o sistema oferece o analista e só transfere quando o funcionário aceita.',
     stepKind: 'handed_off',
     failureLabel: HANDOFF_STEP_LABEL,
     inputSchema,
