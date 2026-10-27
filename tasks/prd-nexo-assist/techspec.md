@@ -1231,7 +1231,7 @@ Não rodam no CI. Comando: `pnpm --filter @nexo/agent eval` (modelo e número de
 
 ### Riscos conhecidos
 
-- **Latência com duas chamadas e tools.** Mitigação: modelo pequeno no classificador, streaming desde o primeiro trecho, passos emitidos enquanto as tools rodam, prefixo estável para cache e medição de `first_token_ms` nos evals. Se a meta não for atingida, o classificador pode ser pulado em mensagens resolvidas por código (confirmação, opção rápida de oferta de analista).
+- **Latência com duas chamadas e tools.** Mitigação: modelo pequeno no classificador, streaming desde o primeiro trecho, passos emitidos enquanto as tools rodam, prefixo estável para cache e medição de `first_token_ms` nos evals. A meta de latência foi revista na QA (ver o PRD): o que o funcionário percebe é o aceite imediato, o primeiro passo em ~3 s e o texto em ~4,5 s. Se for preciso reduzir mais, o classificador pode ser pulado em mensagens resolvidas por código (confirmação, opção rápida de oferta de analista).
 - **Qualidade da extração de fatos de prioridade e do julgamento de aplicabilidade dos artigos.** Mitigação: evals com gabarito, `citar_artigo` obrigando o modelo a declarar `applies` e o motivo, e escolha do modelo pelos resultados.
 - **API do Mastra em evolução** (nomes de chunks e opções de `stream`). Mitigação: tudo isolado em `MastraLlmClient`, com um teste de contrato do adaptador contra um modelo fake do AI SDK. Versão fixada no `package.json`.
 - **Custo vindo do OpenRouter** (usage accounting) pode não chegar pelos metadados do Mastra. Mitigação: estimativa por tabela de preços, sinalizada como estimativa no registro.
