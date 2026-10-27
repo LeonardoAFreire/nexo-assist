@@ -24,7 +24,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [ ] 18.0 `chat/http` do funcionário: mensagens por SSE, retry e ações pendentes
 - [ ] 19.0 `chat/http`: transferência, console do analista e SSE de atualização
 - [x] 20.0 `web`: base (shell, rotas, cliente HTTP, MSW), login e perfil
-- [ ] 21.0 `web`: componentes compartilhados de chamado e de decisão do agent
+- [x] 21.0 `web`: componentes compartilhados de chamado e de decisão do agent
 - [ ] 22.0 `web`: chat em streaming (mensagens, composer, contador, erros)
 - [ ] 23.0 `web`: cards interativos do chat e estado transferido
 - [ ] 24.0 `web`: console do analista

@@ -29,9 +29,9 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 21.1 `components/tickets/`: `labels.ts`, `TicketStatusBadge`, `PriorityBadge`, `OverdueLabel` e `TicketCard`.
-- [ ] 21.2 `components/agent-turn/`: `StepsLine`, `ConfidenceBadge` e `DecisionDetails`.
-- [ ] 21.3 Utilitário de formatação de data e hora em `lib/`.
+- [x] 21.1 `components/tickets/`: `labels.ts`, `TicketStatusBadge`, `PriorityBadge`, `OverdueLabel` e `TicketCard`.
+- [x] 21.2 `components/agent-turn/`: `StepsLine`, `ConfidenceBadge` e `DecisionDetails`.
+- [x] 21.3 Utilitário de formatação de data e hora em `lib/`.
 
 ## Detalhes de implementação
 
@@ -49,8 +49,8 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-24 — expande o detalhe da decisão com entendimento, ação, confiança e motivo.
-- [ ] `TicketCard` mostra "prazo vencido" em texto quando `overdue`.
+- [x] TI-24 — expande o detalhe da decisão com entendimento, ação, confiança e motivo.
+- [x] `TicketCard` mostra "prazo vencido" em texto quando `overdue`.
 
 ## Arquivos relevantes
 
