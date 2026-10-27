@@ -20,7 +20,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [ ] 14.0 `agent/persistence`: `MastraLlmClient`, decoradores resilientes, `agent.runs` e módulo
 - [x] 15.0 `chat/core`: estado da conversa, limite, matchers, opção rápida e ações pendentes
 - [x] 16.0 `chat/core`: transferência, console e `SendEmployeeMessage`
-- [ ] 17.0 `chat/persistence`: schema, repositórios e seed do console
+- [x] 17.0 `chat/persistence`: schema, repositórios e seed do console
 - [ ] 18.0 `chat/http` do funcionário: mensagens por SSE, retry e ações pendentes
 - [ ] 19.0 `chat/http`: transferência, console do analista e SSE de atualização
 - [x] 20.0 `web`: base (shell, rotas, cliente HTTP, MSW), login e perfil

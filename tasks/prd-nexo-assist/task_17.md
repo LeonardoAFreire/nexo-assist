@@ -30,10 +30,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 17.1 Schemas Drizzle `chat.conversations`, `messages`, `pending_actions` e `session_usage`, com as migrations.
-- [ ] 17.2 Repositórios Drizzle das quatro portas, com `parse` dos `jsonb`.
-- [ ] 17.3 Seed das conversas do console.
-- [ ] 17.4 `ChatModule` com os providers do `core` e dos repositórios.
+- [x] 17.1 Schemas Drizzle `chat.conversations`, `messages`, `pending_actions` e `session_usage`, com as migrations.
+- [x] 17.2 Repositórios Drizzle das quatro portas, com `parse` dos `jsonb`.
+- [x] 17.3 Seed das conversas do console.
+- [x] 17.4 `ChatModule` com os providers do `core` e dos repositórios.
 
 ## Detalhes de implementação
 
@@ -49,7 +49,7 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] Repositórios no PGlite: assumir condicional só funciona uma vez; segunda ação `pending` na mesma conversa é recusada; `jsonb` corrompido falha de forma explícita na leitura.
+- [x] Repositórios no PGlite: assumir condicional só funciona uma vez; segunda ação `pending` na mesma conversa é recusada; `jsonb` corrompido falha de forma explícita na leitura.
 
 ## Arquivos relevantes
 

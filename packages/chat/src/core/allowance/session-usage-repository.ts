@@ -1,3 +1,5 @@
+export const SESSION_USAGE_REPOSITORY = Symbol('SESSION_USAGE_REPOSITORY');
+
 export type IncrementUsageInput = {
   sessionId: string;
   userId: string;

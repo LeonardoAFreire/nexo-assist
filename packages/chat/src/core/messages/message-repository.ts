@@ -1,5 +1,7 @@
 import type { ChatMessage } from '@nexo/contracts';
 
+export const MESSAGE_REPOSITORY = Symbol('MESSAGE_REPOSITORY');
+
 export type ListRecentMessagesInput = {
   conversationId: string;
   limit: number;
