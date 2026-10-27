@@ -26,7 +26,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [x] 20.0 `web`: base (shell, rotas, cliente HTTP, MSW), login e perfil
 - [x] 21.0 `web`: componentes compartilhados de chamado e de decisão do agent
 - [x] 22.0 `web`: chat em streaming (mensagens, composer, contador, erros)
-- [ ] 23.0 `web`: cards interativos do chat e estado transferido
+- [x] 23.0 `web`: cards interativos do chat e estado transferido
 - [x] 24.0 `web`: console do analista
 - [ ] 25.0 Composição final do monólito e testes E2E
 - [ ] 26.0 Evals com o modelo real, relatório e escolha do modelo

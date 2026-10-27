@@ -32,10 +32,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 23.1 `QuickOptions` e `useQuickReplyKeys`.
-- [ ] 23.2 `TicketSelection` (usa `TicketCard` da tarefa 21 após a escolha).
-- [ ] 23.3 `api/` de ações pendentes, `usePendingAction`, `DraftCard`, `DraftEditForm`, `ComplementCard` e `ReopenCard`.
-- [ ] 23.4 `subscribeConversation`, `useConversationEvents`, `ConversationStateBanner`, `AnalystMessage` e `SystemEvent`.
+- [x] 23.1 `QuickOptions` e `useQuickReplyKeys`.
+- [x] 23.2 `TicketSelection` (usa `TicketCard` da tarefa 21 após a escolha).
+- [x] 23.3 `api/` de ações pendentes, `usePendingAction`, `DraftCard`, `DraftEditForm`, `ComplementCard` e `ReopenCard`.
+- [x] 23.4 `subscribeConversation`, `useConversationEvents`, `ConversationStateBanner`, `AnalystMessage` e `SystemEvent`.
 
 ## Detalhes de implementação
 
@@ -59,10 +59,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-21 — confirma o rascunho por clique e por Ctrl/⌘+Enter, cancela e edita.
-- [ ] TI-22 — responde opções rápidas por clique e pela tecla numérica.
-- [ ] TI-23 — escolhe um chamado da lista e mostra o card com prazo vencido.
-- [ ] TI-26 — mostra a conversa transferida e as mensagens do analista com nome e nível.
+- [x] TI-21 — confirma o rascunho por clique e por Ctrl/⌘+Enter, cancela e edita.
+- [x] TI-22 — responde opções rápidas por clique e pela tecla numérica.
+- [x] TI-23 — escolhe um chamado da lista e mostra o card com prazo vencido.
+- [x] TI-26 — mostra a conversa transferida e as mensagens do analista com nome e nível.
 
 ## Arquivos relevantes
 
