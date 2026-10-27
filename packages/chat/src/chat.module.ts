@@ -15,6 +15,7 @@ import { PENDING_ACTION_REPOSITORY } from './core/pending-actions/pending-action
 import { AnalystProfilePipe } from './http/analyst-profile.pipe.js';
 import { ConsoleActionsController } from './http/console-actions.controller.js';
 import { ConsoleController } from './http/console.controller.js';
+import { ConsoleStreamController } from './http/console-stream.controller.js';
 import { ConversationStreamController } from './http/conversation-stream.controller.js';
 import { EmployeeConversationController } from './http/employee-conversation.controller.js';
 import { EmployeeSessionPipe } from './http/employee-session.pipe.js';
@@ -35,6 +36,7 @@ import { DrizzleSessionUsageRepository } from './persistence/drizzle-session-usa
     ConversationStreamController,
     ConsoleController,
     ConsoleActionsController,
+    ConsoleStreamController,
   ],
   providers: [
     ChatMigrator,
