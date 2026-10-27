@@ -28,11 +28,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 7.1 Porta `Clock` e `FakeClock` de teste.
-- [ ] 7.2 `ServiceDeskCalendar` com `date-fns` e `@date-fns/tz`.
-- [ ] 7.3 `PriorityMatrix` com as 4 regras em ordem.
-- [ ] 7.4 `DeadlinePolicy` e `OverduePolicy`.
-- [ ] 7.5 `ReopenPolicy` e `DuplicateFinder` (semelhança por categoria ou texto, sem acento e sem diferenciar maiúsculas).
+- [x] 7.1 Porta `Clock` e `FakeClock` de teste.
+- [x] 7.2 `ServiceDeskCalendar` com `date-fns` e `@date-fns/tz`.
+- [x] 7.3 `PriorityMatrix` com as 4 regras em ordem.
+- [x] 7.4 `DeadlinePolicy` e `OverduePolicy`.
+- [x] 7.5 `ReopenPolicy` e `DuplicateFinder` (semelhança por categoria ou texto, sem acento e sem diferenciar maiúsculas).
 
 ## Detalhes de implementação
 
@@ -53,14 +53,14 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] TU-01 — classifica como alta quando só uma pessoa é afetada e há compromisso no mesmo dia.
-- [ ] TU-02 — classifica como crítica quando algo está parado para a equipe ou a empresa.
-- [ ] TU-03 — classifica como média com alternativa e como baixa em pedido sem urgência.
-- [ ] TU-04 — soma horas úteis atravessando o fim do expediente e o fim de semana.
-- [ ] TU-05 — conta o prazo crítico em hora corrida fora do expediente.
-- [ ] TU-06 — marca como vencido um chamado médio sem atualização há mais de 3 dias úteis.
-- [ ] TU-07 — permite reabrir até 7 dias após a resolução e recusa depois.
-- [ ] TU-08 — considera duplicado um chamado aberto do mesmo solicitante sobre o mesmo problema.
+- [x] TU-01 — classifica como alta quando só uma pessoa é afetada e há compromisso no mesmo dia.
+- [x] TU-02 — classifica como crítica quando algo está parado para a equipe ou a empresa.
+- [x] TU-03 — classifica como média com alternativa e como baixa em pedido sem urgência.
+- [x] TU-04 — soma horas úteis atravessando o fim do expediente e o fim de semana.
+- [x] TU-05 — conta o prazo crítico em hora corrida fora do expediente.
+- [x] TU-06 — marca como vencido um chamado médio sem atualização há mais de 3 dias úteis.
+- [x] TU-07 — permite reabrir até 7 dias após a resolução e recusa depois.
+- [x] TU-08 — considera duplicado um chamado aberto do mesmo solicitante sobre o mesmo problema.
 
 ## Arquivos relevantes
 
