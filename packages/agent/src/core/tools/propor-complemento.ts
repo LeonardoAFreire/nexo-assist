@@ -54,7 +54,7 @@ export function createProporComplementoTool(
   return {
     name: 'propor_complemento',
     description:
-      'Propõe acrescentar uma informação a um chamado aberto do próprio funcionário. O complemento só é gravado após a confirmação do funcionário.',
+      'Propõe acrescentar uma informação nova a um chamado aberto do próprio funcionário, inclusive quando ele relata de novo um problema que já tem chamado aberto. Esta chamada já pede a confirmação ao funcionário: use-a direto, sem perguntar antes, e o complemento só é gravado depois que ele confirmar.',
     stepKind: 'proposed_update',
     failureLabel: 'preparou um complemento',
     inputSchema,

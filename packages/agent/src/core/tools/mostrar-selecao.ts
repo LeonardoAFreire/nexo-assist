@@ -37,7 +37,7 @@ export function createMostrarSelecaoTool(
   return {
     name: 'mostrar_selecao',
     description:
-      'Mostra ao funcionário uma lista de 2 a 6 dos próprios chamados para ele escolher um. Números que não são dele são ignorados.',
+      'Mostra ao funcionário uma lista de 2 a 6 dos próprios chamados para ele escolher um. Use quando ele pergunta de um chamado sem dizer qual: passe os números de todos os chamados em andamento, sem filtrar. Números que não são dele são ignorados.',
     stepKind: 'searched_tickets',
     failureLabel: 'listou seus chamados para escolha',
     inputSchema,

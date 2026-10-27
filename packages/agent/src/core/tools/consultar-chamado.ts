@@ -30,7 +30,7 @@ export function createConsultarChamadoTool(
   return {
     name: 'consultar_chamado',
     description:
-      'Consulta um chamado do próprio funcionário pelo número (INC-00000 ou REQ-00000). Devolve not_found quando o chamado não existe ou não pertence ao funcionário.',
+      'Consulta um chamado do próprio funcionário pelo número (INC-00000 ou REQ-00000). Devolve not_found quando não encontra o chamado entre os do funcionário. Ao informar isso, não explique o motivo nem sugira que o chamado existe.',
     stepKind: 'viewed_ticket',
     failureLabel: 'consultou um chamado',
     inputSchema,

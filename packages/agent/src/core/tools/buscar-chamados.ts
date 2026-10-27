@@ -35,7 +35,7 @@ export function createBuscarChamadosTool(
   return {
     name: 'buscar_chamados',
     description:
-      'Lista ou busca os chamados do próprio funcionário. Use query para filtrar por assunto e scope para escolher abertos, encerrados ou todos.',
+      'Lista ou busca os chamados do próprio funcionário. query filtra por assunto (opcional). scope: open = em andamento, closed = resolvidos ou encerrados, all = todos. Para saber se um problema já tem chamado ou voltou a acontecer, use all, pois um chamado resolvido só aparece em closed e all.',
     stepKind: 'searched_tickets',
     failureLabel: STEP_LABEL,
     inputSchema,

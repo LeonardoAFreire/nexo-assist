@@ -76,7 +76,7 @@ export function createProporReaberturaTool(
   return {
     name: 'propor_reabertura',
     description:
-      'Propõe reabrir um chamado resolvido do próprio funcionário, informando o motivo; só vale até 7 dias após a resolução. A reabertura só acontece após a confirmação do funcionário.',
+      'Propõe reabrir um chamado resolvido do próprio funcionário quando o mesmo problema voltou, informando o motivo. Esta chamada já pede a confirmação ao funcionário: use-a direto, sem perguntar antes, e a reabertura só acontece depois que ele confirmar. Se o prazo de reabertura tiver passado, a resposta diz isso e o caminho é propor um chamado novo.',
     stepKind: 'proposed_reopen',
     failureLabel: 'propôs reabrir um chamado',
     inputSchema,

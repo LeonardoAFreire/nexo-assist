@@ -6,6 +6,8 @@ const QUESTION_MAX_LENGTH = 300;
 const OPTION_MAX_LENGTH = 80;
 const MIN_OPTIONS = 2;
 const MAX_OPTIONS = 5;
+const AWAITING_ANSWER_NOTE =
+  'Aguardando a resposta do funcionário. Encerre o turno sem escrever mais nada.';
 
 const inputSchema = z.strictObject({
   question: z.string().trim().min(1).max(QUESTION_MAX_LENGTH),
@@ -14,7 +16,11 @@ const inputSchema = z.strictObject({
     .min(MIN_OPTIONS)
     .max(MAX_OPTIONS),
 });
-const outputSchema = z.object({ question: z.string(), optionCount: z.number().int() });
+const outputSchema = z.object({
+  question: z.string(),
+  optionCount: z.number().int(),
+  note: z.string(),
+});
 
 export type PerguntarOpcoesInput = z.infer<typeof inputSchema>;
 export type PerguntarOpcoesOutput = z.infer<typeof outputSchema>;
@@ -25,7 +31,7 @@ function askQuestion(input: PerguntarOpcoesInput, context: TurnContext): Pergunt
     type: 'part',
     part: { type: 'quick_options', question: input.question, options, answered: false },
   });
-  return { question: input.question, optionCount: options.length };
+  return { question: input.question, optionCount: options.length, note: AWAITING_ANSWER_NOTE };
 }
 
 export function createPerguntarOpcoesTool(): AgentTool<
@@ -35,7 +41,7 @@ export function createPerguntarOpcoesTool(): AgentTool<
   return {
     name: 'perguntar_opcoes',
     description:
-      'Faz uma pergunta ao funcionário com 2 a 5 opções de resposta rápida, mostradas como botões.',
+      'Faz uma pergunta ao funcionário com 2 a 5 opções de resposta rápida, mostradas como botões. Use para coletar um dado que falta (uma pergunta por vez) ou para oferecer um caminho, como falar com um analista. Não use para pedir permissão antes de propor_chamado, propor_complemento ou propor_reabertura, que já pedem a confirmação. A pergunta aparece sozinha: não a repita no texto.',
     stepKind: 'asked_question',
     failureLabel: 'fez uma pergunta',
     inputSchema,

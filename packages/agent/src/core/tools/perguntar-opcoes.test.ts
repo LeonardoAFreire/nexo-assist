@@ -7,7 +7,8 @@ describe('perguntar_opcoes', () => {
     const { context, events } = makeTurnContext();
     const input = { question: 'Quem é afetado?', options: ['Só eu', 'Minha equipe'] };
     const output = await createPerguntarOpcoesTool().execute(input, context);
-    expect(output).toEqual({ question: 'Quem é afetado?', optionCount: 2 });
+    expect(output).toMatchObject({ question: 'Quem é afetado?', optionCount: 2 });
+    expect(output.note).toContain('Aguardando a resposta do funcionário');
     expect(events).toEqual([
       {
         type: 'part',
@@ -39,7 +40,7 @@ describe('perguntar_opcoes', () => {
   it('usa a pergunta como resultado do passo', () => {
     const tool = createPerguntarOpcoesTool();
     const input = { question: 'Quem é afetado?', options: ['a', 'b'] };
-    expect(tool.stepResult(input, { question: input.question, optionCount: 2 })).toBe(
+    expect(tool.stepResult(input, { question: input.question, optionCount: 2, note: '' })).toBe(
       'Quem é afetado?',
     );
   });
