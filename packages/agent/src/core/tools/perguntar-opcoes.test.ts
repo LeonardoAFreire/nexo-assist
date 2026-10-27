@@ -1,0 +1,46 @@
+import { describe, expect, it } from 'vitest';
+import { makeTurnContext } from '../../persistence/scripted/make-turn-context.js';
+import { createPerguntarOpcoesTool } from './perguntar-opcoes.js';
+
+describe('perguntar_opcoes', () => {
+  it('emite as opções rápidas numeradas, ainda sem resposta', async () => {
+    const { context, events } = makeTurnContext();
+    const input = { question: 'Quem é afetado?', options: ['Só eu', 'Minha equipe'] };
+    const output = await createPerguntarOpcoesTool().execute(input, context);
+    expect(output).toEqual({ question: 'Quem é afetado?', optionCount: 2 });
+    expect(events).toEqual([
+      {
+        type: 'part',
+        part: {
+          type: 'quick_options',
+          question: 'Quem é afetado?',
+          options: [
+            { id: 'option-1', label: 'Só eu' },
+            { id: 'option-2', label: 'Minha equipe' },
+          ],
+          answered: false,
+        },
+      },
+    ]);
+  });
+
+  it('aceita de 2 a 5 opções', () => {
+    const { inputSchema } = createPerguntarOpcoesTool();
+    const withOptions = (count: number) => ({
+      question: 'Qual?',
+      options: Array.from({ length: count }, (_, index) => `Opção ${index + 1}`),
+    });
+    expect(inputSchema.safeParse(withOptions(1)).success).toBe(false);
+    expect(inputSchema.safeParse(withOptions(2)).success).toBe(true);
+    expect(inputSchema.safeParse(withOptions(5)).success).toBe(true);
+    expect(inputSchema.safeParse(withOptions(6)).success).toBe(false);
+  });
+
+  it('usa a pergunta como resultado do passo', () => {
+    const tool = createPerguntarOpcoesTool();
+    const input = { question: 'Quem é afetado?', options: ['a', 'b'] };
+    expect(tool.stepResult(input, { question: input.question, optionCount: 2 })).toBe(
+      'Quem é afetado?',
+    );
+  });
+});

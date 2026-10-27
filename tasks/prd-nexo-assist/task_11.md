@@ -31,10 +31,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 11.1 Portas `LlmClient` e `AgentRunRepository`, tipos `AgentTool`, `TurnContext` e `LlmEvent`.
-- [ ] 11.2 `ScriptedLlmClient` em `persistence/scripted/` e fakes de `TicketsApi` e `KnowledgeApi` para testes.
-- [ ] 11.3 `StepRecorder`: decora `execute`, grava passos, tentativas (via `onAttemptFailed`) e falhas, e emite `step`.
-- [ ] 11.4 Tools de consulta e de exibição, uma por arquivo, com `stepLabel`.
+- [x] 11.1 Portas `LlmClient` e `AgentRunRepository`, tipos `AgentTool`, `TurnContext` e `LlmEvent`.
+- [x] 11.2 `ScriptedLlmClient` em `persistence/scripted/` e fakes de `TicketsApi` e `KnowledgeApi` para testes.
+- [x] 11.3 `StepRecorder`: decora `execute`, grava passos, tentativas (via `onAttemptFailed`) e falhas, e emite `step`.
+- [x] 11.4 Tools de consulta e de exibição, uma por arquivo, com `stepLabel`.
 
 ## Detalhes de implementação
 
@@ -57,9 +57,9 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] TU-19 — registra exatamente os passos das tools executadas, inclusive falhas e novas tentativas.
-- [ ] TU-20 — usa o `requesterId` do contexto e rejeita argumentos extras do modelo.
-- [ ] `consultar_chamado` devolve o mesmo `not_found` para chamado alheio e inexistente; `citar_artigo` recusa artigo que não veio da busca do turno.
+- [x] TU-19 — registra exatamente os passos das tools executadas, inclusive falhas e novas tentativas.
+- [x] TU-20 — usa o `requesterId` do contexto e rejeita argumentos extras do modelo.
+- [x] `consultar_chamado` devolve o mesmo `not_found` para chamado alheio e inexistente; `citar_artigo` recusa artigo que não veio da busca do turno.
 
 ## Arquivos relevantes
 
