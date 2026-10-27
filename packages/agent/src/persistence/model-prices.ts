@@ -1,6 +1,12 @@
 import { DEFAULT_TOKEN_PRICING, type TokenPricing } from '../core/agent-settings.js';
 
 export const MODEL_PRICES: Readonly<Record<string, TokenPricing>> = {
+  'deepseek/deepseek-v4-flash': { inputPerMillionUsd: 0.05, outputPerMillionUsd: 0.45 },
+  'deepseek/deepseek-v4-flash-0731': { inputPerMillionUsd: 0.12, outputPerMillionUsd: 0.24 },
+  'qwen/qwen3.8-flash': { inputPerMillionUsd: 0.15, outputPerMillionUsd: 0.47 },
+  'qwen/qwen3.7-flash': { inputPerMillionUsd: 0.03, outputPerMillionUsd: 0.13 },
+  'z-ai/glm-5.3-flash': { inputPerMillionUsd: 0.15, outputPerMillionUsd: 0.5 },
+  'google/gemini-2.5-flash': { inputPerMillionUsd: 0.3, outputPerMillionUsd: 2.5 },
   'openai/gpt-4o-mini': { inputPerMillionUsd: 0.15, outputPerMillionUsd: 0.6 },
   'openai/gpt-4o': { inputPerMillionUsd: 2.5, outputPerMillionUsd: 10 },
   'openai/gpt-4.1-nano': { inputPerMillionUsd: 0.1, outputPerMillionUsd: 0.4 },
