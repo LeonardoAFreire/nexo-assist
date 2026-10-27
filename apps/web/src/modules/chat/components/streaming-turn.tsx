@@ -14,7 +14,14 @@ export function StreamingTurn({ turn }: StreamingTurnProps) {
   return (
     <div className="flex flex-col gap-5">
       {turn.pendingText ? <EmployeeMessage text={turn.pendingText} /> : null}
-      <AgentMessage text={turn.text} steps={turn.steps} parts={turn.parts} decision={null} busy />
+      <AgentMessage
+        messageId={null}
+        text={turn.text}
+        steps={turn.steps}
+        parts={turn.parts}
+        decision={null}
+        busy
+      />
     </div>
   );
 }

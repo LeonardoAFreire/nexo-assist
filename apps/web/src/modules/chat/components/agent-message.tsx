@@ -5,6 +5,7 @@ import { AgentBubble } from './agent-bubble.js';
 import { MessageParts } from './message-parts.js';
 
 type AgentMessageProps = {
+  messageId: string | null;
   text: string;
   steps: AgentStep[];
   parts: MessagePart[];
@@ -12,7 +13,8 @@ type AgentMessageProps = {
   busy: boolean;
 };
 
-export function AgentMessage({ text, steps, parts, decision, busy }: AgentMessageProps) {
+export function AgentMessage(props: AgentMessageProps) {
+  const { messageId, text, steps, parts, decision, busy } = props;
   return (
     <article aria-label="Nexo Assist" aria-busy={busy} className="flex flex-col gap-1.5">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -20,7 +22,7 @@ export function AgentMessage({ text, steps, parts, decision, busy }: AgentMessag
         <StepsLine steps={steps} />
       </div>
       <AgentBubble text={text} typing={busy && text === ''} />
-      <MessageParts parts={parts} />
+      <MessageParts messageId={messageId} parts={parts} />
       {decision ? <DecisionDetails decision={decision} steps={steps} /> : null}
     </article>
   );

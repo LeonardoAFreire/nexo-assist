@@ -18,6 +18,7 @@ function MessageItem({ message }: { message: ChatMessage }) {
 
   return (
     <AgentMessage
+      messageId={message.id}
       text={message.text}
       steps={message.turn?.steps ?? []}
       parts={message.parts}
