@@ -1,0 +1,48 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "import", "oxc", "react", "jsx-a11y"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "eqeqeq": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-console": "error",
+    "no-nested-ternary": "error",
+    "max-depth": ["error", 3],
+    "max-params": ["error", 3],
+    "max-lines": [
+      "error",
+      {
+        "max": 100,
+        "skipComments": true
+      }
+    ],
+    "max-lines-per-function": [
+      "error",
+      {
+        "max": 30,
+        "skipComments": true
+      }
+    ],
+    "typescript/no-explicit-any": "error",
+    "import/no-cycle": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "e2e/**"],
+      "rules": {
+        "max-lines": "off",
+        "max-lines-per-function": "off"
+      }
+    },
+    {
+      "files": ["tools/**"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ],
+  "ignorePatterns": ["dist", "node_modules", "docs", ".claude"]
+}

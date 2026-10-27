@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  },
+  "overrides": [
+    {
+      "files": ["src/components/ui/**"],
+      "rules": {
+        "react/only-export-components": "off",
+        "max-lines": "off",
+        "max-lines-per-function": "off"
+      }
+    }
+  ]
+}

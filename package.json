@@ -1,0 +1,27 @@
+{
+  "name": "nexo",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "check:boundaries": "node tools/scripts/check-boundaries.mjs",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.16.20",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "oxlint-tsgolint": "^7.0.2005",
+    "turbo": "^2.11.10",
+    "typescript": "^7.0.2",
+    "unplugin-swc": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.0"
+}
