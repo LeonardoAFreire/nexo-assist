@@ -11,6 +11,7 @@ export const CRITICAL_HANDOFF_TEXT =
 const DEGRADED_QUESTION = 'Como prefere seguir?';
 const OVERDUE_QUESTION = 'O que você gostaria de fazer com este chamado vencido?';
 const PERCENT = 100;
+const TRAILING_PUNCTUATION = /[.\s]+$/;
 
 const DEGRADED_OPTIONS: QuickOption[] = [
   { id: 'retry', label: 'Tentar de novo' },
@@ -58,7 +59,8 @@ export function offerOverdueOptions(turn: TurnSession): void {
 function buildSummary(understanding: Understanding, reason: HandoffReason): string {
   const confidence = Math.round(understanding.confidence * PERCENT);
   const motive = HANDOFF_REASON_LABELS[reason];
-  return `${understanding.summary}. Motivo: ${motive}. Confiança do agent: ${confidence}%.`;
+  const summary = understanding.summary.replace(TRAILING_PUNCTUATION, '');
+  return `${summary}. Motivo: ${motive}. Confiança do agent: ${confidence}%.`;
 }
 
 export function requestHandoff(
