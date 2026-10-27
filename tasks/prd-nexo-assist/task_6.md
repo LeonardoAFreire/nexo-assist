@@ -32,10 +32,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 6.1 Schema Drizzle `identity.users`, migration e seed a partir de `DEMO_PEOPLE`.
-- [ ] 6.2 `core/`: `LoginUseCase` (gera `sid` novo), `UserProfile` e `IdentityService`.
-- [ ] 6.3 `http/`: `AuthController` com `login`, `logout` e `me`.
-- [ ] 6.4 `IdentityModule` `@Global()` com o token `IDENTITY_API`.
+- [x] 6.1 Schema Drizzle `identity.users`, migration e seed a partir de `DEMO_PEOPLE`.
+- [x] 6.2 `core/`: `LoginUseCase` (gera `sid` novo), `UserProfile` e `IdentityService`.
+- [x] 6.3 `http/`: `AuthController` com `login`, `logout` e `me`.
+- [x] 6.4 `IdentityModule` `@Global()` com o token `IDENTITY_API`.
 
 ## Detalhes de implementação
 
@@ -52,11 +52,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] `LoginUseCase`: e-mail conhecido em qualquer caixa cria sessão; senha vazia e e-mail desconhecido geram o mesmo erro genérico.
+- [x] `LoginUseCase`: e-mail conhecido em qualquer caixa cria sessão; senha vazia e e-mail desconhecido geram o mesmo erro genérico.
 
 ### Testes de integração
 
-- [ ] TI-01 — autentica funcionário e analista e recusa e-mail desconhecido com mensagem genérica.
+- [x] TI-01 — autentica funcionário e analista e recusa e-mail desconhecido com mensagem genérica.
 
 ## Arquivos relevantes
 
