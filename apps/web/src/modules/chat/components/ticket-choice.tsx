@@ -2,6 +2,7 @@ import type { TicketSummary } from '@nexo/contracts';
 import { OverdueLabel } from '@/components/tickets/overdue-label';
 import { PriorityBadge } from '@/components/tickets/priority-badge';
 import { TicketStatusBadge } from '@/components/tickets/ticket-status-badge';
+import { formatDate } from '@/lib/format-date-time';
 
 type TicketChoiceProps = {
   ticket: TicketSummary;
@@ -24,6 +25,9 @@ export function TicketChoice({ ticket, disabled, onChoose }: TicketChoiceProps) 
         {ticket.overdue ? <OverdueLabel /> : null}
       </span>
       <span className="text-sm font-medium text-ink">{ticket.title}</span>
+      <time dateTime={ticket.lastUpdatedAt} className="text-xs text-ink-3">
+        Atualizado em {formatDate(ticket.lastUpdatedAt)}
+      </time>
     </button>
   );
 }
