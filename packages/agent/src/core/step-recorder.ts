@@ -1,6 +1,7 @@
 import type { AgentStep } from '@nexo/contracts';
 import type { AttemptFailure } from '@nexo/shared/resilience';
 import type { AgentTool } from './agent-tool.js';
+import { runWithAttemptObserver } from './attempt-scope.js';
 import { describeStepFailure } from './step-failure.js';
 import type { TurnContext } from './turn-context.js';
 
@@ -41,7 +42,10 @@ export class StepRecorder {
     const startedAt = context.clock.now().getTime();
     try {
       const parsedInput = tool.inputSchema.parse(input);
-      const output = tool.outputSchema.parse(await tool.execute(parsedInput, context));
+      const executed = await runWithAttemptObserver(this.onAttemptFailed, () =>
+        tool.execute(parsedInput, context),
+      );
+      const output = tool.outputSchema.parse(executed);
       const { stepKind: kind } = tool;
       const label = tool.stepLabel(parsedInput, output);
       const result = tool.stepResult(parsedInput, output);
