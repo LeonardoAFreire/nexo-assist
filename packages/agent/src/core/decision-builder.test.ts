@@ -93,6 +93,15 @@ describe('DecisionBuilder', () => {
     expect(decision.reason).not.toBe(UNDERSTANDING.reason);
   });
 
+  it('usa a ação degradada com o motivo informado quando o turno não conclui por outra causa', () => {
+    const decision = build({ degradedReason: 'o limite de passos foi atingido' });
+    expect(decision.action).toEqual({
+      kind: 'degraded',
+      label: 'avisou que não conseguiu concluir',
+    });
+    expect(decision.reason).toBe('o limite de passos foi atingido');
+  });
+
   it('usa a transferência como ação e inclui os dados do handoff', () => {
     const decision = build({ steps: [makeStep({})], handoff: HANDOFF });
     expect(decision.action.kind).toBe('handed_off');

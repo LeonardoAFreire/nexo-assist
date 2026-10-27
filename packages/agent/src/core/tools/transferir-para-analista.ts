@@ -4,9 +4,9 @@ import type { AgentTool } from '../agent-tool.js';
 import type { TurnContext } from '../turn-context.js';
 
 const SUMMARY_MAX_LENGTH = 600;
-const STEP_LABEL = 'transferiu para um analista';
+export const HANDOFF_STEP_LABEL = 'transferiu para um analista';
 
-const REASON_LABELS: Record<HandoffReason, string> = {
+export const HANDOFF_REASON_LABELS: Record<HandoffReason, string> = {
   requested: 'pedido do funcionário',
   critical: 'prioridade crítica',
   overdue: 'chamado vencido',
@@ -45,11 +45,11 @@ export function createTransferirParaAnalistaTool(): AgentTool<
     description:
       'Transfere a conversa para um analista humano, com o motivo e um resumo do caso para que o analista não recomece a conversa. A transferência é executada pelo sistema.',
     stepKind: 'handed_off',
-    failureLabel: STEP_LABEL,
+    failureLabel: HANDOFF_STEP_LABEL,
     inputSchema,
     outputSchema,
-    stepLabel: () => STEP_LABEL,
-    stepResult: (_input, output) => `motivo: ${REASON_LABELS[output.reason]}`,
+    stepLabel: () => HANDOFF_STEP_LABEL,
+    stepResult: (_input, output) => `motivo: ${HANDOFF_REASON_LABELS[output.reason]}`,
     execute: async (input, context) => requestHandoff(input, context),
   };
 }

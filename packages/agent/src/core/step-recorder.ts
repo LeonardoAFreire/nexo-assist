@@ -7,7 +7,7 @@ import type { TurnContext } from './turn-context.js';
 const FIRST_ATTEMPT = 1;
 const STEP_ID_PREFIX = 's';
 
-type StepOutcome = Pick<AgentStep, 'kind' | 'label' | 'result' | 'status'>;
+export type StepOutcome = Pick<AgentStep, 'kind' | 'label' | 'result' | 'status'>;
 
 export class StepRecorder {
   private readonly recorded: AgentStep[] = [];
@@ -29,6 +29,11 @@ export class StepRecorder {
 
   wrap<I, O>(tool: AgentTool<I, O>): AgentTool<I, O> {
     return { ...tool, execute: (input, context) => this.run(tool, input, context) };
+  }
+
+  note(context: TurnContext, outcome: StepOutcome): void {
+    this.attempts = FIRST_ATTEMPT;
+    this.finish({ context, startedAt: context.clock.now().getTime() }, outcome);
   }
 
   private async run<I, O>(tool: AgentTool<I, O>, input: I, context: TurnContext): Promise<O> {

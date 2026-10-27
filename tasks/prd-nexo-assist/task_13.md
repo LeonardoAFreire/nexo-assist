@@ -32,11 +32,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 13.1 `UnderstandingStep` e `ContextBuilder`.
-- [ ] 13.2 `TurnPolicy` com as rotas e as tools permitidas por rota.
-- [ ] 13.3 `PromptCatalog` (instruções estáveis no início, conteúdo variável no fim).
-- [ ] 13.4 `ResponseLoop` e `BudgetGuard`.
-- [ ] 13.5 `AgentService.respond` emitindo `AgentTurnEvent` e gravando o registro do turno pela porta `AgentRunRepository`.
+- [x] 13.1 `UnderstandingStep` e `ContextBuilder`.
+- [x] 13.2 `TurnPolicy` com as rotas e as tools permitidas por rota.
+- [x] 13.3 `PromptCatalog` (instruções estáveis no início, conteúdo variável no fim).
+- [x] 13.4 `ResponseLoop` e `BudgetGuard`.
+- [x] 13.5 `AgentService.respond` emitindo `AgentTurnEvent` e gravando o registro do turno pela porta `AgentRunRepository`.
 
 ## Detalhes de implementação
 
@@ -60,12 +60,12 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] TU-16 — transfere sem chamar o laço quando o funcionário pede analista.
-- [ ] TU-17 — transfere com motivo de baixa confiança abaixo do limite.
-- [ ] TU-18 — redireciona assunto fora de TI sem tools de chamados.
-- [ ] TU-23 — encerra o laço no limite de passos com resposta tratada.
-- [ ] TU-24 — não chama o modelo quando o teto diário de custo foi atingido.
-- [ ] TU-27 — monta o contexto só com dados da conversa e marca a ação pendente.
+- [x] TU-16 — transfere sem chamar o laço quando o funcionário pede analista.
+- [x] TU-17 — transfere com motivo de baixa confiança abaixo do limite.
+- [x] TU-18 — redireciona assunto fora de TI sem tools de chamados.
+- [x] TU-23 — encerra o laço no limite de passos com resposta tratada.
+- [x] TU-24 — não chama o modelo quando o teto diário de custo foi atingido.
+- [x] TU-27 — monta o contexto só com dados da conversa e marca a ação pendente.
 
 ## Arquivos relevantes
 
