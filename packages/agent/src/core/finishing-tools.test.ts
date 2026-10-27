@@ -22,4 +22,11 @@ describe('tools finalizadoras por intenção', () => {
     );
     expect(FINISHING_TOOLS.ticket_complement).toContain('propor_complemento');
   });
+
+  it('exige apresentar o chamado ou a lista na consulta de status, não só buscar', () => {
+    expect(FINISHING_TOOLS.ticket_status).toEqual(
+      expect.arrayContaining(['mostrar_chamado', 'mostrar_selecao']),
+    );
+    expect(FINISHING_TOOLS.ticket_status).not.toContain('buscar_chamados');
+  });
 });

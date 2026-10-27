@@ -6,7 +6,7 @@ const ASK_OR_HAND_OFF = ['perguntar_opcoes', 'transferir_para_analista'];
 
 export const FINISHING_TOOLS: Partial<Record<Intent, string[]>> = {
   question: ['buscar_central', ...ASK_OR_HAND_OFF],
-  ticket_status: ['buscar_chamados', 'consultar_chamado', ...ASK_OR_HAND_OFF],
+  ticket_status: ['mostrar_chamado', 'mostrar_selecao', 'consultar_chamado', ...ASK_OR_HAND_OFF],
   ticket_complement: [
     'propor_complemento',
     'propor_reabertura',
