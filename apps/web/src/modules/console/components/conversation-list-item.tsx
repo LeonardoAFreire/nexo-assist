@@ -29,7 +29,7 @@ function linkClassName({ isActive }: { isActive: boolean }): string {
 }
 
 function ItemSummary({ item }: ConversationListItemProps) {
-  const statusClass = needsAttention(item.consoleStatus) ? 'text-warning' : 'text-ink-3';
+  const statusClass = needsAttention(item.consoleStatus) ? 'text-warning-text' : 'text-ink-3';
   return (
     <span className="flex min-w-0 flex-1 flex-col gap-0.5">
       <span className="flex items-center justify-between gap-2">
