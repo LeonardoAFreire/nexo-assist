@@ -17,7 +17,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [x] 11.0 `agent/core`: fundações (`LlmClient`, fake, `StepRecorder`) e tools de consulta
 - [x] 12.0 `agent/core`: tools de proposta e `DecisionBuilder`
 - [x] 13.0 `agent/core`: entendimento, política de turno, contexto, laço e `AgentService`
-- [ ] 14.0 `agent/persistence`: `MastraLlmClient`, decoradores resilientes, `agent.runs` e módulo
+- [x] 14.0 `agent/persistence`: `MastraLlmClient`, decoradores resilientes, `agent.runs` e módulo
 - [x] 15.0 `chat/core`: estado da conversa, limite, matchers, opção rápida e ações pendentes
 - [x] 16.0 `chat/core`: transferência, console e `SendEmployeeMessage`
 - [x] 17.0 `chat/persistence`: schema, repositórios e seed do console

@@ -31,11 +31,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 14.1 Instalar `@mastra/core` e `@openrouter/ai-sdk-provider` com versão fixa no pacote `agent`.
-- [ ] 14.2 `MastraLlmClient`: criação das tools do Mastra por turno com o contexto em closure; tabela `model-prices.ts`.
-- [ ] 14.3 `ResilientTicketsApi` e `ResilientKnowledgeApi`.
-- [ ] 14.4 Schema e migration de `agent.runs` e `DrizzleAgentRunRepository`.
-- [ ] 14.5 `AgentModule` `@Global()` com `AGENT_API` e a escolha do `LlmClient`.
+- [x] 14.1 Instalar `@mastra/core` e `@openrouter/ai-sdk-provider` com versão fixa no pacote `agent`.
+- [x] 14.2 `MastraLlmClient`: criação das tools do Mastra por turno com o contexto em closure; tabela `model-prices.ts`.
+- [x] 14.3 `ResilientTicketsApi` e `ResilientKnowledgeApi`.
+- [x] 14.4 Schema e migration de `agent.runs` e `DrizzleAgentRunRepository`.
+- [x] 14.5 `AgentModule` `@Global()` com `AGENT_API` e a escolha do `LlmClient`.
 
 ## Detalhes de implementação
 
@@ -54,12 +54,12 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] Teste de contrato do `MastraLlmClient` com um modelo fake do AI SDK: `text-delta`, chamada de tool e `finished` com `usage`; erro antes do primeiro texto ganha nova tentativa; erro depois termina sem nova tentativa.
-- [ ] `ResilientTicketsApi` registra novas tentativas e propaga `TicketsUnavailableError` após 3 falhas.
+- [x] Teste de contrato do `MastraLlmClient` com um modelo fake do AI SDK: `text-delta`, chamada de tool e `finished` com `usage`; erro antes do primeiro texto ganha nova tentativa; erro depois termina sem nova tentativa.
+- [x] `ResilientTicketsApi` registra novas tentativas e propaga `TicketsUnavailableError` após 3 falhas.
 
 ### Testes de integração
 
-- [ ] `DrizzleAgentRunRepository` grava e soma o custo do dia no PGlite.
+- [x] `DrizzleAgentRunRepository` grava e soma o custo do dia no PGlite.
 
 ## Arquivos relevantes
 
