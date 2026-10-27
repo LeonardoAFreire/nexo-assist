@@ -13,6 +13,7 @@ import { MESSAGE_REPOSITORY } from './core/messages/message-repository.js';
 import { PENDING_ACTION_REPOSITORY } from './core/pending-actions/pending-action-repository.js';
 import { EmployeeConversationController } from './http/employee-conversation.controller.js';
 import { EmployeeSessionPipe } from './http/employee-session.pipe.js';
+import { PendingActionsController } from './http/pending-actions.controller.js';
 import { UserThrottlerGuard } from './http/user-throttler.guard.js';
 import { ChatMigrator } from './persistence/chat.migrator.js';
 import { ConsoleSeedStore } from './persistence/console-seed-store.js';
@@ -23,7 +24,7 @@ import { DrizzlePendingActionRepository } from './persistence/drizzle-pending-ac
 import { DrizzleSessionUsageRepository } from './persistence/drizzle-session-usage.repository.js';
 
 @Module({
-  controllers: [EmployeeConversationController],
+  controllers: [EmployeeConversationController, PendingActionsController],
   providers: [
     ChatMigrator,
     ConsoleSeedStore,
