@@ -107,7 +107,7 @@ Princípios que valem mais que o prompt:
 
 ### Testes
 
-`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **691 testes, todos passando**.
+`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **746 testes, todos passando**.
 
 | Pacote            | Testes |
 | ----------------- | ------ |
@@ -116,10 +116,10 @@ Princípios que valem mais que o prompt:
 | `@nexo/identity`  | 19     |
 | `@nexo/tickets`   | 95     |
 | `@nexo/knowledge` | 22     |
-| `@nexo/agent`     | 193    |
-| `@nexo/chat`      | 225    |
-| `@nexo/monolith`  | 10     |
-| `@nexo/web`       | 56     |
+| `@nexo/agent`     | 230    |
+| `@nexo/chat`      | 231    |
+| `@nexo/monolith`  | 11     |
+| `@nexo/web`       | 67     |
 
 `pnpm e2e` roda quatro jornadas no navegador com Playwright (abertura de chamado, chamado de terceiro, transferência para o analista e o chat em 375 px), contra um banco `nexo_e2e` próprio e o modelo roteirizado. É preciso ter o Postgres do `docker compose` no ar e instalar o Chromium uma vez (`pnpm --filter @nexo/e2e exec playwright install chromium`).
 
