@@ -696,7 +696,7 @@ As datas são relativas ao momento da seed e ajustadas para cair em horário út
 | `SEED_DEMO_DATA` | `true` | Seeds no boot |
 | `SERVE_WEB_DIR` | (vazio) | Em produção, o monólito serve o build do `web` |
 
-Constantes no código, e não no `.env`, porque são regra de negócio: 30 mensagens por sessão, 6 passos por turno, janela de 20 mensagens, 7 dias de reabertura, expediente de 8h às 18h, fuso `America/Sao_Paulo`, orçamento de 60.000 tokens de entrada por conversa e política de tentativas do legado (3 tentativas, timeout de 2 s, espera de 300 ms e 900 ms).
+Constantes no código, e não no `.env`, porque são regra de negócio: 30 mensagens por sessão, 6 passos por turno, janela de 20 mensagens, 7 dias de reabertura, expediente de 8h às 18h, fuso `America/Sao_Paulo`, orçamento de 600.000 tokens de entrada por conversa (cada turno real consome cerca de 13 mil, então 60.000 esgotava a conversa no 5º turno, longe das 30 mensagens do PRD) e política de tentativas do legado (3 tentativas, timeout de 2 s, espera de 300 ms e 900 ms).
 
 ### Endpoints da API
 

@@ -1,6 +1,6 @@
 import type { AgentRunRepository } from './agent-run-repository.js';
 
-export const CONVERSATION_TOKEN_BUDGET = 60_000;
+export const CONVERSATION_TOKEN_BUDGET = 600_000;
 const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 export type BudgetVerdict = 'available' | 'daily_exhausted' | 'conversation_exhausted';
