@@ -1,4 +1,4 @@
 import { createBrowserRouter } from 'react-router';
-import { StatusPage } from './status-page';
+import { appRoutes } from './routes';
 
-export const router = createBrowserRouter([{ path: '/', element: <StatusPage /> }]);
+export const router = createBrowserRouter(appRoutes);
