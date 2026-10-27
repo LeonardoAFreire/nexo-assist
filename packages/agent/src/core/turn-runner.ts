@@ -42,8 +42,8 @@ export class TurnRunner {
       return;
     }
     if (verdict === 'conversation_exhausted') {
-      const input = { understanding: BUDGET_UNDERSTANDING, degradation: BUDGET_DEGRADATION };
-      await this.finisher.finish(turn, input);
+      const exhausted = { understanding: BUDGET_UNDERSTANDING, degradation: BUDGET_DEGRADATION };
+      await this.finisher.finish(turn, exhausted);
       return;
     }
     await this.handleTurn(input, turn);
