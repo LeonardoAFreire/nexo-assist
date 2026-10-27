@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CHAT_CORE_PROVIDERS } from './chat-core.providers.js';
 import { MessageAllowance } from './core/allowance/message-allowance.js';
 import {
   SESSION_USAGE_REPOSITORY,
@@ -10,6 +11,9 @@ import { CONVERSATION_REPOSITORY } from './core/conversation/conversation-reposi
 import { ConversationEventsHub } from './core/events/conversation-events-hub.js';
 import { MESSAGE_REPOSITORY } from './core/messages/message-repository.js';
 import { PENDING_ACTION_REPOSITORY } from './core/pending-actions/pending-action-repository.js';
+import { EmployeeConversationController } from './http/employee-conversation.controller.js';
+import { EmployeeSessionPipe } from './http/employee-session.pipe.js';
+import { UserThrottlerGuard } from './http/user-throttler.guard.js';
 import { ChatMigrator } from './persistence/chat.migrator.js';
 import { ConsoleSeedStore } from './persistence/console-seed-store.js';
 import { ConsoleSeeder } from './persistence/console-seeder.js';
@@ -19,10 +23,13 @@ import { DrizzlePendingActionRepository } from './persistence/drizzle-pending-ac
 import { DrizzleSessionUsageRepository } from './persistence/drizzle-session-usage.repository.js';
 
 @Module({
+  controllers: [EmployeeConversationController],
   providers: [
     ChatMigrator,
     ConsoleSeedStore,
     ConsoleSeeder,
+    EmployeeSessionPipe,
+    UserThrottlerGuard,
     { provide: CLOCK, useClass: SystemClock },
     { provide: CONVERSATION_REPOSITORY, useClass: DrizzleConversationRepository },
     { provide: MESSAGE_REPOSITORY, useClass: DrizzleMessageRepository },
@@ -34,6 +41,7 @@ import { DrizzleSessionUsageRepository } from './persistence/drizzle-session-usa
       useFactory: (usage: SessionUsageRepository) => new MessageAllowance(usage),
     },
     { provide: ConversationEventsHub, useFactory: () => new ConversationEventsHub() },
+    ...CHAT_CORE_PROVIDERS,
   ],
 })
 export class ChatModule {}
