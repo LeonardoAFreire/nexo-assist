@@ -9,13 +9,14 @@ Monorepo Turborepo com pnpm. Os pacotes usam o escopo `@nexo/*`. A lógica fica 
 │   └── web/                # React + Vite
 ├── packages/
 │   ├── contracts/          # tipos, schemas zod, eventos e interfaces públicas
-│   ├── shared/             # config, logger, database, events, http (infra do backend)
+│   ├── shared/             # config, logger, database, events, http, auth, resilience (infra do backend)
 │   ├── identity/           # login e sessão
 │   ├── chat/               # conversas, mensagens, transferência, console do analista
 │   ├── tickets/            # chamados, prioridade e prazos, deduplicação
 │   ├── knowledge/          # central de ajuda
 │   └── agent/              # orquestração do agent e porta para o modelo
 ├── e2e/                    # testes Playwright
+├── docker-compose.yml      # Postgres local (postgres:17)
 ├── tasks/                  # fluxo SDD: tasks/prd-<slug>/{prd,techspec,tasks,task_N,qa,codereview}.md
 ├── docs/                   # documentos-fonte (PRD do desafio, protótipo)
 ├── tools/scripts/          # check-boundaries.mjs e outros utilitários
@@ -33,8 +34,26 @@ packages/<domínio>/src/
 ├── <domínio>.module.ts
 ├── core/                   # entidades, regras, casos de uso, portas
 ├── persistence/            # repositórios que implementam as portas
-└── http/                   # controllers e DTOs
+├── http/                   # controllers e DTOs
+└── drizzle/                # migrations SQL do schema do domínio (gerado pelo drizzle-kit)
 ```
+
+`packages/agent/` tem ainda `evals/` (casos e execução dos evals do modelo, fora da suíte de testes comum).
+
+Subpaths de `packages/shared` (cada um é um export em `package.json`):
+
+```text
+packages/shared/src/
+├── config/                 # AppConfig e schema do ambiente
+├── logger/
+├── database/               # conexão Postgres e módulo; database/testing expõe o PGlite para testes
+├── events/
+├── http/                   # filtro de exceção, pipes, guards
+├── auth/                   # sessão e JWT
+└── resilience/             # timeout e nova tentativa com espera
+```
+
+Os subpaths públicos são `@nexo/shared/{config,logger,database,database/testing,events,http,auth,resilience}`.
 
 - `core/`: regras de negócio independentes de HTTP e de banco. É onde ficam os testes unitários mais importantes.
 - `persistence/`: acesso a dados e integrações externas (por exemplo, o cliente do sistema de chamados legado).

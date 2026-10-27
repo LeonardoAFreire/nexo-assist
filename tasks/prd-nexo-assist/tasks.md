@@ -4,7 +4,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 
 ## Tarefas
 
-- [ ] 1.0 Ambiente local, configuração e base de testes
+- [x] 1.0 Ambiente local, configuração e base de testes
 - [ ] 2.0 `shared/database`: Drizzle, migrations, PGlite e health check
 - [ ] 3.0 `shared/http` e `shared/resilience`: códigos de erro, SSE e novas tentativas
 - [ ] 4.0 `shared/auth`: sessão JWT, guards e cookie
