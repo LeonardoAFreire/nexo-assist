@@ -84,6 +84,16 @@ describe('envSchema', () => {
     expect(failedPaths({ ...debugEnv, NODE_ENV: 'development' })).toEqual([]);
   });
 
+  it('recusa o JWT_SECRET de exemplo em produção e aceita um segredo próprio', () => {
+    const production = { ...validEnv, NODE_ENV: 'production', LOG_LEVEL: 'info' };
+    const placeholder = 'change-me-with-at-least-32-characters';
+    const strongSecret = 'Zk3vQ9xT2mLw8RpN5sYc7HdF1bGa4JeU';
+
+    expect(failedPaths({ ...production, JWT_SECRET: placeholder })).toEqual(['JWT_SECRET']);
+    expect(failedPaths({ ...production, JWT_SECRET: strongSecret })).toEqual([]);
+    expect(failedPaths({ ...validEnv, JWT_SECRET: placeholder })).toEqual([]);
+  });
+
   it('rejeita limites fora do intervalo', () => {
     const confidence = { ...validEnv, AGENT_CONFIDENCE_THRESHOLD: '1.5' };
     const budget = { ...validEnv, LLM_DAILY_BUDGET_USD: '0' };
