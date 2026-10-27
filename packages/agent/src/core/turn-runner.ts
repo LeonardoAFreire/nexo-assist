@@ -67,8 +67,8 @@ export class TurnRunner {
       await this.finisher.finish(turn, { understanding, degradation: null });
       return;
     }
-    const requireToolFirst = this.policy.requiresToolFirst(understanding);
-    const run = { turn, signal: input.signal, requireToolFirst };
+    const finishingTools = this.policy.finishingToolsFor(understanding, !!input.pendingAction);
+    const run = { turn, signal: input.signal, finishingTools };
     const degradation = await this.respond(route, messages, run);
     const impactAsked = wasImpactAsked(input.history);
     await this.finisher.finish(turn, { understanding, degradation, impactAsked });
@@ -83,15 +83,15 @@ export class TurnRunner {
   private async respond(
     route: RespondableRoute,
     messages: LlmMessage[],
-    run: { turn: TurnSession; signal: AbortSignal; requireToolFirst: boolean },
+    run: { turn: TurnSession; signal: AbortSignal; finishingTools: string[] },
   ): Promise<Degradation | null> {
-    const { turn, signal, requireToolFirst } = run;
+    const { turn, signal, finishingTools } = run;
     const tools = this.policy.toolsFor(route, this.deps.tools);
     const input = {
       instructions: this.prompts.response(route),
       messages,
       tools: tools.map((tool) => turn.recorder.wrap(tool)),
-      requireToolFirst,
+      finishingTools,
     };
     const result = await this.loop.run(input, turn.context, signal);
     turn.metrics.add(this.deps.settings.responseModel, result.usage);

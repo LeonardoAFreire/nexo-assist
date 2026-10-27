@@ -45,7 +45,7 @@ async function replyTo(text: string, options: { requesterId: string; tickets: Ag
     messages: wrapped(text),
     tools: options.tickets,
     maxSteps: 6,
-    requireToolFirst: false,
+    finishingTools: [],
     context,
     signal: new AbortController().signal,
   };

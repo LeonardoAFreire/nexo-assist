@@ -5,15 +5,15 @@ import { ScriptedLlmClient } from '../persistence/scripted/scripted-llm-client.j
 import type { RespondInput } from './llm-client.js';
 
 class RecordingLlm extends ScriptedLlmClient {
-  readonly requested: boolean[] = [];
+  readonly requested: string[][] = [];
 
   override respond(input: RespondInput) {
-    this.requested.push(input.requireToolFirst);
+    this.requested.push(input.finishingTools);
     return super.respond(input);
   }
 }
 
-async function requestedFor(intent: 'ticket_open' | 'closing'): Promise<boolean[]> {
+async function requestedFor(intent: 'ticket_open' | 'closing'): Promise<string[][]> {
   const llm = new RecordingLlm([
     { type: 'understand', understanding: makeUnderstanding({ intent }) },
     { type: 'respond', text: 'Certo.', toolCalls: [] },
@@ -23,12 +23,13 @@ async function requestedFor(intent: 'ticket_open' | 'closing'): Promise<boolean[
   return llm.requested;
 }
 
-describe('tool obrigatória no primeiro passo', () => {
+describe('tool obrigatória até a finalizadora', () => {
   it('pede ao modelo uma tool primeiro quando o funcionário quer abrir chamado', async () => {
-    expect(await requestedFor('ticket_open')).toEqual([true]);
+    const [finishing] = await requestedFor('ticket_open');
+    expect(finishing).toContain('propor_chamado');
   });
 
   it('deixa o modelo livre para responder quando o funcionário só agradece', async () => {
-    expect(await requestedFor('closing')).toEqual([false]);
+    expect(await requestedFor('closing')).toEqual([[]]);
   });
 });

@@ -1,13 +1,7 @@
 import type { Understanding } from '@nexo/contracts';
 import type { AgentTool } from './agent-tool.js';
+import { FINISHING_TOOLS } from './finishing-tools.js';
 import type { TurnRoute } from './turn-route.js';
-
-const INTENTS_BACKED_BY_TOOLS: Understanding['intent'][] = [
-  'question',
-  'ticket_status',
-  'ticket_complement',
-  'ticket_open',
-];
 
 export class TurnPolicy {
   constructor(private readonly confidenceThreshold: number) {}
@@ -22,8 +16,8 @@ export class TurnPolicy {
     return understanding.intent === 'out_of_scope' ? { kind: 'redirect' } : { kind: 'respond' };
   }
 
-  requiresToolFirst(understanding: Understanding): boolean {
-    return INTENTS_BACKED_BY_TOOLS.includes(understanding.intent);
+  finishingToolsFor(understanding: Understanding, hasPendingAction = false): string[] {
+    return hasPendingAction ? [] : (FINISHING_TOOLS[understanding.intent] ?? []);
   }
 
   toolsFor(route: TurnRoute, tools: AgentTool[]): AgentTool[] {

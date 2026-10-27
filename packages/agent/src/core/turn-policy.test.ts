@@ -36,16 +36,16 @@ describe('TurnPolicy', () => {
     expect(policy.decide(understanding)).toEqual({ kind: 'handoff', reason: 'requested' });
   });
 
-  it('exige uma tool no primeiro passo quando a intenção depende de dados do sistema', () => {
-    const intents = ['question', 'ticket_status', 'ticket_complement', 'ticket_open'] as const;
-    for (const intent of intents) {
-      expect(policy.requiresToolFirst(makeUnderstanding({ intent }))).toBe(true);
+  it('devolve as tools finalizadoras da intenção, e nenhuma para agradecimento ou fora de TI', () => {
+    const open = policy.finishingToolsFor(makeUnderstanding({ intent: 'ticket_open' }));
+    expect(open).toContain('propor_chamado');
+    for (const intent of ['closing', 'other', 'out_of_scope'] as const) {
+      expect(policy.finishingToolsFor(makeUnderstanding({ intent }))).toEqual([]);
     }
   });
 
-  it('não exige tool em agradecimento, assunto solto ou fora de TI', () => {
-    for (const intent of ['closing', 'other', 'out_of_scope'] as const) {
-      expect(policy.requiresToolFirst(makeUnderstanding({ intent }))).toBe(false);
-    }
+  it('não exige tool finalizadora enquanto há uma ação pendente de confirmação', () => {
+    const understanding = makeUnderstanding({ intent: 'ticket_open' });
+    expect(policy.finishingToolsFor(understanding, true)).toEqual([]);
   });
 });

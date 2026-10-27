@@ -3,6 +3,7 @@ import type { RespondInput } from '../../core/llm-client.js';
 import type { LlmEvent } from '../../core/llm-event.js';
 import { createModelAgent } from './create-model-agent.js';
 import { type Deadline, startDeadline } from './deadline.js';
+import { chooseToolChoice } from './tool-choice.js';
 import { FirstEventTimeoutError, toModelFailure } from './model-failure.js';
 import { readResponseStream, type StreamProgress } from './response-stream.js';
 import { toModelMessages } from './to-model-messages.js';
@@ -10,7 +11,6 @@ import { ToolBridge } from './tool-bridge.js';
 
 const MAX_OUTPUT_TOKENS_PER_STEP = 600;
 const NO_RETRIES = 0;
-const FIRST_STEP = 0;
 
 export type SharedAttemptState = {
   turn: Deadline;
@@ -32,9 +32,7 @@ async function openStream(
   const abortSignal = AbortSignal.any([input.signal, bridge.signal, ...signals]);
   const opening = agent.stream(toModelMessages(input.messages), {
     maxSteps: input.maxSteps,
-    prepareStep: ({ stepNumber }) => ({
-      toolChoice: input.requireToolFirst && stepNumber === FIRST_STEP ? 'required' : 'auto',
-    }),
+    prepareStep: ({ steps }) => ({ toolChoice: chooseToolChoice(input.finishingTools, steps) }),
     abortSignal,
     modelSettings: { maxOutputTokens: MAX_OUTPUT_TOKENS_PER_STEP, maxRetries: NO_RETRIES },
   });

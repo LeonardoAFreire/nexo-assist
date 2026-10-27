@@ -30,7 +30,7 @@ function respondInput(tools: ReturnType<typeof createBuscarCentralTool>[]) {
     messages: [],
     tools,
     maxSteps: 6,
-    requireToolFirst: false,
+    finishingTools: [],
     context,
     signal: new AbortController().signal,
   };
