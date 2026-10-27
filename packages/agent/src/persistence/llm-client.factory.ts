@@ -7,6 +7,8 @@ import { ScriptedLlmClient } from './scripted/scripted-llm-client.js';
 
 const MISSING_API_KEY_MESSAGE = 'OPENROUTER_API_KEY não configurada';
 
+export const OPENROUTER_EXTRA_BODY = { reasoning: { enabled: false } } as const;
+
 function chatModel(provider: OpenRouterProvider, modelId: string): MastraModelConfig {
   return provider.chat(modelId) as unknown as MastraModelConfig;
 }
@@ -19,7 +21,7 @@ export function createLlmClient(config: AgentSettingsSource): LlmClient {
   if (apiKey === undefined) {
     throw new Error(MISSING_API_KEY_MESSAGE);
   }
-  const provider = createOpenRouter({ apiKey });
+  const provider = createOpenRouter({ apiKey, extraBody: OPENROUTER_EXTRA_BODY });
   return new MastraLlmClient({
     router: chatModel(provider, config.get('LLM_ROUTER_MODEL')),
     response: chatModel(provider, config.get('LLM_MODEL')),
