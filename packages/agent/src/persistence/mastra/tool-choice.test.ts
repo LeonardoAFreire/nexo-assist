@@ -7,6 +7,11 @@ function stepWith(...names: string[]) {
   return { toolCalls: names.map((toolName) => ({ toolName })) };
 }
 
+function completedStep(toolName: string, value: unknown) {
+  const output = { type: 'json', value };
+  return { toolCalls: [{ toolName }], toolResults: [{ toolName, output }] };
+}
+
 describe('chooseToolChoice', () => {
   it('exige tool no primeiro passo', () => {
     expect(chooseToolChoice(FINISHING, [])).toBe('required');
@@ -35,13 +40,25 @@ describe('chooseToolChoice', () => {
   });
 
   it('libera o texto quando o artigo citado se aplica ao caso', () => {
-    const cited = { toolResults: [{ toolName: 'citar_artigo', output: { applies: true } }] };
+    const cited = completedStep('citar_artigo', { applies: true });
     expect(chooseToolChoice(FINISHING, [cited])).toBe('auto');
   });
 
   it('continua exigindo quando o artigo citado não se aplica ao caso', () => {
-    const cited = { toolResults: [{ toolName: 'citar_artigo', output: { applies: false } }] };
+    const cited = completedStep('citar_artigo', { applies: false });
     expect(chooseToolChoice(FINISHING, [cited])).toBe('required');
+  });
+
+  it('continua exigindo quando a proposta foi recusada por uma regra do service desk', () => {
+    for (const status of ['rule_violated', 'duplicate_found', 'not_found']) {
+      const step = completedStep('propor_complemento', { status });
+      expect(chooseToolChoice(FINISHING, [step])).toBe('required');
+    }
+  });
+
+  it('libera o texto quando a proposta foi aceita', () => {
+    const step = completedStep('propor_complemento', { status: 'proposed' });
+    expect(chooseToolChoice(FINISHING, [step])).toBe('auto');
   });
 
   it('aceita passos sem chamadas de tool', () => {
