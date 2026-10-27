@@ -36,6 +36,7 @@ export class TurnSession {
       clock: deps.clock,
       articles: new SearchedArticles(),
       emit: (event) => this.emit(event),
+      questionAsked: () => this.observer.quickOptionsShown,
     };
   }
 

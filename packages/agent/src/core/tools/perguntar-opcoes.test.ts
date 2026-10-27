@@ -25,6 +25,17 @@ describe('perguntar_opcoes', () => {
     ]);
   });
 
+  it('ignora a segunda pergunta do mesmo turno, sem repetir os botões', async () => {
+    const { context, events } = makeTurnContext();
+    const tool = createPerguntarOpcoesTool();
+    const input = { question: 'Quem é afetado?', options: ['Só eu', 'Minha equipe'] };
+    await tool.execute(input, context);
+    const repeated = await tool.execute(input, context);
+    expect(events).toHaveLength(1);
+    expect(repeated).toMatchObject({ optionCount: 0 });
+    expect(repeated.note).toContain('Já existe uma pergunta');
+  });
+
   it('aceita de 2 a 5 opções', () => {
     const { inputSchema } = createPerguntarOpcoesTool();
     const withOptions = (count: number) => ({

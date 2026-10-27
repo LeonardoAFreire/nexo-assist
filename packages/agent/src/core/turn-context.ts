@@ -8,4 +8,5 @@ export type TurnContext = {
   readonly clock: Clock;
   readonly articles: SearchedArticles;
   emit(event: AgentTurnEvent): void;
+  questionAsked(): boolean;
 };

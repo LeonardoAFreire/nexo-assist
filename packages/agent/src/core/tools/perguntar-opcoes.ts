@@ -8,6 +8,8 @@ const MIN_OPTIONS = 2;
 const MAX_OPTIONS = 5;
 const AWAITING_ANSWER_NOTE =
   'Aguardando a resposta do funcionário. Encerre o turno sem escrever mais nada.';
+const ALREADY_ASKED_NOTE =
+  'Já existe uma pergunta com opções neste turno. Não faça outra; encerre o turno sem escrever mais nada.';
 
 const inputSchema = z.strictObject({
   question: z.string().trim().min(1).max(QUESTION_MAX_LENGTH),
@@ -26,6 +28,9 @@ export type PerguntarOpcoesInput = z.infer<typeof inputSchema>;
 export type PerguntarOpcoesOutput = z.infer<typeof outputSchema>;
 
 function askQuestion(input: PerguntarOpcoesInput, context: TurnContext): PerguntarOpcoesOutput {
+  if (context.questionAsked()) {
+    return { question: input.question, optionCount: 0, note: ALREADY_ASKED_NOTE };
+  }
   const options = input.options.map((label, index) => ({ id: `option-${index + 1}`, label }));
   context.emit({
     type: 'part',
