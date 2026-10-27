@@ -31,10 +31,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 3.1 Adicionar os códigos de erro em `packages/contracts/src/api-error.ts`.
-- [ ] 3.2 Ajustar `ApiExceptionFilter` e `ZodValidationPipe`.
-- [ ] 3.3 Implementar `SseResponse` em `shared/http`.
-- [ ] 3.4 Implementar `withResilience` no subpath `@nexo/shared/resilience`, com o `package.json` atualizado.
+- [x] 3.1 Adicionar os códigos de erro em `packages/contracts/src/api-error.ts`.
+- [x] 3.2 Ajustar `ApiExceptionFilter` e `ZodValidationPipe`.
+- [x] 3.3 Implementar `SseResponse` em `shared/http`.
+- [x] 3.4 Implementar `withResilience` no subpath `@nexo/shared/resilience`, com o `package.json` atualizado.
 
 ## Detalhes de implementação
 
@@ -50,9 +50,9 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] TU-29 — tenta de novo com espera e desiste após o limite.
-- [ ] `ApiExceptionFilter` devolve o `code` e o status de `ApiHttpException` e esconde detalhes de erros não tratados.
-- [ ] `SseResponse` formata eventos e encerra ao desconectar.
+- [x] TU-29 — tenta de novo com espera e desiste após o limite.
+- [x] `ApiExceptionFilter` devolve o `code` e o status de `ApiHttpException` e esconde detalhes de erros não tratados.
+- [x] `SseResponse` formata eventos e encerra ao desconectar.
 
 ## Arquivos relevantes
 
