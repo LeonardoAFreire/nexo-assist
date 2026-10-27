@@ -1,4 +1,11 @@
-import type { PriorityAssessment, PriorityFacts, TicketDetail, TicketDraft } from '@nexo/contracts';
+import type {
+  PriorityAssessment,
+  PriorityFacts,
+  TicketDetail,
+  TicketDraft,
+  TicketScope,
+  TicketSummary,
+} from '@nexo/contracts';
 import { FakeTicketsApi } from '../../core/testing/fake-tickets-api.js';
 import { NOW_ISO } from '../../core/testing/factories.js';
 
@@ -13,7 +20,18 @@ export type CreateTicketInput = {
 
 export class EchoTicketsApi extends FakeTicketsApi {
   readonly created = new Map<string, TicketDetail>();
+  readonly listings: { requesterId: string; scope: TicketScope }[] = [];
+  private readonly summaries = new Map<string, TicketSummary[]>();
   private nextSequence = FIRST_TICKET_SEQUENCE;
+
+  setTickets(requesterId: string, tickets: TicketSummary[]): void {
+    this.summaries.set(requesterId, tickets);
+  }
+
+  async listOwn(input: { requesterId: string; scope: TicketScope }): Promise<TicketSummary[]> {
+    this.listings.push(input);
+    return this.summaries.get(input.requesterId) ?? [];
+  }
 
   override async assessPriority(facts: PriorityFacts): Promise<PriorityAssessment> {
     const assessment = await super.assessPriority(facts);
