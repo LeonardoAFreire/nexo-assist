@@ -22,7 +22,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [x] 16.0 `chat/core`: transferência, console e `SendEmployeeMessage`
 - [x] 17.0 `chat/persistence`: schema, repositórios e seed do console
 - [x] 18.0 `chat/http` do funcionário: mensagens por SSE, retry e ações pendentes
-- [ ] 19.0 `chat/http`: transferência, console do analista e SSE de atualização
+- [x] 19.0 `chat/http`: transferência, console do analista e SSE de atualização
 - [x] 20.0 `web`: base (shell, rotas, cliente HTTP, MSW), login e perfil
 - [x] 21.0 `web`: componentes compartilhados de chamado e de decisão do agent
 - [x] 22.0 `web`: chat em streaming (mensagens, composer, contador, erros)

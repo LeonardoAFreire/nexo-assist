@@ -30,10 +30,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 19.1 Rota `handoff` e SSE do funcionário (`ConversationStreamController`).
-- [ ] 19.2 `ConsoleController`: lista, detalhe, painel de chamados e `read`.
-- [ ] 19.3 Ações do analista: `claim`, `release`, `close` e `messages`.
-- [ ] 19.4 SSE do console.
+- [x] 19.1 Rota `handoff` e SSE do funcionário (`ConversationStreamController`).
+- [x] 19.2 `ConsoleController`: lista, detalhe, painel de chamados e `read`.
+- [x] 19.3 Ações do analista: `claim`, `release`, `close` e `messages`.
+- [x] 19.4 SSE do console.
 
 ## Detalhes de implementação
 
@@ -56,12 +56,12 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-09 — transfere a pedido, publica o evento e registra no histórico do chamado.
-- [ ] TI-10 — não chama o agent e entrega ao console a mensagem enviada durante a transferência.
-- [ ] TI-11 — assume, devolve e encerra a conversa e recusa a segunda tentativa de assumir.
-- [ ] TI-12 — filtra e busca no console com contadores coerentes.
-- [ ] TI-13 — libera os chamados do funcionário só para conversa transferida e bloqueia funcionário no console.
-- [ ] TI-17 — publica no SSE do console nova mensagem e mudança de estado.
+- [x] TI-09 — transfere a pedido, publica o evento e registra no histórico do chamado.
+- [x] TI-10 — não chama o agent e entrega ao console a mensagem enviada durante a transferência.
+- [x] TI-11 — assume, devolve e encerra a conversa e recusa a segunda tentativa de assumir.
+- [x] TI-12 — filtra e busca no console com contadores coerentes.
+- [x] TI-13 — libera os chamados do funcionário só para conversa transferida e bloqueia funcionário no console.
+- [x] TI-17 — publica no SSE do console nova mensagem e mudança de estado.
 
 ## Arquivos relevantes
 
