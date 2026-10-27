@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { envFields } from './env.fields.js';
 
+const PLACEHOLDER_SECRET_PATTERN = /change-me|changeme|example|segredo-de-teste/i;
+
 type EnvInput = z.infer<z.ZodObject<typeof envFields>>;
 
 function addIssue(context: z.RefinementCtx, path: string, message: string): void {
@@ -17,6 +19,9 @@ function validateConditionals(env: EnvInput, context: z.RefinementCtx): void {
   }
   if (env.LOG_LEVEL === 'debug' && isProduction) {
     addIssue(context, 'LOG_LEVEL', 'debug não é permitido em produção');
+  }
+  if (isProduction && PLACEHOLDER_SECRET_PATTERN.test(env.JWT_SECRET)) {
+    addIssue(context, 'JWT_SECRET', 'o segredo de exemplo não é permitido em produção');
   }
 }
 

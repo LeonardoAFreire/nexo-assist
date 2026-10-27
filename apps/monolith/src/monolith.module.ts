@@ -13,6 +13,7 @@ import { ApiExceptionFilter } from '@nexo/shared/http';
 import { NexoLoggerModule } from '@nexo/shared/logger';
 import { TicketsModule } from '@nexo/tickets';
 import { HealthController } from './health.controller.js';
+import { WebStaticModule } from './web-static.module.js';
 
 const ONE_MINUTE_MS = 60_000;
 
@@ -34,6 +35,7 @@ const ONE_MINUTE_MS = 60_000;
     }),
     ChatModule,
     AgentModule,
+    WebStaticModule,
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_FILTER, useClass: ApiExceptionFilter }],
