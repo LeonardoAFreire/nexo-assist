@@ -2,6 +2,7 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 import { http as mswHttp } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { http } from '@/lib/http';
+import { consoleApiMock } from '@/test/console-api-mock';
 import {
   identityApiMock,
   makeAnalyst,
@@ -22,7 +23,8 @@ async function signIn(app: RenderedApp, email: string): Promise<void> {
 }
 
 async function signedInAs(email: string): Promise<RenderedApp> {
-  server.use(...identityApiMock([makeSessionUser(), makeAnalyst()]));
+  const accounts = [makeSessionUser(), makeAnalyst()];
+  server.use(...identityApiMock(accounts), ...consoleApiMock([], makeAnalyst()).handlers);
   const app = renderApp('/login');
   await signIn(app, email);
   return app;

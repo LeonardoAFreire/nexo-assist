@@ -31,11 +31,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 24.1 `api/` e hooks de consulta: `useConsoleConversations`, `useConsoleConversation` e `useEmployeeTickets`.
-- [ ] 24.2 `useConsoleEvents` (SSE do console).
-- [ ] 24.3 Lista: `ConversationFilters`, `ConversationSearch`, `ConversationList` e `ConversationListItem`.
-- [ ] 24.4 Conversa: `ConsoleThread`, `HandoffSummary`, `AttendanceBar`, `AnalystComposer` e as mutações `useClaim`, `useRelease`, `useClose`, `useAnalystMessage` (e marcar como lida).
-- [ ] 24.5 `EmployeeTicketsPanel` e `ConsolePage` nas rotas `/console` e `/console/:conversationId`.
+- [x] 24.1 `api/` e hooks de consulta: `useConsoleConversations`, `useConsoleConversation` e `useEmployeeTickets`.
+- [x] 24.2 `useConsoleEvents` (SSE do console).
+- [x] 24.3 Lista: `ConversationFilters`, `ConversationSearch`, `ConversationList` e `ConversationListItem`.
+- [x] 24.4 Conversa: `ConsoleThread`, `HandoffSummary`, `AttendanceBar`, `AnalystComposer` e as mutações `useClaim`, `useRelease`, `useClose`, `useAnalystMessage` (e marcar como lida).
+- [x] 24.5 `EmployeeTicketsPanel` e `ConsolePage` nas rotas `/console` e `/console/:conversationId`.
 
 ## Detalhes de implementação
 
@@ -57,8 +57,8 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-28 — filtra o console, assume, responde, devolve e mostra a recusa de assumir.
-- [ ] TI-29 — atualiza a lista do console ao receber evento SSE.
+- [x] TI-28 — filtra o console, assume, responde, devolve e mostra a recusa de assumir.
+- [x] TI-29 — atualiza a lista do console ao receber evento SSE.
 
 ## Arquivos relevantes
 

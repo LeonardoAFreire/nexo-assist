@@ -2,6 +2,7 @@ import { Navigate, type RouteObject } from 'react-router';
 import { routePaths } from '@/lib/routes';
 import { LoginPage, ProfilePage } from '@/modules/identity';
 import { AppShell } from './app-shell';
+import { ConsoleRoute } from './console-route';
 import { PlaceholderPage } from './placeholder-page';
 import { RequireRole } from './require-role';
 
@@ -22,11 +23,8 @@ export const appRoutes: RouteObject[] = [
           {
             element: <RequireRole roles={['analyst']} />,
             children: [
-              { path: routePaths.console, element: <PlaceholderPage title="Conversas" /> },
-              {
-                path: `${routePaths.console}/:conversationId`,
-                element: <PlaceholderPage title="Conversas" />,
-              },
+              { path: routePaths.console, element: <ConsoleRoute /> },
+              { path: `${routePaths.console}/:conversationId`, element: <ConsoleRoute /> },
             ],
           },
         ],
