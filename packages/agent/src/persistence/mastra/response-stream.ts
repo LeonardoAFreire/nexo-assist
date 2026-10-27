@@ -3,6 +3,7 @@ import type { TokenUsage } from '../../core/token-usage.js';
 import type { Deadline } from './deadline.js';
 import { toModelFailure } from './model-failure.js';
 import { type ParsedChunk, parseChunk } from './parse-chunk.js';
+import { StepTextSeparator } from './step-text-separator.js';
 import type { ToolBridge } from './tool-bridge.js';
 
 const NO_USAGE: TokenUsage = { inputTokens: 0, outputTokens: 0 };
@@ -56,13 +57,17 @@ export async function* readResponseStream(
 ): AsyncGenerator<LlmEvent> {
   const iterator = source[Symbol.asyncIterator]();
   let usage = NO_USAGE;
+  const separator = new StepTextSeparator();
   try {
     for (let next = await nextChunk(iterator, guards); next.done !== true;) {
       const chunk = parseChunk(next.value);
       trackProgress(chunk, guards);
       usage = chunk.kind === 'finish' ? chunk.usage : usage;
+      if (chunk.kind === 'tool-call') {
+        separator.noteToolCall();
+      }
       if (chunk.kind === 'text') {
-        yield { type: 'text-delta', delta: chunk.delta };
+        yield { type: 'text-delta', delta: separator.apply(chunk.delta) };
       }
       next = await nextChunk(iterator, guards);
     }
