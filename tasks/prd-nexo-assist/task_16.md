@@ -33,11 +33,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 16.1 `HandOffConversation` e publicação do evento.
-- [ ] 16.2 `ClaimConversation`, `ReleaseConversation`, `CloseConversation` e `SendAnalystMessage`.
-- [ ] 16.3 `AnalystTicketAccess` e `ConsoleQueries`.
-- [ ] 16.4 `ConversationEventsHub`.
-- [ ] 16.5 `SendEmployeeMessage`, retry do turno e montagem de `EmployeeConversationView`.
+- [x] 16.1 `HandOffConversation` e publicação do evento.
+- [x] 16.2 `ClaimConversation`, `ReleaseConversation`, `CloseConversation` e `SendAnalystMessage`.
+- [x] 16.3 `AnalystTicketAccess` e `ConsoleQueries`.
+- [x] 16.4 `ConversationEventsHub`.
+- [x] 16.5 `SendEmployeeMessage`, retry do turno e montagem de `EmployeeConversationView`.
 
 ## Detalhes de implementação
 
@@ -61,9 +61,9 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] TU-13 — recusa assumir conversa já assumida por outro analista.
-- [ ] `SendEmployeeMessage`: "sim" com ação pendente confirma sem chamar o agent; conversa com analista termina em `turn.skipped` sem chamar o agent; `handoff-requested` muda o estado e publica o evento; turno concorrente recebe `turn_in_progress`.
-- [ ] `ConsoleQueries`: status derivado ("agent pediu ajuda" com a confiança), filtros e contadores.
+- [x] TU-13 — recusa assumir conversa já assumida por outro analista.
+- [x] `SendEmployeeMessage`: "sim" com ação pendente confirma sem chamar o agent; conversa com analista termina em `turn.skipped` sem chamar o agent; `handoff-requested` muda o estado e publica o evento; turno concorrente recebe `turn_in_progress`.
+- [x] `ConsoleQueries`: status derivado ("agent pediu ajuda" com a confiança), filtros e contadores.
 
 ## Arquivos relevantes
 
