@@ -4,11 +4,11 @@ As evidências da ferramenta de navegador estão em `tasks/prd-nexo-assist/evide
 
 ## Resumo
 - Data: 2026-10-27
-- Status: **REPROVADO** (todos os critérios funcionais passam e o clone limpo sobe; reprova só o encaminhamento certo do CA-40 (88% contra 100%), e o CA-39 está bloqueado pelo deploy)
+- Status: **BLOQUEADO** (todos os critérios verificáveis passam, inclusive o clone limpo e as metas dos evals; só o CA-39 depende do deploy, que está pendente e exige a confirmação do usuário)
 - Total de critérios de aceitação: 40
-- Critérios de aceitação atendidos: 38 (CA-01 a CA-38)
-- Reprovado: 1 (CA-40). Bloqueado: 1 (CA-39)
-- Bugs encontrados: 14 (todos corrigidos, cada um com teste de regressão e commit próprio)
+- Critérios de aceitação atendidos: 39 (CA-01 a CA-38 e CA-40)
+- Bloqueado: 1 (CA-39)
+- Bugs encontrados: 15 (todos corrigidos, cada um com teste de regressão e commit próprio)
 
 Ambiente da execução: modelo real (OpenRouter), banco descartável, sem tocar no `pnpm dev` nem no Postgres do usuário.
 
@@ -66,7 +66,7 @@ Os fluxos de interface foram executados no navegador com o modelo real. Quando o
 | CA-37 | Resposta incremental, indicador de carregamento e erro com tentar de novo | TI-05, TI-20 | PASSOU | `ca37-erro-do-modelo-com-tentar-novamente` (chave inválida): alerta sem detalhe do provedor e botão "Tentar novamente", que recuperou a resposta sem contar outra mensagem |
 | CA-38 | Clone limpo com `.env` e chave sobe com os dados de exemplo | — | PASSOU | `git clone` do repositório, `cp .env.example .env` com a chave, `pnpm install --frozen-lockfile` (20 s) e `pnpm dev`: API e web no ar, login, chamado de exemplo (INC-20311) e resposta real do modelo. Só o Postgres foi trocado por um container em outra porta, porque a 5432 é do projeto do usuário (o `docker compose` não foi executado). Um aviso: logo após o boot o `node --watch` reinicia a API três vezes, e uma requisição nesse intervalo pode ser interrompida
 | CA-39 | Ambiente publicado: limite de uso sem chamar o modelo | TU-24, TI-15 | BLOQUEADO | A tarefa 27.0 (publicação) está pendente. Localmente, o excesso por minuto devolve 429 `rate_limited` com mensagem clara e o 31º por sessão, `message_limit_reached` |
-| CA-40 | Evals do README atingem as metas dos Objetivos | evals | FALHOU | Todas as metas atingidas, inclusive a latência revista, menos o encaminhamento certo (88% contra 100%). Ver "Evals" abaixo |
+| CA-40 | Evals do README atingem as metas dos Objetivos | evals | PASSOU | Rodada de 90 turnos (18 cenários × 5, Luna): 88 aprovados, todas as metas atingidas, com a latência revista. Rodadas menores (2 por cenário) oscilaram de 33 a 35 de 36. Ver "Evals" abaixo |
 
 ## Testes E2E executados
 | ID | Fluxo | Resultado | Observações |
@@ -82,7 +82,7 @@ Além desses, executei no navegador com o **modelo real** os fluxos de login, pe
 | Camada | ID | Resultado | Validação/comando | Observações |
 |--------|----|-----------|-------------------|-------------|
 | Estática | — | PASSOU | `pnpm typecheck`, `pnpm lint`, `pnpm check:boundaries` | 0 avisos e 0 erros; "Fronteiras OK (9 pacotes verificados)" |
-| Unidade/Integração | TU-01 a TU-29, TI-01 a TI-29 | PASSOU | `pnpm test` | **748 testes**: contracts 24, shared 47, identity 19, tickets 95, knowledge 22, agent 232, chat 231, monolith 11, web 67 (eram 708 no início da QA) |
+| Unidade/Integração | TU-01 a TU-29, TI-01 a TI-29 | PASSOU | `pnpm test` | **751 testes**: contracts 24, shared 47, identity 19, tickets 95, knowledge 22, agent 235, chat 231, monolith 11, web 67 (eram 708 no início da QA) |
 | E2E | E2E-01 a E2E-04 | PASSOU | `pnpm e2e` em portas isoladas | 4 de 4 |
 
 - Cobertura: NÃO APLICÁVEL (o projeto não define meta numérica; a regra é testar por risco).
@@ -90,24 +90,26 @@ Além desses, executei no navegador com o **modelo real** os fluxos de login, pe
 
 ## Evals (CA-40)
 
-Rodada completa com o modelo real e o código atual (18 cenários × 2 execuções): ver a tabela de resultados e a comparação de modelos no README. Resumo:
+Rodada final com o modelo real e o código atual: 18 cenários × 5 execuções (90 turnos), **88 aprovados** e nenhuma falha de disponibilidade. A tabela completa e a comparação de modelos estão no README.
 
 | Meta | Resultado (`openai/gpt-6-luna`) | Meta do PRD | Status |
 | --- | --- | --- | --- |
-| Resolução sem fila | 100% | 90% | atingida |
-| Chamados bem abertos | 100% | 90% | atingida (era 50%) |
+| Resolução sem fila | 90% | 90% | atingida (no limite) |
+| Chamados bem abertos | 100% | 90% | atingida |
 | Sem duplicidade | 100% | 100% | atingida |
 | Confirmação antes de escrever | 100% | 100% | atingida |
-| Encaminhamento certo | 88% | 100% | **abaixo** |
+| Encaminhamento certo | 100% | 100% | atingida |
 | Escopo | 100% | 100% | atingida |
 | Privacidade | 100% | 100% | atingida |
 | Transparência | 100% | 100% | atingida |
 | Aceite (indicador de atividade) | p50 de 51 ms | ≤ 1 s (meta revista) | atingida |
 | Primeiro passo visível | p50 de 2,9 s; p90 de 3,7 s | p50 ≤ 3 s e p95 ≤ 5 s (meta revista) | atingida |
-| Primeiro texto p50 / p95 | 4,5 s / 8,1 s | p50 ≤ 5 s e p95 ≤ 10 s (meta revista; a original era 2 s / 5 s) | atingida |
+| Primeiro texto p50 / p95 | 4,6 s / 9,9 s | p50 ≤ 5 s e p95 ≤ 10 s (meta revista; a original era 2 s / 5 s) | atingida |
 | Custo por 10 mensagens | US$ 0,0092 | US$ 0,02 | atingida |
 
-Decisão do modelo (liberada pelo usuário): comparei Luna, Haiku 5.5, DeepSeek 0731 e Mercury 2.5. O Haiku 5.5, que você sugeriu, fez 29/36 (chamados bem abertos em 25%, privacidade e duplicidade em 75%) e estima US$ 0,022 por 10 mensagens, acima da meta; por isso o padrão ficou no **Luna** (35/36, US$ 0,0009 por turno). Para usar o Haiku, basta `LLM_MODEL=anthropic/claude-haiku-5.5` no `.env`. O seu `.env` não foi alterado.
+As duas execuções reprovadas são de resolução (`erro-809-windows-10`, critério de texto; `status-sem-numero`). Com 2 execuções por cenário o resultado oscila (33 a 35 de 36) por esses critérios e por falhas transitórias do provedor, por isso a rodada final usa 5. O encaminhamento certo estava em 88% (em `critico-equipe` o modelo às vezes perguntava em vez de propor o chamado crítico); com o BUG-15 corrigido, o cenário passou a 10 de 10 e a rodada final fechou em 100%.
+
+Decisão do modelo (liberada pelo usuário): comparei Luna, Haiku 5.5, DeepSeek 0731 e Mercury 2.5. O Haiku 5.5, que o usuário sugeriu, fez 29/36 (chamados bem abertos em 25%, privacidade e duplicidade em 75%) e estima US$ 0,022 por 10 mensagens, acima da meta; por isso o padrão ficou no **Luna**. Para usar o Haiku, basta `LLM_MODEL=anthropic/claude-haiku-5.5` no `.env`. O `.env` do usuário não foi alterado.
 
 ## Acessibilidade
 - [x] Navegação por teclado (Tab, Enter, Esc): ordem de foco lógica em login, chat, perfil e console; opções rápidas pela tecla numérica; Confirmar por Ctrl+Enter; detalhe expansível com Enter e Espaço (`aria-expanded`). Esc e foco da edição do rascunho: **BUG-11**, corrigido (`a11y-teclado-rascunho`).
@@ -143,6 +145,7 @@ Capturas em 1440, 1280, 768 e 375 px (`vis-*`), com estado vazio ("Como posso aj
 | BUG-12 | O mesmo artigo era citado duas vezes no turno e aparecia em dois cartões | Baixa | Corrigido | `76e60bb` | `citar-artigo.test.ts` | — |
 | BUG-13 | Com o Luna, o agent consultou o INC-20311 vencido e transferiu a conversa sozinho; a TechSpec só transfere por vencimento quando o funcionário aceita | Média | Corrigido | `66c4da7`: a tool `transferir_para_analista` não aceita mais o motivo `overdue` | `transferir-para-analista.test.ts` | — |
 | BUG-14 | Regressão da correção do BUG-03, achada nos evals: na consulta de status só buscar os chamados encerrava a exigência de tool, e o modelo respondia sem mostrar a lista (`status-sem-numero` 0/2) | Média | Corrigido | `1e24ef0`: a finalizadora de status é apresentar o chamado ou a lista | `finishing-tools.test.ts`; evals 3/3 | — |
+| BUG-15 | Em relato crítico (equipe ou empresa parada e impedimento de trabalhar já ditos) o modelo às vezes fazia mais uma pergunta em vez de propor o chamado crítico (`critico-equipe` 1/2 nos evals) | Média | Corrigido | `3a0a592`: a tool `perguntar_opcoes` recusa a pergunta nesse caso e manda propor; a recusa não encerra a exigência de tool | `critical-report.test.ts`, `perguntar-opcoes.test.ts`; evals 10/10 | — |
 
 Também no escopo desta QA: modelo padrão trocado para o Luna (`55d40ad`), preços dos candidatos registrados (`50b1606`), limite de tempo dos testes com PGlite (`1127006`) e aviso no log com a causa de um turno que falha (`f89fd5a`, `agent-service-failure-log.test.ts`).
 
@@ -150,17 +153,15 @@ Também no escopo desta QA: modelo padrão trocado para o Luna (`55d40ad`), pre�
 - **Qualidade do modelo.** O DeepSeek 0731 às vezes inventava fatos no entendimento (afetados, "impede o trabalho"), números de chamado nas tools (recusados pelas tools, sem vazar nada), respondia em inglês de vez em quando e repetia o conteúdo dos cartões no texto. O Luna perguntou a mais ("Sim, tenho alternativa / Não tenho alternativa") antes de propor o rascunho. As regras seguem no código; o texto livre do modelo continua sendo variável.
 - **Texto antes da confirmação.** No caso crítico o agent disse "abri um chamado" e logo depois "confirme para que eu registre"; o estado é correto (só existe o rascunho).
 - **Orçamento por conversa.** São ~13 a 17 mil tokens de entrada por turno, então os 600.000 cobrem cerca de 36 turnos de uma conversa, que atravessa sessões. Ao esgotar, o agent responde sem chamar o modelo e oferece o analista.
-- **Latência.** Meta revista com a aprovação do usuário (o desafio não traz número): aceite em 51 ms, primeiro passo em p50 de 2,9 s e primeiro texto em p50 de 4,5 s e p95 de 8,1 s, todos dentro. Para referência, a meta original de 2 s para o primeiro texto não é atingida. Medi onde o tempo vai: ~1,2 s por chamada ao modelo e ~4 chamadas em sequência por turno (roteador, tools, resposta). O Mastra soma só ~0,1 s por chamada, `:nitro` e `provider.sort` ganham ~0,2 s a 2 a 4 vezes o custo, e pedir tools em paralelo piorou e foi revertido. Reduzir de fato exige menos chamadas em sequência (por exemplo, fundir o roteador ao laço), o que muda a arquitetura. O agent não usa threads nem memória do Mastra de propósito: o contexto vem do banco do `chat`.
+- **Latência.** Meta revista com a aprovação do usuário (o desafio não traz número): aceite em 51 ms, primeiro passo em p50 de 2,9 s e primeiro texto em p50 de 4,6 s e p95 de 9,9 s, todos dentro. Para referência, a meta original de 2 s para o primeiro texto não é atingida. Medi onde o tempo vai: ~1,2 s por chamada ao modelo e ~4 chamadas em sequência por turno (roteador, tools, resposta). O Mastra soma só ~0,1 s por chamada, `:nitro` e `provider.sort` ganham ~0,2 s a 2 a 4 vezes o custo, e pedir tools em paralelo piorou e foi revertido. Reduzir de fato exige menos chamadas em sequência (por exemplo, fundir o roteador ao laço), o que muda a arquitetura. O agent não usa threads nem memória do Mastra de propósito: o contexto vem do banco do `chat`.
 - **Falha de rede ao enviar.** Se a requisição nem chega ao servidor, a tela mostra o alerta e mantém o texto no campo, mas sem o botão "Tentar novamente" (ele existe quando o turno falha no servidor).
 - **Perfil.** O bloco de senha diz "Enviaremos um link de redefinição…" com o botão desabilitado; o PRD só exige o botão visível e desabilitado.
 - **Ambiente.** O cookie de sessão do `localhost` vale para todas as portas e o `JWT_SECRET` é o do `.env`, então o navegador já abriu logado como a Ana de outra instância.
 
 ## Conclusão
 
-Todos os critérios com fluxo de interface passam com o modelo real (CA-01 a CA-37), o clone limpo sobe (CA-38), e os 14 defeitos achados foram corrigidos na causa raiz, com teste de regressão e commit próprio. Três deles mereciam atenção antes de qualquer entrega: o agent que escrevia "proposta" sem criar a ação pendente (BUG-03), a conversa que quebrava no 5º turno por causa do orçamento de tokens (BUG-06) e o 409 que travava a funcionária com o console aberto (BUG-08).
+Todos os critérios com fluxo de interface passam com o modelo real (CA-01 a CA-37), o clone limpo sobe (CA-38), e os 15 defeitos achados foram corrigidos na causa raiz, com teste de regressão e commit próprio. Três deles mereciam atenção antes de qualquer entrega: o agent que escrevia "proposta" sem criar a ação pendente (BUG-03), a conversa que quebrava no 5º turno por causa do orçamento de tokens (BUG-06) e o 409 que travava a funcionária com o console aberto (BUG-08).
 
-O status é **REPROVADO** por dois itens:
-1. **CA-40:** o encaminhamento certo ficou em 88% (meta de 100%): em `critico-equipe` o modelo, numa de duas execuções, fez a pergunta que falta em vez de propor o chamado crítico. A meta de latência, que era uma premissa do PRD (o desafio só pede "em tempo real" e "rápido"), foi revista com a aprovação do usuário e está atendida.
-2. **CA-39:** bloqueado até a publicação (tarefa 27.0), que exige a confirmação do usuário.
+O status é **BLOQUEADO**: não há critério verificável que falhe. O CA-39 (limite de uso no ambiente publicado) depende da publicação (tarefa 27.0), que é uma ação externa e exige a confirmação do usuário. Localmente o limite devolve 429 com mensagem clara e sem chamar o modelo.
 
-Para aprovar: publicar e conferir o limite no ambiente publicado, e fechar o encaminhamento certo em 100% (o cenário `critico-equipe` ainda oscila no modelo).
+Para aprovar: publicar no Railway e conferir o limite no ambiente publicado. A meta de latência do PRD, que era uma premissa, foi revista com a aprovação do usuário; os cenários de resolução continuam sendo os que mais oscilam no modelo (um critério de texto e a lista de seleção).

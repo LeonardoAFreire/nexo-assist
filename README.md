@@ -107,7 +107,7 @@ Princípios que valem mais que o prompt:
 
 ### Testes
 
-`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **748 testes, todos passando**.
+`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **751 testes, todos passando**.
 
 | Pacote            | Testes |
 | ----------------- | ------ |
@@ -116,7 +116,7 @@ Princípios que valem mais que o prompt:
 | `@nexo/identity`  | 19     |
 | `@nexo/tickets`   | 95     |
 | `@nexo/knowledge` | 22     |
-| `@nexo/agent`     | 232    |
+| `@nexo/agent`     | 235    |
 | `@nexo/chat`      | 231    |
 | `@nexo/monolith`  | 11     |
 | `@nexo/web`       | 67     |
@@ -137,24 +137,23 @@ Metas: confirmação antes de escrever, privacidade, escopo e transparência val
 
 <!-- evals:start -->
 
-Rodada final, com `openai/gpt-6-luna` como modelo de resposta e `deepseek/deepseek-v4-flash-0731` como roteador: 18 cenários × 2 execuções (36 turnos), **35 aprovados**.
+Rodada final, com `openai/gpt-6-luna` como modelo de resposta e `deepseek/deepseek-v4-flash-0731` como roteador: 18 cenários × 5 execuções (90 turnos), **88 aprovados** e nenhuma falha de disponibilidade.
 
-| Meta                          | Resultado  | Meta do PRD |
-| ----------------------------- | ---------- | ----------- |
-| Resolução sem fila            | 100% (8/8) | 90%         |
-| Chamados bem abertos          | 100% (4/4) | 90%         |
-| Sem duplicidade               | 100% (8/8) | 100%        |
-| Confirmação antes de escrever | 100%       | 100%        |
-| Encaminhamento certo          | 88% (7/8)  | 100%        |
-| Escopo                        | 100% (4/4) | 100%        |
-| Privacidade                   | 100% (4/4) | 100%        |
-| Transparência                 | 100%       | 100%        |
+| Meta                          | Resultado    | Meta do PRD |
+| ----------------------------- | ------------ | ----------- |
+| Resolução sem fila            | 90% (18/20)  | 90%         |
+| Chamados bem abertos          | 100% (10/10) | 90%         |
+| Sem duplicidade               | 100% (20/20) | 100%        |
+| Confirmação antes de escrever | 100%         | 100%        |
+| Encaminhamento certo          | 100% (20/20) | 100%        |
+| Escopo                        | 100% (10/10) | 100%        |
+| Privacidade                   | 100% (10/10) | 100%        |
+| Transparência                 | 100%         | 100%        |
 
-- **Latência percebida** (meta revista do PRD, que o desafio só pede "em tempo real" e "rápida"): o aceite chega em ~51 ms e o chat mostra o indicador na hora; o **primeiro passo** do agent aparece em p50 de 2,9 s e p90 de 3,7 s (meta: p50 ≤ 3 s e p95 ≤ 5 s); o **primeiro texto** em p50 de 4,5 s e p95 de 8,1 s (meta: p50 ≤ 5 s e p95 ≤ 10 s). Medi onde o tempo vai: cada chamada ao modelo leva cerca de 1,2 s, e um turno faz em média quatro em sequência (roteador, tools e resposta). O Mastra soma só ~0,1 s por chamada (roteador via Mastra: 1,47 s; a mesma chamada direta na API: 1,35 s). `:nitro` e `provider.sort` do OpenRouter ganham ~0,2 s por chamada e custam de 2 a 4 vezes mais, então não foram adotados. Reduzir mais exigiria menos chamadas em sequência (por exemplo, fundir o roteador ao laço), o que muda a arquitetura. Pedir ao modelo chamadas de tool em paralelo foi testado e piorou (falhas de execução, sem ganho de tempo).
+- **Latência percebida** (meta revista do PRD; o desafio só pede "em tempo real" e "rápida"): o aceite chega em ~51 ms e o chat mostra o indicador na hora; o **primeiro passo** do agent aparece em p50 de 2,9 s e p90 de 3,7 s (meta: p50 ≤ 3 s e p95 ≤ 5 s); o **primeiro texto** em p50 de 4,6 s e p95 de 9,9 s (meta: p50 ≤ 5 s e p95 ≤ 10 s). Medi onde o tempo vai: cada chamada ao modelo leva cerca de 1,2 s, e um turno faz em média quatro em sequência (roteador, tools e resposta). O Mastra soma só ~0,1 s por chamada (roteador via Mastra: 1,47 s; a mesma chamada direta na API: 1,35 s). `:nitro` e `provider.sort` do OpenRouter ganham ~0,2 s por chamada e custam de 2 a 4 vezes mais, então não foram adotados. Reduzir mais exigiria menos chamadas em sequência (por exemplo, fundir o roteador ao laço), o que muda a arquitetura. Pedir ao modelo chamadas de tool em paralelo foi testado e piorou (falhas de execução, sem ganho de tempo).
 - **Custo médio por turno:** US$ 0,0009. Para 10 mensagens, a estimativa é de US$ 0,0092 (meta de US$ 0,02, dentro).
-- **Abaixo da meta, sem ajuste forçado:** encaminhamento certo (88%). Em `critico-equipe` o modelo, numa das duas execuções, fez a pergunta que falta em vez de propor o chamado crítico. É variação do modelo, e o critério não foi afrouxado. `erro-809-windows-10` também oscila (critério de texto): às vezes o modelo pergunta "isso resolveu?" antes de escrever o passo do artigo.
-- O que mudou desde a rodada anterior (DeepSeek, 34/36, chamados bem abertos em 50%): a pergunta "quem é afetado" passou a ser garantida pelo código; cada intenção só encerra o turno depois de uma tool finalizadora (propor, perguntar, transferir ou apresentar o chamado), porque o modelo às vezes escrevia o "rascunho" em texto, sem chamar a tool, e inventava prazo; e a tool de transferência não aceita mais o motivo "vencido", que só se aplica quando o funcionário aceita a oferta.
-- Falhas de disponibilidade do provedor (`agent_unavailable`, de 3 a 6 em 36 turnos em algumas rodadas, e nenhuma em outras) agora deixam um aviso no log com o nome do erro e o status HTTP.
+- **Variação entre rodadas:** com 2 execuções por cenário (36 turnos) o resultado oscilou de 33 a 35 aprovados entre rodadas, por critérios de texto (`erro-809-windows-10`: o modelo às vezes pergunta "isso resolveu?" antes de escrever o passo do artigo; `status-sem-numero`) e por falhas transitórias do provedor (`agent_unavailable`, que agora deixam um aviso no log). Por isso a rodada final usa 5 execuções por cenário. Os dois cenários que ainda falham de vez em quando são esses de resolução.
+- O que mudou desde a rodada anterior (DeepSeek, 34/36, chamados bem abertos em 50%): a pergunta "quem é afetado" passou a ser garantida pelo código; cada intenção só encerra o turno depois de uma tool finalizadora (propor, perguntar, transferir ou apresentar o chamado), porque o modelo às vezes escrevia o "rascunho" em texto, sem chamar a tool, e inventava prazo; em relato crítico (equipe ou empresa parada e impedimento de trabalhar) o código recusa a pergunta e manda propor o chamado; e a tool de transferência não aceita mais o motivo "vencido", que só se aplica quando o funcionário aceita a oferta.
 <!-- evals:end -->
 
 ## Escolha do modelo e do OpenRouter
@@ -167,7 +166,7 @@ Comparação final, com o código atual, 18 cenários × 2 execuções (36 turno
 
 | Modelo de resposta                | Aprovados | Primeiro trecho p50 / p95 | Custo por turno | Observação                                                                 |
 | --------------------------------- | --------- | ------------------------- | --------------- | -------------------------------------------------------------------------- |
-| `openai/gpt-6-luna`               | 35/36     | 4,5 s / 8,1 s             | US$ 0,0009      | Todas as metas, menos encaminhamento (88%)                                 |
+| `openai/gpt-6-luna`               | 88/90 (5 execuções) | 4,6 s / 9,9 s   | US$ 0,0009      | Todas as metas atingidas                                                   |
 | `anthropic/claude-haiku-5.5`      | 29/36     | 4,4 s / 7,6 s             | US$ 0,0022      | Chamados bem abertos em 25% (perguntou de novo o Windows que já foi dito); 10 mensagens custam US$ 0,022, acima da meta |
 | `deepseek/deepseek-v4-flash-0731` | 34/36     | 5,3 s / 10,2 s            | US$ 0,0015      | 3 turnos sem resposta por indisponibilidade do provedor                    |
 | `inception/mercury-2.5`           | 22/36     | 5,6 s / 15,2 s            | US$ 0,0013      | Falhou em privacidade e em chamados bem abertos                            |
@@ -183,7 +182,7 @@ O custo por turno é registrado em `agent.runs`, a partir do usage accounting do
 
 ## Trade-offs
 
-- **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro passo aparece em ~3 s e o primeiro texto em **p50 de 4,5 s e p95 de 8,1 s**, dentro da meta revista do PRD (5 s e 10 s) e acima da original (2 s). É um trade-off assumido e registrado.
+- **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro passo aparece em ~3 s e o primeiro texto em **p50 de 4,6 s e p95 de 9,9 s**, dentro da meta revista do PRD (5 s e 10 s) e acima da original (2 s). É um trade-off assumido e registrado.
 - **Tool obrigatória até a finalizadora** (`toolChoice: required` no `prepareStep`): garante que o agent nunca escreva um "rascunho" ou uma "proposta" em texto sem a tool; a exigência cai com ação pendente e após três passos.
 - **Postgres com um schema por domínio e Drizzle**, em vez de um banco sem serviço (SQLite): a regra "cada domínio só acessa as próprias tabelas" fica visível no banco e o deploy cabe num Postgres gerenciado. Custa um `docker compose up -d`. Nos testes, PGlite dá Postgres de verdade sem Docker.
 - **SSE em vez de WebSocket:** o tráfego é quase todo servidor para cliente, passa por proxies HTTP comuns e usa o cookie de sessão. O hub de eventos é em memória, então vale para uma instância; a evolução é `LISTEN/NOTIFY`.

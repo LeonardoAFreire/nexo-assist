@@ -27,7 +27,7 @@ O desafio mede o sucesso por quatro resultados. Para cada um, a meta abaixo é v
 | Resiliência | Indisponibilidade de alguns segundos do sistema de chamados não derruba a conversa | 100% dos cenários de falha simulada terminam com nova tentativa bem-sucedida ou mensagem clara ao funcionário |
 | Execução | Subir o projeto localmente a partir de um clone limpo | No máximo 4 comandos documentados no README |
 
-Nota sobre a latência: o documento do desafio só pede "respostas em tempo real" e "respostas rápidas e uso consciente do modelo" (sem números). A meta original de p50 ≤ 2 s para o primeiro trecho era uma premissa deste PRD e foi revista na QA de 2026-10-27, com a aprovação do usuário, para as três medidas acima. Os valores medidos com o modelo real (Luna) foram: aceite p50 de 51 ms; primeiro passo p50 de 2,9 s e p90 de 3,7 s; primeiro texto p50 de 4,5 s e p95 de 8,1 s.
+Nota sobre a latência: o documento do desafio só pede "respostas em tempo real" e "respostas rápidas e uso consciente do modelo" (sem números). A meta original de p50 ≤ 2 s para o primeiro trecho era uma premissa deste PRD e foi revista na QA de 2026-10-27, com a aprovação do usuário, para as três medidas acima. Os valores medidos com o modelo real (Luna) foram: aceite p50 de 51 ms; primeiro passo p50 de 2,9 s e p90 de 3,7 s; primeiro texto p50 de 4,6 s e p95 de 9,9 s.
 
 Meta de negócio: entregar um produto que atenda aos critérios de avaliação do desafio (qualidade das decisões, condução da conversa, transparência, interface fiel ao protótipo, arquitetura e boas práticas, clareza do README) e o diferencial de deploy.
 
