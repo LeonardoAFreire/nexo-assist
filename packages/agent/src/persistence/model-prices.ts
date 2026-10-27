@@ -6,6 +6,7 @@ export const MODEL_PRICES: Readonly<Record<string, TokenPricing>> = {
   'qwen/qwen3.8-flash': { inputPerMillionUsd: 0.15, outputPerMillionUsd: 0.47 },
   'qwen/qwen3.7-flash': { inputPerMillionUsd: 0.03, outputPerMillionUsd: 0.13 },
   'z-ai/glm-5.3-flash': { inputPerMillionUsd: 0.15, outputPerMillionUsd: 0.5 },
+  'google/gemini-2.5-flash-lite': { inputPerMillionUsd: 0.1, outputPerMillionUsd: 0.4 },
   'google/gemini-2.5-flash': { inputPerMillionUsd: 0.3, outputPerMillionUsd: 2.5 },
   'openai/gpt-4o-mini': { inputPerMillionUsd: 0.15, outputPerMillionUsd: 0.6 },
   'openai/gpt-4o': { inputPerMillionUsd: 2.5, outputPerMillionUsd: 10 },
