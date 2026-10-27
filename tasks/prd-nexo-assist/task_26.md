@@ -29,11 +29,13 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 26.1 Runner dos evals e os critérios de pontuação.
-- [ ] 26.2 Cenários com gabarito.
-- [ ] 26.3 Script `report`.
+- [x] 26.1 Runner dos evals e os critérios de pontuação.
+- [x] 26.2 Cenários com gabarito.
+- [x] 26.3 Script `report`.
 - [ ] 26.4 Rodar com 2 ou 3 modelos candidatos, escolher e registrar os padrões no `.env.example`.
 - [ ] 26.5 Ajustar prompts e descrições das tools onde os evals falharem, sem mover regras do código para o prompt.
+
+> **Pendente (aguarda `OPENROUTER_API_KEY`):** as subtarefas 26.4 e 26.5 exigem o modelo real e não foram feitas. O runner, os cenários e o `report` (26.1 a 26.3) foram validados sem chave com `--dry-run` (roteiros de ensaio) e com testes unitários. Para concluir: preencher a chave no `.env`, rodar `pnpm --filter @nexo/agent eval --model <modelo> --runs 3` com 2 ou 3 modelos candidatos, escolher `LLM_MODEL` e `LLM_ROUTER_MODEL`, registrar os padrões no `.env.example`, ajustar prompts onde os critérios falharem e publicar o resultado no README (CA-40).
 
 ## Detalhes de implementação
 
