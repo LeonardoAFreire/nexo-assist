@@ -32,11 +32,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 15.1 `Conversation` (máquina de estados) e as portas `ConversationRepository`, `MessageRepository`, `PendingActionRepository` e `SessionUsageRepository`, com fakes em memória.
-- [ ] 15.2 `MessageAllowance`.
-- [ ] 15.3 `ConfirmationMatcher`, `CancellationMatcher` e `QuickReplyResolver`.
-- [ ] 15.4 `HandoffPolicy`.
-- [ ] 15.5 `PendingActions`, `EditPendingAction`, `ConfirmPendingAction` e o cancelamento.
+- [x] 15.1 `Conversation` (máquina de estados) e as portas `ConversationRepository`, `MessageRepository`, `PendingActionRepository` e `SessionUsageRepository`, com fakes em memória.
+- [x] 15.2 `MessageAllowance`.
+- [x] 15.3 `ConfirmationMatcher`, `CancellationMatcher` e `QuickReplyResolver`.
+- [x] 15.4 `HandoffPolicy`.
+- [x] 15.5 `PendingActions`, `EditPendingAction`, `ConfirmPendingAction` e o cancelamento.
 
 ## Detalhes de implementação
 
@@ -63,13 +63,13 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] TU-09 — reconhece frases afirmativas como confirmação e recusa respostas ambíguas.
-- [ ] TU-10 — só confirma uma ação pendente e substitui a anterior ao propor outra.
-- [ ] TU-11 — recalcula prioridade e prazo ao editar afetados ou categoria do rascunho.
-- [ ] TU-12 — aplica as transições de estado da conversa.
-- [ ] TU-14 — aceita a 30ª mensagem da sessão e recusa a 31ª.
-- [ ] TU-15 — define nível e prazo de contato da transferência pelo motivo.
-- [ ] TU-26 — converte dígito em opção rápida quando há opções abertas.
+- [x] TU-09 — reconhece frases afirmativas como confirmação e recusa respostas ambíguas.
+- [x] TU-10 — só confirma uma ação pendente e substitui a anterior ao propor outra.
+- [x] TU-11 — recalcula prioridade e prazo ao editar afetados ou categoria do rascunho.
+- [x] TU-12 — aplica as transições de estado da conversa.
+- [x] TU-14 — aceita a 30ª mensagem da sessão e recusa a 31ª.
+- [x] TU-15 — define nível e prazo de contato da transferência pelo motivo.
+- [x] TU-26 — converte dígito em opção rápida quando há opções abertas.
 
 ## Arquivos relevantes
 
