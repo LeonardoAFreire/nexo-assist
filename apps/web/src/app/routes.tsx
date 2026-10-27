@@ -4,7 +4,6 @@ import { ChatPage } from '@/modules/chat';
 import { LoginPage, ProfilePage } from '@/modules/identity';
 import { AppShell } from './app-shell';
 import { ConsoleRoute } from './console-route';
-import { PlaceholderPage } from './placeholder-page';
 import { RequireRole } from './require-role';
 
 export const appRoutes: RouteObject[] = [
