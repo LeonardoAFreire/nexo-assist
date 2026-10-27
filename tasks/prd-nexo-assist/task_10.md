@@ -30,10 +30,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 10.1 Schema `knowledge.articles` com `search_vector` gerada e índice GIN, com a migration.
-- [ ] 10.2 Seed dos 8 artigos.
-- [ ] 10.3 `SearchArticles` e `KnowledgeService`.
-- [ ] 10.4 `KnowledgeModule` `@Global()` com o token `KNOWLEDGE_API`.
+- [x] 10.1 Schema `knowledge.articles` com `search_vector` gerada e índice GIN, com a migration.
+- [x] 10.2 Seed dos 8 artigos.
+- [x] 10.3 `SearchArticles` e `KnowledgeService`.
+- [x] 10.4 `KnowledgeModule` `@Global()` com o token `KNOWLEDGE_API`.
 
 ## Detalhes de implementação
 
@@ -50,8 +50,8 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-18 — encontra o artigo de horário pela busca em português.
-- [ ] "VPN erro 809" devolve `vpn-erro-809` com `conditions` preenchido.
+- [x] TI-18 — encontra o artigo de horário pela busca em português.
+- [x] "VPN erro 809" devolve `vpn-erro-809` com `conditions` preenchido.
 
 ## Arquivos relevantes
 
