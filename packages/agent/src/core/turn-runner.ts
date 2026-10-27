@@ -8,6 +8,7 @@ import type { Clock } from './clock.js';
 import { ContextBuilder } from './context-builder.js';
 import { BUDGET_DEGRADATION, type Degradation, toDegradation } from './degradation.js';
 import { HANDOFF_TEXT, requestHandoff } from './fixed-replies.js';
+import { wasImpactAsked } from './impact-history.js';
 import type { LlmClient, LlmMessage } from './llm-client.js';
 import { PromptCatalog } from './prompt-catalog.js';
 import { ResponseLoop } from './response-loop.js';
@@ -69,7 +70,8 @@ export class TurnRunner {
       return;
     }
     const degradation = await this.respond(route, messages, { turn, signal: input.signal });
-    await this.finisher.finish(turn, { understanding, degradation });
+    const impactAsked = wasImpactAsked(input.history);
+    await this.finisher.finish(turn, { understanding, degradation, impactAsked });
   }
 
   private async understand(messages: LlmMessage[], turn: TurnSession): Promise<Understanding> {

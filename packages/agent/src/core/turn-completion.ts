@@ -7,6 +7,7 @@ import type { TurnSession } from './turn-session.js';
 export type CompletionInput = {
   understanding: Understanding;
   degradation: Degradation | null;
+  impactAsked?: boolean;
 };
 
 export function buildDecision(turn: TurnSession, input: CompletionInput): AgentDecision {

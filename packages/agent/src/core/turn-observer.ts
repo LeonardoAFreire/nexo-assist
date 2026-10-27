@@ -9,6 +9,8 @@ export class TurnObserver {
   overdueShown = false;
   quickOptionsShown = false;
   criticalDraft: TicketDraft | null = null;
+  private proposed = false;
+  private resolvedByContent = false;
 
   watch(event: AgentTurnEvent, elapsedMs: number): void {
     if (event.type === 'text-delta') {
@@ -18,14 +20,27 @@ export class TurnObserver {
     if (event.type === 'handoff-requested') {
       this.handoff = event;
     }
-    if (event.type === 'part' && event.part.type === 'ticket_card' && event.part.ticket.overdue) {
-      this.overdueShown = true;
+    if (event.type === 'part') {
+      this.watchPart(event.part);
     }
-    if (event.type === 'part' && event.part.type === 'quick_options') {
-      this.quickOptionsShown = true;
+    if (event.type === 'proposal') {
+      this.proposed = true;
+      this.criticalDraft = event.draft?.priority === 'critical' ? event.draft : this.criticalDraft;
     }
-    if (event.type === 'proposal' && event.draft?.priority === 'critical') {
-      this.criticalDraft = event.draft;
-    }
+  }
+
+  hasNextStep(): boolean {
+    return (
+      this.proposed || this.resolvedByContent || this.quickOptionsShown || this.handoff !== null
+    );
+  }
+
+  private watchPart(part: Extract<AgentTurnEvent, { type: 'part' }>['part']): void {
+    this.quickOptionsShown ||= part.type === 'quick_options';
+    this.overdueShown ||= part.type === 'ticket_card' && part.ticket.overdue;
+    this.resolvedByContent ||=
+      part.type === 'ticket_card' ||
+      part.type === 'ticket_selection' ||
+      (part.type === 'article_citation' && part.applies);
   }
 }

@@ -22,8 +22,28 @@ const OVERDUE_OPTIONS: QuickOption[] = [
   { id: 'no-thanks', label: 'Não, obrigado' },
 ];
 
+const IMPACT_QUESTION = 'Quem está sendo afetado por esse problema?';
+const IMPACT_STEP_LABEL = 'fez uma pergunta';
+const IMPACT_OPTIONS: QuickOption[] = [
+  { id: 'only_me', label: 'Só eu' },
+  { id: 'my_team', label: 'Minha equipe' },
+  { id: 'whole_company', label: 'Toda a empresa' },
+  { id: 'unknown', label: 'Não sei' },
+];
+
 function offerOptions(turn: TurnSession, question: string, options: QuickOption[]): void {
   turn.emit({ type: 'part', part: { type: 'quick_options', question, options, answered: false } });
+}
+
+export function askImpact(turn: TurnSession): void {
+  const label = IMPACT_STEP_LABEL;
+  turn.recorder.note(turn.context, {
+    kind: 'asked_question',
+    label,
+    result: IMPACT_QUESTION,
+    status: 'ok',
+  });
+  offerOptions(turn, IMPACT_QUESTION, IMPACT_OPTIONS);
 }
 
 export function replyDegraded(turn: TurnSession): void {
