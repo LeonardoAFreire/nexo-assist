@@ -21,8 +21,8 @@ export const anaTickets: readonly SeedTicketSpec[] = [
   {
     number: 'REQ-10442',
     type: 'request',
-    title: 'Segundo monitor para a mesa do Financeiro',
-    description: 'Solicitação de um segundo monitor para a rotina de conciliação financeira.',
+    title: 'Segundo monitor para home office',
+    description: 'Solicitação de um segundo monitor para trabalhar em home office.',
     category: 'hardware',
     priority: 'low',
     affected: 'only_me',

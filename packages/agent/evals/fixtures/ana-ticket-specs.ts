@@ -18,8 +18,8 @@ export const anaTicketSpecs: EvalTicketSpec[] = [
   },
   {
     number: 'REQ-10442',
-    title: 'Segundo monitor para a mesa do Financeiro',
-    description: 'Solicitação de um segundo monitor para a rotina de conciliação financeira.',
+    title: 'Segundo monitor para home office',
+    description: 'Solicitação de um segundo monitor para trabalhar em home office.',
     category: 'hardware',
     priority: 'low',
     status: 'approved',
