@@ -66,8 +66,9 @@ export async function* readResponseStream(
       if (chunk.kind === 'tool-call') {
         separator.noteToolCall();
       }
-      if (chunk.kind === 'text') {
-        yield { type: 'text-delta', delta: separator.apply(chunk.delta) };
+      const delta = chunk.kind === 'text' ? separator.apply(chunk.delta) : '';
+      if (delta !== '') {
+        yield { type: 'text-delta', delta };
       }
       next = await nextChunk(iterator, guards);
     }

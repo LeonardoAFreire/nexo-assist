@@ -54,4 +54,41 @@ describe('readResponseStream', () => {
     );
     expect(deltas.join('')).toBe('Gostaria de falar com um analista?\n\nAguardo sua resposta.');
   });
+
+  it('descarta o espaço em branco que o modelo emite sozinho antes e entre as tools', async () => {
+    const deltas = await deltasOf(
+      textChunk('Vou verificar na central de ajuda.'),
+      { type: 'tool-call', payload: {} },
+      textChunk('\n\n'),
+      { type: 'tool-call', payload: {} },
+      textChunk('\n\nO service desk atende'),
+      textChunk(' das 8h às 18h.'),
+    );
+    expect(deltas.join('')).toBe(
+      'Vou verificar na central de ajuda.\n\nO service desk atende das 8h às 18h.',
+    );
+  });
+
+  it('não começa a resposta com espaço em branco emitido antes da primeira tool', async () => {
+    const deltas = await deltasOf(
+      textChunk('\n\n'),
+      { type: 'tool-call', payload: {} },
+      textChunk('\n\nO service desk atende'),
+    );
+    expect(deltas.join('')).toBe('O service desk atende');
+  });
+
+  it('não soma a quebra do separador à que o próprio modelo deixou no fim do texto', async () => {
+    const deltas = await deltasOf(
+      textChunk('Vou verificar se há chamado.\n\n'),
+      { type: 'tool-call', payload: {} },
+      textChunk('Encontrei seu problema.'),
+    );
+    expect(deltas.join('')).toBe('Vou verificar se há chamado.\n\nEncontrei seu problema.');
+  });
+
+  it('preserva o espaço entre palavras e as quebras do próprio texto', async () => {
+    const deltas = await deltasOf(textChunk('Olá'), textChunk(' '), textChunk('Ana.\n\nTudo bem?'));
+    expect(deltas.join('')).toBe('Olá Ana.\n\nTudo bem?');
+  });
 });
