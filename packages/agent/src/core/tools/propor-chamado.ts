@@ -86,7 +86,7 @@ export function createProporChamadoTool(
   return {
     name: 'propor_chamado',
     description:
-      'Propõe um rascunho de chamado para o funcionário confirmar; nada é criado antes da confirmação. Se existir chamado aberto equivalente, devolve duplicate_found sem propor; só informe notDuplicateOf com números desses chamados quando o problema for de fato outro.',
+      'Propõe um rascunho de chamado para o funcionário confirmar; nada é criado antes da confirmação, e a prioridade e o prazo são calculados aqui. Use quando já souber quem é afetado. Em priorityFacts, blocksWork, sameDayCommitment e hasWorkaround só são verdadeiros quando o funcionário disse isso; não deduza do tipo de problema. Se existir chamado aberto equivalente, devolve duplicate_found sem propor: nesse caso use propor_complemento nesse chamado. Só informe notDuplicateOf com números desses chamados quando o problema for de fato outro.',
     stepKind: 'built_draft',
     failureLabel: STEP_LABEL,
     inputSchema,

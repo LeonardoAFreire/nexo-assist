@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import type { AgentTurnEvent, AgentTurnInput } from '@nexo/contracts';
 import type { AgentRun } from '../src/core/agent-run.js';
-import { InMemoryKnowledgeApi } from '../src/persistence/scripted/in-memory-knowledge-api.js';
 import { type AgentProvider, type EvalAgent } from './compose-agent.js';
 import { universalCriteria } from './criteria/index.js';
 import { evalArticles } from './fixtures/articles.js';
 import { buildEvalWorld, type EvalRequester } from './fixtures/build-eval-world.js';
+import { EvalKnowledgeApi } from './fixtures/eval-knowledge-api.js';
 import { EvalTicketsApi } from './fixtures/eval-tickets-api.js';
 import { observeTurn } from './observe-turn.js';
 import { allPassed, scoreObservation } from './score-observation.js';
@@ -55,7 +55,7 @@ export async function runScenarioOnce(
 ): Promise<RunResult> {
   const { requester, owned, world } = buildEvalWorld(scenario.requester, new Date());
   const tickets = new EvalTicketsApi(owned, new Date());
-  const agent = provider(scenario, { tickets, knowledge: new InMemoryKnowledgeApi(evalArticles) });
+  const agent = provider(scenario, { tickets, knowledge: new EvalKnowledgeApi(evalArticles) });
   const events = await collectEvents(agent, buildTurnInput(scenario, requester));
   const observation = observeTurn(events, tickets.writeCalls);
   const criteria = scoreObservation(

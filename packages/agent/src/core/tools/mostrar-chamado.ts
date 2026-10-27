@@ -41,7 +41,7 @@ export function createMostrarChamadoTool(
   return {
     name: 'mostrar_chamado',
     description:
-      'Mostra ao funcionário o cartão de um dos próprios chamados, com status, prazo e se está vencido.',
+      'Mostra ao funcionário o cartão de um dos próprios chamados, com status, prazo e se está vencido. Use quando ele citar o número ou se referir a um chamado já mencionado na conversa. Se devolver overdue verdadeiro, avise que o prazo venceu e ofereça falar com um analista usando perguntar_opcoes.',
     stepKind: 'viewed_ticket',
     failureLabel: 'mostrou um chamado',
     inputSchema,
