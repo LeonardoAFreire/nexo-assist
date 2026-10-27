@@ -6,7 +6,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 
 - [ ] 1.0 Ambiente local, configuração e base de testes
 - [ ] 2.0 `shared/database`: Drizzle, migrations, PGlite e health check
-- [ ] 3.0 `shared/http` e `shared/resilience`: códigos de erro, SSE e novas tentativas
+- [x] 3.0 `shared/http` e `shared/resilience`: códigos de erro, SSE e novas tentativas
 - [ ] 4.0 `shared/auth`: sessão JWT, guards e cookie
 - [ ] 5.0 Contratos em `@nexo/contracts`: modelos, tokens, eventos e erros
 - [ ] 6.0 Domínio `identity`: login, sessão, perfil e seed
