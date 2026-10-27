@@ -2,7 +2,7 @@
 
 Agent de atendimento do service desk de TI da Nexo. O funcionário conversa no chat; o agent consulta a central de ajuda e os chamados, abre ou atualiza chamados **depois da confirmação do funcionário** e transfere a conversa para um analista quando precisa.
 
-Este repositório é a solução do desafio técnico (documento-fonte em `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.pdf`, protótipo visual em `docs/nexo/nexo.pen`). O planejamento do desenvolvimento (PRD, TechSpec e tarefas) está em `tasks/prd-nexo-assist/`.
+Este repositório é a solução do desafio técnico (documento-fonte em `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.md`, transcrito do PDF original, protótipo visual em `docs/nexo/nexo.pen`). O planejamento do desenvolvimento (PRD, TechSpec e tarefas) está em `tasks/prd-nexo-assist/`.
 
 ## Como rodar
 
@@ -107,7 +107,7 @@ Princípios que valem mais que o prompt:
 
 ### Testes
 
-`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **690 testes, todos passando**.
+`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **691 testes, todos passando**.
 
 | Pacote            | Testes |
 | ----------------- | ------ |
@@ -118,7 +118,7 @@ Princípios que valem mais que o prompt:
 | `@nexo/knowledge` | 22     |
 | `@nexo/agent`     | 193    |
 | `@nexo/chat`      | 225    |
-| `@nexo/monolith`  | 9      |
+| `@nexo/monolith`  | 10     |
 | `@nexo/web`       | 56     |
 
 `pnpm e2e` roda três jornadas no navegador com Playwright (abertura de chamado, chamado de terceiro e transferência para o analista), contra um banco `nexo_e2e` próprio e o modelo roteirizado. É preciso ter o Postgres do `docker compose` no ar e instalar o Chromium uma vez (`pnpm --filter @nexo/e2e exec playwright install chromium`).
@@ -137,7 +137,24 @@ Metas: confirmação antes de escrever, privacidade, escopo e transparência val
 
 <!-- evals:start -->
 
-Resultados dos evals em atualização.
+Rodada final, com `deepseek/deepseek-v4-flash-0731` como modelo de resposta e como roteador: 18 cenários × 2 execuções (36 turnos), **34 aprovados e nenhuma falha de disponibilidade**.
+
+| Meta                          | Resultado  | Meta do PRD |
+| ----------------------------- | ---------- | ----------- |
+| Resolução sem fila            | 100% (8/8) | 90%         |
+| Chamados bem abertos          | 50% (2/4)  | 90%         |
+| Sem duplicidade               | 100% (8/8) | 100%        |
+| Confirmação antes de escrever | 100%       | 100%        |
+| Encaminhamento certo          | 100% (8/8) | 100%        |
+| Escopo                        | 100% (4/4) | 100%        |
+| Privacidade                   | 100% (4/4) | 100%        |
+| Transparência                 | 100%       | 100%        |
+
+- **Latência do primeiro trecho:** p50 de 2,9 s (meta de 2 s, **acima**) e p95 de 3,9 s (meta de 5 s, dentro).
+- **Custo médio por turno:** US$ 0,0013. Para 10 mensagens, a estimativa é de US$ 0,013 (meta de US$ 0,02, dentro).
+- **Abaixo da meta, sem ajuste forçado:** "chamados bem abertos". Em `erro-809-windows-11` o modelo às vezes não pergunta quem é afetado, e em `abertura-coleta-minima` às vezes cita "impede uma pessoa de trabalhar" em vez do compromisso do dia. É variação do modelo, e o critério não foi afrouxado para passar.
+
+Antes dos ajustes de prompt e das tools, o mesmo modelo aprovava 26 de 36 turnos. As causas encontradas foram: a busca da central usada nos evals devolvia artigos errados; `buscar_chamados` não explicava o `scope`, então o modelo abria um chamado novo em vez de reabrir; o modelo usava `perguntar_opcoes` para pedir uma permissão que as tools de proposta já pedem; e a descrição de `consultar_chamado` insinuava que o chamado de terceiro existia. As regras do service desk seguem no código.
 <!-- evals:end -->
 
 ## Escolha do modelo e do OpenRouter
@@ -154,17 +171,18 @@ Na primeira rodada, comparei três candidatos em 18 cenários com 2 execuções 
 | `deepseek/deepseek-v4-flash-0731` | 26/36            |
 | `qwen/qwen3.8-flash`              | 27/36            |
 
-Depois dos ajustes de prompt e de descrição das tools, o DeepSeek 0731 chegou a 2/2 em todos os cenários. Aprendizados da escolha:
+Depois dos ajustes de prompt e de descrição das tools, o DeepSeek 0731 chegou a 34/36 na rodada final (resultados acima). Aprendizados da escolha:
 
 - **Modelos de raciocínio consomem `max_tokens` pensando e devolvem texto vazio.** Por isso o raciocínio é desligado (`reasoning.enabled=false`).
 - O **Gemini 2.5 Flash-Lite foi descartado como roteador**: levou 429 do Google em 11 de 20 chamadas.
-- O roteador, uma chamada sequencial antes das tools, é o principal custo de latência.
+- O roteador, uma chamada sequencial antes das tools, é o principal custo de latência. Com o DeepSeek 0731 nos dois papéis, o primeiro trecho ficou em p50 de 2,9 s, contra cerca de 4 s com roteadores mais lentos.
+- Modelos com poucos provedores sofrem com limite de taxa; a redundância de provedores do OpenRouter pesa mais na escolha do que uns décimos de segundo.
 
 O custo por turno é registrado em `agent.runs`, a partir do usage accounting do OpenRouter ou, na falta dele, de uma tabela de preços por modelo (`model-prices.ts`). Os valores medidos por conversa entram no bloco de resultados acima.
 
 ## Trade-offs
 
-- **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro trecho da resposta chega em torno de **3 a 4 s (p50)**, acima da meta de 2 s do PRD. É um trade-off assumido e registrado.
+- **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro trecho da resposta chega em **p50 de 2,9 s e p95 de 3,9 s**, acima da meta de 2 s do PRD. É um trade-off assumido e registrado.
 - **Postgres com um schema por domínio e Drizzle**, em vez de um banco sem serviço (SQLite): a regra "cada domínio só acessa as próprias tabelas" fica visível no banco e o deploy cabe num Postgres gerenciado. Custa um `docker compose up -d`. Nos testes, PGlite dá Postgres de verdade sem Docker.
 - **SSE em vez de WebSocket:** o tráfego é quase todo servidor para cliente, passa por proxies HTTP comuns e usa o cookie de sessão. O hub de eventos é em memória, então vale para uma instância; a evolução é `LISTEN/NOTIFY`.
 - **Tickets dentro do monólito, como "legado":** o agent só o consome por interface, com decorador resiliente. Virar app dedicada exige apenas trocar o provedor do token por um cliente HTTP.
@@ -222,6 +240,6 @@ docker run --rm -p 3000:3000 \
 - **503 prévio para `budget_exhausted`:** hoje o teto diário vira `turn.failed` depois do aceite da mensagem.
 - **Distinguir 429 e 402 do provedor**, hoje ambos viram `agent_unavailable`.
 - **Logs `warn`** para orçamento atingido e para limite de passos.
-- **Timeline do chat** (linha do tempo de eventos da conversa).
+- **Estabilizar "chamados bem abertos"** (50% nos evals): endurecer a pergunta de impacto e o registro do compromisso do dia no fluxo de abertura.
 - **`pass^k` no relatório dos evals**, para medir consistência entre execuções e não só a média.
 - Hub de eventos distribuído (`LISTEN/NOTIFY`) para mais de uma instância.
