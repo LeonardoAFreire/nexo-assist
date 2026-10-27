@@ -26,7 +26,7 @@ import { RetryEmployeeTurn } from './core/send/retry-employee-turn.js';
 import { SendEmployeeMessage } from './core/send/send-employee-message.js';
 import { GetEmployeeConversation } from './core/timeline/get-employee-conversation.js';
 
-const CHAT_CORE = Symbol('CHAT_CORE');
+export const CHAT_CORE = Symbol('CHAT_CORE');
 
 type CoreDependencies = [
   ConversationRepository,
@@ -73,7 +73,10 @@ const chatCoreProvider: Provider = {
   },
 };
 
-function fromCore<T>(token: new (...args: never[]) => T, pick: (core: ChatCore) => T): Provider {
+export function fromCore<T>(
+  token: new (...args: never[]) => T,
+  pick: (core: ChatCore) => T,
+): Provider {
   return { provide: token, inject: [CHAT_CORE], useFactory: pick };
 }
 

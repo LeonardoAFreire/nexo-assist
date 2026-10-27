@@ -1,6 +1,7 @@
 import type { AgentApi, IdentityApi, TicketsApi } from '@nexo/contracts';
 import type { MessageAllowance } from './allowance/message-allowance.js';
 import type { Clock } from './clock/clock.js';
+import { buildConsoleCore, type ConsoleCore } from './console/console-core.js';
 import type { ConversationRepository } from './conversation/conversation-repository.js';
 import type { ConversationEventsHub } from './events/conversation-events-hub.js';
 import {
@@ -34,7 +35,7 @@ export type ChatCoreDeps = {
   clock: Clock;
 };
 
-export type ChatCore = {
+export type ChatCore = ConsoleCore & {
   getConversation: GetEmployeeConversation;
   sendMessage: SendEmployeeMessage;
   retryTurn: RetryEmployeeTurn;
@@ -66,6 +67,7 @@ export function buildChatCore(deps: ChatCoreDeps): ChatCore {
   const timeline = new TimelineBuilder(deps.actions);
   const edit = new EditPendingAction(deps.actions, deps.tickets);
   return {
+    ...buildConsoleCore(deps, collaborators),
     getConversation: new GetEmployeeConversation({ ...deps, views, timeline }),
     sendMessage: new SendEmployeeMessage(turnDeps),
     retryTurn: new RetryEmployeeTurn(turnDeps),
