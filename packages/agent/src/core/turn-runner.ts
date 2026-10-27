@@ -14,7 +14,7 @@ import { PromptCatalog } from './prompt-catalog.js';
 import { ResponseLoop } from './response-loop.js';
 import { TurnFinisher } from './turn-finisher.js';
 import { TurnPolicy } from './turn-policy.js';
-import type { TurnRoute } from './turn-route.js';
+import type { RespondableRoute } from './turn-route.js';
 import type { TurnSession } from './turn-session.js';
 import { UnderstandingStep } from './understanding-step.js';
 
@@ -25,8 +25,6 @@ export type TurnRunnerDeps = {
   tools: AgentTool[];
   settings: AgentSettings;
 };
-
-type Respondable = Exclude<TurnRoute, { kind: 'handoff' }>;
 
 export class TurnRunner {
   private readonly budget: BudgetGuard;
@@ -69,7 +67,9 @@ export class TurnRunner {
       await this.finisher.finish(turn, { understanding, degradation: null });
       return;
     }
-    const degradation = await this.respond(route, messages, { turn, signal: input.signal });
+    const requireToolFirst = this.policy.requiresToolFirst(understanding);
+    const run = { turn, signal: input.signal, requireToolFirst };
+    const degradation = await this.respond(route, messages, run);
     const impactAsked = wasImpactAsked(input.history);
     await this.finisher.finish(turn, { understanding, degradation, impactAsked });
   }
@@ -81,16 +81,17 @@ export class TurnRunner {
   }
 
   private async respond(
-    route: Respondable,
+    route: RespondableRoute,
     messages: LlmMessage[],
-    run: { turn: TurnSession; signal: AbortSignal },
+    run: { turn: TurnSession; signal: AbortSignal; requireToolFirst: boolean },
   ): Promise<Degradation | null> {
-    const { turn, signal } = run;
+    const { turn, signal, requireToolFirst } = run;
     const tools = this.policy.toolsFor(route, this.deps.tools);
     const input = {
       instructions: this.prompts.response(route),
       messages,
       tools: tools.map((tool) => turn.recorder.wrap(tool)),
+      requireToolFirst,
     };
     const result = await this.loop.run(input, turn.context, signal);
     turn.metrics.add(this.deps.settings.responseModel, result.usage);

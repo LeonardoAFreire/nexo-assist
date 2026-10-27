@@ -22,6 +22,7 @@ export type UnderstandInput = {
 export type RespondInput = UnderstandInput & {
   tools: AgentTool[];
   maxSteps: number;
+  requireToolFirst: boolean;
   context: TurnContext;
   signal: AbortSignal;
 };

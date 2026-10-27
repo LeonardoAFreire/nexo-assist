@@ -11,6 +11,7 @@ export type LoopInput = {
   instructions: string;
   messages: LlmMessage[];
   tools: AgentTool[];
+  requireToolFirst: boolean;
 };
 
 export type LoopResult = {
@@ -24,11 +25,12 @@ export class ResponseLoop {
   async run(input: LoopInput, context: TurnContext, signal: AbortSignal): Promise<LoopResult> {
     const guard = new ToolGuard(MAX_STEPS_PER_TURN);
     const tools = input.tools.map((tool) => guard.wrap(tool));
-    const { instructions, messages } = input;
+    const { instructions, messages, requireToolFirst } = input;
     const request = {
       instructions,
       messages,
       tools,
+      requireToolFirst,
       maxSteps: MAX_STEPS_PER_TURN,
       context,
       signal,

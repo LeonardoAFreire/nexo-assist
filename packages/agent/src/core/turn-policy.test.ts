@@ -35,4 +35,17 @@ describe('TurnPolicy', () => {
     const understanding = makeUnderstanding({ intent: 'analyst_request', confidence: 0.2 });
     expect(policy.decide(understanding)).toEqual({ kind: 'handoff', reason: 'requested' });
   });
+
+  it('exige uma tool no primeiro passo quando a intenção depende de dados do sistema', () => {
+    const intents = ['question', 'ticket_status', 'ticket_complement', 'ticket_open'] as const;
+    for (const intent of intents) {
+      expect(policy.requiresToolFirst(makeUnderstanding({ intent }))).toBe(true);
+    }
+  });
+
+  it('não exige tool em agradecimento, assunto solto ou fora de TI', () => {
+    for (const intent of ['closing', 'other', 'out_of_scope'] as const) {
+      expect(policy.requiresToolFirst(makeUnderstanding({ intent }))).toBe(false);
+    }
+  });
 });

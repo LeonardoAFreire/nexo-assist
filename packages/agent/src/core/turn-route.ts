@@ -6,3 +6,5 @@ export type TurnRoute =
   | { kind: 'handoff'; reason: RouteHandoffReason }
   | { kind: 'redirect' }
   | { kind: 'respond' };
+
+export type RespondableRoute = Exclude<TurnRoute, { kind: 'handoff' }>;

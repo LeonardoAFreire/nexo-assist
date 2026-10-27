@@ -53,6 +53,7 @@ function makeRequest(tools: AgentTool[] = []): RespondInput {
     messages,
     tools,
     maxSteps: MAX_STEPS,
+    requireToolFirst: false,
     context,
     signal: new AbortController().signal,
   };
