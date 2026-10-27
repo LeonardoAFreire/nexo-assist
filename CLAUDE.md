@@ -1,6 +1,6 @@
 # Nexo Assist
 
-Agent de atendimento do service desk de TI da Nexo: o funcionário conversa no chat, o agent consulta a central de ajuda e os chamados, abre ou atualiza chamados com confirmação e transfere para um analista quando precisa. Documento-fonte: `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.pdf`. Protótipo visual: `docs/nexo/nexo.pen`.
+Agent de atendimento do service desk de TI da Nexo: o funcionário conversa no chat, o agent consulta a central de ajuda e os chamados, abre ou atualiza chamados com confirmação e transfere para um analista quando precisa. Documento-fonte: `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.md` (transcrição do PDF original, `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.pdf`; leia o `.md`). Protótipo visual: `docs/nexo/nexo.pen`.
 
 ## Stack
 

@@ -1,6 +1,6 @@
 # Documento de Requisitos do Produto (PRD): Nexo Assist
 
-Fontes: `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.pdf` (desafio, Anexos A, B e C) e `docs/nexo/nexo.pen` (protótipo com 6 telas). Itens marcados com **[premissa]** não estão definidos nas fontes e foram decididos para fechar o escopo; podem ser revistos na TechSpec.
+Fontes: `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.md` (transcrição do PDF do desafio, com os Anexos A, B e C) e `docs/nexo/nexo.pen` (protótipo com 6 telas). Itens marcados com **[premissa]** não estão definidos nas fontes e foram decididos para fechar o escopo; podem ser revistos na TechSpec.
 
 ## Visão geral
 
