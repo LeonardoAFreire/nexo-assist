@@ -1,5 +1,9 @@
 import type { ChatMessage } from '@nexo/contracts';
-import type { ListRecentMessagesInput, MessageRepository } from './message-repository.js';
+import type {
+  ListRecentByConversationsInput,
+  ListRecentMessagesInput,
+  MessageRepository,
+} from './message-repository.js';
 
 export class InMemoryMessageRepository implements MessageRepository {
   private readonly stored = new Map<string, ChatMessage>();
@@ -13,9 +17,17 @@ export class InMemoryMessageRepository implements MessageRepository {
   }
 
   async listRecent(input: ListRecentMessagesInput): Promise<ChatMessage[]> {
-    const ofConversation = [...this.stored.values()]
-      .filter((message) => message.conversationId === input.conversationId)
+    return this.recentOf([input.conversationId], input.limit);
+  }
+
+  async listRecentByConversations(input: ListRecentByConversationsInput): Promise<ChatMessage[]> {
+    return this.recentOf(input.conversationIds, input.limit);
+  }
+
+  private recentOf(conversationIds: string[], limit: number): ChatMessage[] {
+    const selected = [...this.stored.values()]
+      .filter((message) => conversationIds.includes(message.conversationId))
       .sort((first, second) => first.createdAt.localeCompare(second.createdAt));
-    return ofConversation.slice(-input.limit);
+    return selected.slice(-limit);
   }
 }

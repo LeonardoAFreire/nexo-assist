@@ -65,6 +65,10 @@ export class Conversation {
     return this.moveTo('closed', { resolution: 'agent', closedAt });
   }
 
+  withChanges(changes: Partial<ConversationProps>): Conversation {
+    return new Conversation({ ...this.props, ...changes });
+  }
+
   private moveTo(next: ConversationState, changes: Partial<ConversationProps>): Conversation {
     if (!ALLOWED_TRANSITIONS[this.props.state].includes(next)) {
       throw new ChatRuleError(
