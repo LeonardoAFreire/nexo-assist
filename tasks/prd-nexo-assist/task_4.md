@@ -30,11 +30,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 4.1 Instalar `jose` e `cookie-parser` nos pacotes que os usam.
-- [ ] 4.2 Implementar `SessionTokenService` e as opções do cookie.
-- [ ] 4.3 Implementar `SessionGuard`, `@CurrentSession()`, `@Roles()` e `OriginGuard`.
-- [ ] 4.4 Ajustar `apps/monolith/src/main.ts`: `cookie-parser`, limite de corpo de 32 kB e CORS com credenciais.
-- [ ] 4.5 Exportar o subpath `@nexo/shared/auth`.
+- [x] 4.1 Instalar `jose` e `cookie-parser` nos pacotes que os usam.
+- [x] 4.2 Implementar `SessionTokenService` e as opções do cookie.
+- [x] 4.3 Implementar `SessionGuard`, `@CurrentSession()`, `@Roles()` e `OriginGuard`.
+- [x] 4.4 Ajustar `apps/monolith/src/main.ts`: `cookie-parser`, limite de corpo de 32 kB e CORS com credenciais.
+- [x] 4.5 Exportar o subpath `@nexo/shared/auth`.
 
 ## Detalhes de implementação
 
@@ -50,8 +50,8 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] `SessionTokenService` assina e verifica; token expirado ou com assinatura inválida é recusado.
-- [ ] `SessionGuard`, `@Roles()` e `OriginGuard`: 401 sem sessão, 403 com papel errado, recusa de origem diferente de `WEB_ORIGIN` em rota que escreve.
+- [x] `SessionTokenService` assina e verifica; token expirado ou com assinatura inválida é recusado.
+- [x] `SessionGuard`, `@Roles()` e `OriginGuard`: 401 sem sessão, 403 com papel errado, recusa de origem diferente de `WEB_ORIGIN` em rota que escreve.
 
 ## Arquivos relevantes
 
