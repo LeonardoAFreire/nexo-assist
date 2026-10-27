@@ -5,6 +5,10 @@ export type TurnError = {
   retryable: boolean;
 };
 
+export type RejectedText = {
+  text: string;
+};
+
 export type TurnState = {
   status: 'idle' | 'streaming' | 'failed';
   pendingText: string | null;
@@ -13,6 +17,7 @@ export type TurnState = {
   text: string;
   parts: MessagePart[];
   error: TurnError | null;
+  rejection: RejectedText | null;
 };
 
 export type TurnAction =
@@ -29,4 +34,5 @@ export const idleTurn: TurnState = {
   text: '',
   parts: [],
   error: null,
+  rejection: null,
 };

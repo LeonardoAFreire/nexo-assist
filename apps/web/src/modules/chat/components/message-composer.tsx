@@ -2,15 +2,18 @@ import { MESSAGE_TEXT_MAX_LENGTH } from '@nexo/contracts';
 import { SendHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useComposerDraft } from '../hooks/use-composer-draft.js';
+import type { RejectedText } from '../hooks/turn-state.js';
 
 type MessageComposerProps = {
   disabled: boolean;
   placeholder: string;
+  rejection: RejectedText | null;
   onSend: (text: string) => void;
 };
 
-export function MessageComposer({ disabled, placeholder, onSend }: MessageComposerProps) {
-  const draft = useComposerDraft(disabled, onSend);
+export function MessageComposer(props: MessageComposerProps) {
+  const { disabled, placeholder, rejection, onSend } = props;
+  const draft = useComposerDraft(disabled, onSend, rejection);
   return (
     <form
       onSubmit={draft.submit}

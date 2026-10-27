@@ -23,7 +23,8 @@ function applyEvent(state: TurnState, event: ChatStreamEvent): TurnState {
 
 function interrupt(state: TurnState, message: string): TurnState {
   const error = { message, retryable: state.accepted };
-  return { ...state, status: 'failed', pendingText: null, error };
+  const rejection = state.accepted || !state.pendingText ? null : { text: state.pendingText };
+  return { ...state, status: 'failed', pendingText: null, error, rejection };
 }
 
 export function turnReducer(state: TurnState, action: TurnAction): TurnState {

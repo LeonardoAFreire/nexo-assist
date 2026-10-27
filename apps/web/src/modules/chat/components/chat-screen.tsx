@@ -18,6 +18,7 @@ export function ChatScreen({ view }: ChatScreenProps) {
       <ChatFooter
         usage={view.usage}
         busy={busy}
+        rejection={turn.rejection}
         handoffPending={handoff.isPending}
         handoffError={handoff.error?.message ?? null}
         onSend={send}

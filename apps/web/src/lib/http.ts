@@ -14,6 +14,12 @@ export function setUnauthorizedHandler(handler: UnauthorizedHandler | undefined)
   unauthorizedHandler = handler;
 }
 
+export function notifyIfUnauthenticated(error: ApiRequestError): void {
+  if (error.code === UNAUTHENTICATED_CODE) {
+    unauthorizedHandler?.();
+  }
+}
+
 function toApiRequestError(error: AxiosError): ApiRequestError {
   const parsed = apiErrorSchema.safeParse(error.response?.data);
   const status = error.response?.status ?? UNAVAILABLE_STATUS;
@@ -34,8 +40,6 @@ http.interceptors.response.use(undefined, (error: unknown) => {
     return Promise.reject(error);
   }
   const requestError = toApiRequestError(error);
-  if (requestError.code === UNAUTHENTICATED_CODE) {
-    unauthorizedHandler?.();
-  }
+  notifyIfUnauthenticated(requestError);
   return Promise.reject(requestError);
 });
