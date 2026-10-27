@@ -18,6 +18,7 @@ As regras em `.claude/rules/` são curtas, sempre válidas e carregadas automati
 - `folder-structure.md`: estrutura de pastas do backend, frontend e testes.
 - `code-standards.md` e `javascript-typescript.md`: estilo de código e TypeScript.
 - `security-privacy.md`: segredos e privacidade dos chamados.
+- `evals.md`: como rodar e escrever os evals do agent (custo, critérios, metas, escolha de modelo).
 - `git-commits.md`: Conventional Commits.
 
 Invariantes de Node:

@@ -1,6 +1,6 @@
 ---
 name: agent-llm
-description: Padrões para implementar e revisar o agent de atendimento do Nexo Assist (packages/agent) e qualquer uso do modelo de linguagem. Cobre a porta LlmClient, o laço limitado de passos, tools com schema zod, onde ficam as regras do service desk, custo e latência (janela de contexto, escolha de modelo, prompt caching, orçamento de tokens, streaming), transparência dos passos e tratamento de falhas do modelo e do sistema legado. Use ao criar ou alterar o agent, prompts, tools, o cliente do provedor, o orçamento de tokens, a transferência para o analista, a explicação "o que o agent fez e por quê", ou ao decidir se uma regra vai no prompt ou no código.
+description: Padrões para implementar e revisar o agent de atendimento do Nexo Assist (packages/agent) e qualquer uso do modelo de linguagem. Cobre a porta LlmClient, o laço limitado de passos, tools com schema zod, onde ficam as regras do service desk, custo e latência (janela de contexto, escolha de modelo e provedor, raciocínio dos modelos, prompt caching, orçamento de tokens, streaming), transparência dos passos e tratamento de falhas do modelo e do sistema legado. Use ao criar ou alterar o agent, prompts, tools, o cliente do provedor, o orçamento de tokens, a transferência para o analista, a explicação "o que o agent fez e por quê", ou ao decidir se uma regra vai no prompt ou no código.
 ---
 
 # Agent e uso do modelo
@@ -24,6 +24,16 @@ O PRD pede respostas rápidas, uso consciente do modelo e atenção ao custo por
 - Defina orçamento de tokens por conversa e por mensagem. Ao atingir o limite, o agent informa e transfere em vez de continuar.
 - Responda por streaming para reduzir a latência percebida.
 - Registre por conversa: modelo, tokens de entrada e saída, passos, tools chamadas e duração, sem conteúdo sensível. É a base da explicação "o que o agent fez e por quê" e da análise de custo.
+
+## Escolha de modelo e provedor
+
+- Compare candidatos com os evals (`.claude/rules/evals.md`) por três números: taxa de aprovação, latência do primeiro trecho (p50 e p95) e custo por turno. Registre a escolha e o motivo no README.
+- Modelos de raciocínio (DeepSeek V4, Qwen 3.x, Gemini 3.x) pensam consumindo `max_tokens` e podem devolver conteúdo vazio com `finish_reason: length`. Consulte `reasoning.mandatory` no catálogo do OpenRouter: se não for obrigatório, envie `reasoning.enabled=false` (já feito em `llm-client.factory.ts`); se for, evite o modelo para roteamento e respostas curtas.
+- O catálogo padrão (`/api/v1/models`) esconde modelos que não geram texto, como os de decisão do Jev. Use `?output_modalities=all` para listá-los.
+- Meça a latência por etapa. O roteador (`understand`) é uma chamada sequencial antes de qualquer tool, e modelos baratos geram cerca de 60 tokens por segundo, então cada 100 tokens de saída custam perto de 1,5 s. Mantenha a saída do roteador curta, use um modelo rápido nele (hoje `google/gemini-2.5-flash-lite`) e deixe o modelo maior só para a resposta.
+- Preço dinâmico (`-1` no catálogo, como o `jev-router`) impede o controle de orçamento por token. Prefira modelos com preço fixo e registre o preço em `model-prices.ts`.
+- Modelos de decisão estruturada (Jev) classificam em cerca de 0,4 s, mas devolvem opções com probabilidade, não texto. Servem para `intent` e `confidence`, não para o resumo e as entidades do `Understanding`.
+- Troque de modelo por configuração (`LLM_MODEL`, `LLM_ROUTER_MODEL`), sem mudar código, e confirme a troca com os evals.
 
 ## Transparência
 
