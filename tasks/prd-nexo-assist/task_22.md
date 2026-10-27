@@ -31,10 +31,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 22.1 `api/`: `getCurrentConversation`, `streamMessage`, `retryTurn` e `requestHandoff`.
-- [ ] 22.2 `hooks/`: `useConversation` e `useSendMessage`.
-- [ ] 22.3 `components/`: `MessageList`, `EmployeeMessage`, `AgentMessage`, `TypingIndicator`, `TurnError`, `EmptyConversation`, `MessageComposer` e `MessageCounter`.
-- [ ] 22.4 `pages/ChatPage` na rota `/atendimento`.
+- [x] 22.1 `api/`: `getCurrentConversation`, `streamMessage`, `retryTurn` e `requestHandoff`.
+- [x] 22.2 `hooks/`: `useConversation` e `useSendMessage`.
+- [x] 22.3 `components/`: `MessageList`, `EmployeeMessage`, `AgentMessage`, `TypingIndicator`, `TurnError`, `EmptyConversation`, `MessageComposer` e `MessageCounter`.
+- [x] 22.4 `pages/ChatPage` na rota `/atendimento`.
 
 ## Detalhes de implementação
 
@@ -52,8 +52,8 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-20 — mostra o texto do agent chegando aos poucos, os passos e o erro com tentar de novo.
-- [ ] TI-25 — desabilita o campo em 30/30 com opção de falar com analista.
+- [x] TI-20 — mostra o texto do agent chegando aos poucos, os passos e o erro com tentar de novo.
+- [x] TI-25 — desabilita o campo em 30/30 com opção de falar com analista.
 
 ## Arquivos relevantes
 
