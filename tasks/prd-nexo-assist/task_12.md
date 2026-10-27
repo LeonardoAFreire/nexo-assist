@@ -29,11 +29,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 12.1 `classificar_prioridade`.
-- [ ] 12.2 `propor_chamado`, com `findDuplicates` e o override `notDuplicateOf` registrado nas regras.
-- [ ] 12.3 `propor_complemento` e `propor_reabertura`.
-- [ ] 12.4 `transferir_para_analista`.
-- [ ] 12.5 `DecisionBuilder`, incluindo `action.kind = degraded` em falha do legado.
+- [x] 12.1 `classificar_prioridade`.
+- [x] 12.2 `propor_chamado`, com `findDuplicates` e o override `notDuplicateOf` registrado nas regras.
+- [x] 12.3 `propor_complemento` e `propor_reabertura`.
+- [x] 12.4 `transferir_para_analista`.
+- [x] 12.5 `DecisionBuilder`, incluindo `action.kind = degraded` em falha do legado.
 
 ## Detalhes de implementação
 
@@ -53,9 +53,9 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] TU-21 — bloqueia propor chamado quando existe chamado aberto equivalente.
-- [ ] TU-22 — propõe reabertura só dentro da janela.
-- [ ] TU-25 — monta a decisão com entendimento, ação, confiança rotulada, motivo e regras.
+- [x] TU-21 — bloqueia propor chamado quando existe chamado aberto equivalente.
+- [x] TU-22 — propõe reabertura só dentro da janela.
+- [x] TU-25 — monta a decisão com entendimento, ação, confiança rotulada, motivo e regras.
 
 ## Arquivos relevantes
 
