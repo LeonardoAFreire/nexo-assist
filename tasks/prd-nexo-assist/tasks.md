@@ -5,7 +5,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 ## Tarefas
 
 - [x] 1.0 Ambiente local, configuração e base de testes
-- [ ] 2.0 `shared/database`: Drizzle, migrations, PGlite e health check
+- [x] 2.0 `shared/database`: Drizzle, migrations, PGlite e health check
 - [x] 3.0 `shared/http` e `shared/resilience`: códigos de erro, SSE e novas tentativas
 - [ ] 4.0 `shared/auth`: sessão JWT, guards e cookie
 - [x] 5.0 Contratos em `@nexo/contracts`: modelos, tokens, eventos e erros

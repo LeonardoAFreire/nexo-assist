@@ -32,11 +32,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 2.1 Instalar `drizzle-orm`, `drizzle-kit`, `pg` e `@electric-sql/pglite` no pacote `shared`.
-- [ ] 2.2 Implementar `DatabaseModule` com o token `DATABASE` e o fechamento do pool.
-- [ ] 2.3 Implementar `runMigrations` e o helper de teste PGlite em `database/testing`.
-- [ ] 2.4 Exportar os subpaths no `package.json` de `shared`.
-- [ ] 2.5 Atualizar `health.controller.ts` com ping no banco.
+- [x] 2.1 Instalar `drizzle-orm`, `drizzle-kit`, `pg` e `@electric-sql/pglite` no pacote `shared`.
+- [x] 2.2 Implementar `DatabaseModule` com o token `DATABASE` e o fechamento do pool.
+- [x] 2.3 Implementar `runMigrations` e o helper de teste PGlite em `database/testing`.
+- [x] 2.4 Exportar os subpaths no `package.json` de `shared`.
+- [x] 2.5 Atualizar `health.controller.ts` com ping no banco.
 
 ## Detalhes de implementação
 
@@ -53,8 +53,8 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] `runMigrations` aplica as migrations de um schema de exemplo no PGlite uma única vez (idempotente).
-- [ ] Health check: 200 com banco disponível; 503 quando o ping falha.
+- [x] `runMigrations` aplica as migrations de um schema de exemplo no PGlite uma única vez (idempotente).
+- [x] Health check: 200 com banco disponível; 503 quando o ping falha.
 
 ## Arquivos relevantes
 

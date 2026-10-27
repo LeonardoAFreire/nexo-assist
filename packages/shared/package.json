@@ -16,6 +16,10 @@
       "types": "./dist/database/index.d.ts",
       "default": "./dist/database/index.js"
     },
+    "./database/testing": {
+      "types": "./dist/database/testing/index.d.ts",
+      "default": "./dist/database/testing/index.js"
+    },
     "./events": {
       "types": "./dist/events/index.d.ts",
       "default": "./dist/events/index.js"
@@ -37,13 +41,16 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.12",
     "@nestjs/common": "^12.2.0",
     "@nestjs/config": "^12.0.1",
     "@nestjs/core": "^12.2.0",
     "@nestjs/event-emitter": "^12.0.1",
     "@nestjs/platform-express": "^12.2.0",
     "@nexo/contracts": "workspace:*",
+    "drizzle-orm": "^0.45.4",
     "nestjs-pino": "^5.3.1",
+    "pg": "^8.23.1",
     "pino": "^10.4.0",
     "pino-http": "^11.0.0",
     "reflect-metadata": "^0.2.2",
@@ -52,6 +59,8 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
     "vitest": "^5.0.5"
   },
   "nexo": {
