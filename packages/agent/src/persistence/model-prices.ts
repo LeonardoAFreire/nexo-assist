@@ -15,6 +15,9 @@ export const MODEL_PRICES: Readonly<Record<string, TokenPricing>> = {
   'openai/gpt-4.1': { inputPerMillionUsd: 2, outputPerMillionUsd: 8 },
   'google/gemini-2.0-flash-001': { inputPerMillionUsd: 0.1, outputPerMillionUsd: 0.4 },
   'anthropic/claude-3.5-haiku': { inputPerMillionUsd: 0.8, outputPerMillionUsd: 4 },
+  'anthropic/claude-haiku-5.5': { inputPerMillionUsd: 0.1, outputPerMillionUsd: 0.5 },
+  'inception/mercury-2.5': { inputPerMillionUsd: 0.04, outputPerMillionUsd: 0.15 },
+  'openai/gpt-6-luna': { inputPerMillionUsd: 0.1, outputPerMillionUsd: 0.5 },
 };
 
 export function pricingFor(model: string): TokenPricing {
