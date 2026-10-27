@@ -4,6 +4,7 @@ import { AgentModule } from '@nexo/agent';
 import { ChatModule } from '@nexo/chat';
 import { IdentityModule } from '@nexo/identity';
 import { KnowledgeModule } from '@nexo/knowledge';
+import { NexoAuthModule } from '@nexo/shared/auth';
 import { NexoConfigModule } from '@nexo/shared/config';
 import { DatabaseModule } from '@nexo/shared/database';
 import { NexoEventsModule } from '@nexo/shared/events';
@@ -17,6 +18,7 @@ import { HealthController } from './health.controller.js';
     NexoConfigModule,
     NexoLoggerModule,
     NexoEventsModule,
+    NexoAuthModule,
     DatabaseModule,
     IdentityModule,
     KnowledgeModule,

@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./auth": {
+      "types": "./dist/auth/index.d.ts",
+      "default": "./dist/auth/index.js"
+    },
     "./config": {
       "types": "./dist/config/index.d.ts",
       "default": "./dist/config/index.js"
@@ -49,6 +53,7 @@
     "@nestjs/platform-express": "^12.2.0",
     "@nexo/contracts": "workspace:*",
     "drizzle-orm": "^0.45.4",
+    "jose": "^6.2.13",
     "nestjs-pino": "^5.3.1",
     "pg": "^8.23.1",
     "pino": "^10.4.0",
