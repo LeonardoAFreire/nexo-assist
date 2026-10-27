@@ -4,11 +4,11 @@ As evidências da ferramenta de navegador estão em `tasks/prd-nexo-assist/evide
 
 ## Resumo
 - Data: 2026-10-27
-- Status: **REPROVADO** (todos os critérios funcionais passam; reprovam a meta de latência e a de encaminhamento do CA-40, e o CA-39 está bloqueado pelo deploy)
+- Status: **REPROVADO** (todos os critérios funcionais passam e o clone limpo sobe; reprovam a meta de latência e a de encaminhamento do CA-40, e o CA-39 está bloqueado pelo deploy)
 - Total de critérios de aceitação: 40
-- Critérios de aceitação atendidos: 37 (CA-01 a CA-37) e 1 em parte (CA-38)
+- Critérios de aceitação atendidos: 38 (CA-01 a CA-38)
 - Reprovado: 1 (CA-40). Bloqueado: 1 (CA-39)
-- Bugs encontrados: 12 (todos corrigidos, cada um com teste de regressão e commit próprio)
+- Bugs encontrados: 14 (todos corrigidos, cada um com teste de regressão e commit próprio)
 
 Ambiente da execução: modelo real (OpenRouter), banco descartável, sem tocar no `pnpm dev` nem no Postgres do usuário.
 
@@ -64,7 +64,7 @@ Os fluxos de interface foram executados no navegador com o modelo real. Quando o
 | CA-35 | Chamado criado pelo agent chega ao analista com os campos preenchidos | TU-03, TI-06 | PASSOU | Card do INC-20520 com título, descrição, categoria e prioridade; colunas do tipo e dos afetados são `not null` |
 | CA-36 | Console se atualiza sem recarregar | TI-17, TI-29, E2E-03 | PASSOU | `ca36-mensagem-chega-sem-recarregar` (dois contextos de navegador) |
 | CA-37 | Resposta incremental, indicador de carregamento e erro com tentar de novo | TI-05, TI-20 | PASSOU | `ca37-erro-do-modelo-com-tentar-novamente` (chave inválida): alerta sem detalhe do provedor e botão "Tentar novamente", que recuperou a resposta sem contar outra mensagem |
-| CA-38 | Clone limpo com `.env` e chave sobe com os dados de exemplo | — | PASSOU (em parte) | Subi backend e web com migrations e dados de exemplo a partir do `.env.example`, mas não testei um clone limpo nem o `docker compose` do projeto |
+| CA-38 | Clone limpo com `.env` e chave sobe com os dados de exemplo | — | PASSOU | `git clone` do repositório, `cp .env.example .env` com a chave, `pnpm install --frozen-lockfile` (20 s) e `pnpm dev`: API e web no ar, login, chamado de exemplo (INC-20311) e resposta real do modelo. Só o Postgres foi trocado por um container em outra porta, porque a 5432 é do projeto do usuário (o `docker compose` não foi executado). Um aviso: logo após o boot o `node --watch` reinicia a API três vezes, e uma requisição nesse intervalo pode ser interrompida
 | CA-39 | Ambiente publicado: limite de uso sem chamar o modelo | TU-24, TI-15 | BLOQUEADO | A tarefa 27.0 (publicação) está pendente. Localmente, o excesso por minuto devolve 429 `rate_limited` com mensagem clara e o 31º por sessão, `message_limit_reached` |
 | CA-40 | Evals do README atingem as metas dos Objetivos | evals | FALHOU | Ver "Evals" abaixo |
 
@@ -82,7 +82,7 @@ Além desses, executei no navegador com o **modelo real** os fluxos de login, pe
 | Camada | ID | Resultado | Validação/comando | Observações |
 |--------|----|-----------|-------------------|-------------|
 | Estática | — | PASSOU | `pnpm typecheck`, `pnpm lint`, `pnpm check:boundaries` | 0 avisos e 0 erros; "Fronteiras OK (9 pacotes verificados)" |
-| Unidade/Integração | TU-01 a TU-29, TI-01 a TI-29 | PASSOU | `pnpm test` | **746 testes**: contracts 24, shared 47, identity 19, tickets 95, knowledge 22, agent 230, chat 231, monolith 11, web 67 (eram 708 no início da QA) |
+| Unidade/Integração | TU-01 a TU-29, TI-01 a TI-29 | PASSOU | `pnpm test` | **748 testes**: contracts 24, shared 47, identity 19, tickets 95, knowledge 22, agent 232, chat 231, monolith 11, web 67 (eram 708 no início da QA) |
 | E2E | E2E-01 a E2E-04 | PASSOU | `pnpm e2e` em portas isoladas | 4 de 4 |
 
 - Cobertura: NÃO APLICÁVEL (o projeto não define meta numérica; a regra é testar por risco).
@@ -102,10 +102,10 @@ Rodada completa com o modelo real e o código atual (18 cenários × 2 execuçõ
 | Escopo | 100% | 100% | atingida |
 | Privacidade | 100% | 100% | atingida |
 | Transparência | 100% | 100% | atingida |
-| Primeiro trecho p50 / p95 | 5,0 s / 6,5 s | 2 s / 5 s | **abaixo** (premissa do PRD) |
-| Custo por 10 mensagens | US$ 0,0093 | US$ 0,02 | atingida |
+| Primeiro trecho p50 / p95 | 4,5 s / 8,1 s | 2 s / 5 s | **abaixo** (premissa do PRD) |
+| Custo por 10 mensagens | US$ 0,0092 | US$ 0,02 | atingida |
 
-Decisão do modelo (você liberou a troca): comparei Luna, Haiku 5.5, DeepSeek 0731 e Mercury 2.5. O Haiku 5.5, que você sugeriu, fez 29/36 (chamados bem abertos em 25%, privacidade e duplicidade em 75%) e estima US$ 0,022 por 10 mensagens, acima da meta; por isso o padrão ficou no **Luna** (35/36, US$ 0,0009 por turno). Para usar o Haiku, basta `LLM_MODEL=anthropic/claude-haiku-5.5` no `.env`. O seu `.env` não foi alterado.
+Decisão do modelo (liberada pelo usuário): comparei Luna, Haiku 5.5, DeepSeek 0731 e Mercury 2.5. O Haiku 5.5, que você sugeriu, fez 29/36 (chamados bem abertos em 25%, privacidade e duplicidade em 75%) e estima US$ 0,022 por 10 mensagens, acima da meta; por isso o padrão ficou no **Luna** (35/36, US$ 0,0009 por turno). Para usar o Haiku, basta `LLM_MODEL=anthropic/claude-haiku-5.5` no `.env`. O seu `.env` não foi alterado.
 
 ## Acessibilidade
 - [x] Navegação por teclado (Tab, Enter, Esc): ordem de foco lógica em login, chat, perfil e console; opções rápidas pela tecla numérica; Confirmar por Ctrl+Enter; detalhe expansível com Enter e Espaço (`aria-expanded`). Esc e foco da edição do rascunho: **BUG-11**, corrigido (`a11y-teclado-rascunho`).
@@ -139,25 +139,26 @@ Capturas em 1440, 1280, 768 e 375 px (`vis-*`), com estado vazio ("Como posso aj
 | BUG-10 | "Agent pediu ajuda" com contraste de 1,88:1 (mínimo 4,5:1) | Média | Corrigido | `6e2c9c7`: token `--warning-text` | `theme-contrast.test.ts` | `vis-console-desktop-1440` |
 | BUG-11 | Em "Editar" o foco caía no corpo da página e o Esc não fechava a edição | Média | Corrigido | `0594367`: foco no primeiro campo, Esc fecha e o foco volta ao botão | `chat-draft-keyboard.integration.test.tsx` | `a11y-teclado-rascunho` |
 | BUG-12 | O mesmo artigo era citado duas vezes no turno e aparecia em dois cartões | Baixa | Corrigido | `76e60bb` | `citar-artigo.test.ts` | — |
+| BUG-13 | Com o Luna, o agent consultou o INC-20311 vencido e transferiu a conversa sozinho; a TechSpec só transfere por vencimento quando o funcionário aceita | Média | Corrigido | `66c4da7`: a tool `transferir_para_analista` não aceita mais o motivo `overdue` | `transferir-para-analista.test.ts` | — |
+| BUG-14 | Regressão da correção do BUG-03, achada nos evals: na consulta de status só buscar os chamados encerrava a exigência de tool, e o modelo respondia sem mostrar a lista (`status-sem-numero` 0/2) | Média | Corrigido | `1e24ef0`: a finalizadora de status é apresentar o chamado ou a lista | `finishing-tools.test.ts`; evals 3/3 | — |
 
-Também no escopo desta QA: modelo padrão trocado para o Luna (`55d40ad`), preços dos candidatos registrados (`50b1606`) e limite de tempo dos testes com PGlite (`1127006`).
+Também no escopo desta QA: modelo padrão trocado para o Luna (`55d40ad`), preços dos candidatos registrados (`50b1606`), limite de tempo dos testes com PGlite (`1127006`) e aviso no log com a causa de um turno que falha (`f89fd5a`, `agent-service-failure-log.test.ts`).
 
 ## Observações (sem correção de código)
 - **Qualidade do modelo.** O DeepSeek 0731 às vezes inventava fatos no entendimento (afetados, "impede o trabalho"), números de chamado nas tools (recusados pelas tools, sem vazar nada), respondia em inglês de vez em quando e repetia o conteúdo dos cartões no texto. O Luna perguntou a mais ("Sim, tenho alternativa / Não tenho alternativa") antes de propor o rascunho. As regras seguem no código; o texto livre do modelo continua sendo variável.
 - **Texto antes da confirmação.** No caso crítico o agent disse "abri um chamado" e logo depois "confirme para que eu registre"; o estado é correto (só existe o rascunho).
 - **Orçamento por conversa.** São ~13 a 17 mil tokens de entrada por turno, então os 600.000 cobrem cerca de 36 turnos de uma conversa, que atravessa sessões. Ao esgotar, o agent responde sem chamar o modelo e oferece o analista.
-- **Latência.** p50 de 5,0 s e p95 de 6,5 s, acima das metas (premissa do PRD). Não isolei quanto vem da exigência de tool e quanto da variação dos provedores (vi picos de 8,7 s).
+- **Latência.** p50 de 4,5 s e p95 de 8,1 s, acima das metas (premissa do PRD). Medi onde o tempo vai: ~1,2 s por chamada ao modelo e ~4 chamadas em sequência por turno (roteador, tools, resposta). O Mastra soma só ~0,1 s por chamada, `:nitro` e `provider.sort` ganham ~0,2 s a 2 a 4 vezes o custo, e pedir tools em paralelo piorou e foi revertido. Reduzir de fato exige menos chamadas em sequência (por exemplo, fundir o roteador ao laço), o que muda a arquitetura. O agent não usa threads nem memória do Mastra de propósito: o contexto vem do banco do `chat`.
 - **Falha de rede ao enviar.** Se a requisição nem chega ao servidor, a tela mostra o alerta e mantém o texto no campo, mas sem o botão "Tentar novamente" (ele existe quando o turno falha no servidor).
 - **Perfil.** O bloco de senha diz "Enviaremos um link de redefinição…" com o botão desabilitado; o PRD só exige o botão visível e desabilitado.
 - **Ambiente.** O cookie de sessão do `localhost` vale para todas as portas e o `JWT_SECRET` é o do `.env`, então o navegador já abriu logado como a Ana de outra instância.
 
 ## Conclusão
 
-Todos os critérios com fluxo de interface passam com o modelo real (CA-01 a CA-37), e os 12 defeitos achados foram corrigidos na causa raiz, com teste de regressão e commit próprio. Três deles mereciam atenção antes de qualquer entrega: o agent que escrevia "proposta" sem criar a ação pendente (BUG-03), a conversa que quebrava no 5º turno por causa do orçamento de tokens (BUG-06) e o 409 que travava a funcionária com o console aberto (BUG-08).
+Todos os critérios com fluxo de interface passam com o modelo real (CA-01 a CA-37), o clone limpo sobe (CA-38), e os 14 defeitos achados foram corrigidos na causa raiz, com teste de regressão e commit próprio. Três deles mereciam atenção antes de qualquer entrega: o agent que escrevia "proposta" sem criar a ação pendente (BUG-03), a conversa que quebrava no 5º turno por causa do orçamento de tokens (BUG-06) e o 409 que travava a funcionária com o console aberto (BUG-08).
 
-O status é **REPROVADO** por três itens que não dependem de correção de código:
-1. **CA-40:** a latência do primeiro trecho (p50 5,0 s, p95 6,5 s) e o encaminhamento certo (88%) ficaram abaixo das metas do PRD, e o README registra os dois sem afrouxar critério.
+O status é **REPROVADO** por dois itens que não dependem de correção de código:
+1. **CA-40:** a latência do primeiro trecho (p50 4,5 s, p95 8,1 s) e o encaminhamento certo (88%) ficaram abaixo das metas do PRD, e o README registra os dois sem afrouxar critério.
 2. **CA-39:** bloqueado até a publicação (tarefa 27.0), que exige a confirmação do usuário.
-3. **CA-38:** verificado em parte, falta um clone limpo.
 
-Para aprovar: publicar e conferir o limite no ambiente publicado, testar o clone limpo, e decidir se a meta de latência do PRD (uma premissa) se mantém ou se o roteador sequencial dá lugar a algo mais rápido.
+Para aprovar: publicar e conferir o limite no ambiente publicado, e decidir se a meta de latência do PRD (uma premissa) se mantém ou se o roteador sequencial dá lugar a algo mais rápido.

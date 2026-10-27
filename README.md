@@ -107,7 +107,7 @@ Princípios que valem mais que o prompt:
 
 ### Testes
 
-`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **746 testes, todos passando**.
+`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **748 testes, todos passando**.
 
 | Pacote            | Testes |
 | ----------------- | ------ |
@@ -116,7 +116,7 @@ Princípios que valem mais que o prompt:
 | `@nexo/identity`  | 19     |
 | `@nexo/tickets`   | 95     |
 | `@nexo/knowledge` | 22     |
-| `@nexo/agent`     | 230    |
+| `@nexo/agent`     | 232    |
 | `@nexo/chat`      | 231    |
 | `@nexo/monolith`  | 11     |
 | `@nexo/web`       | 67     |
@@ -150,10 +150,11 @@ Rodada final, com `openai/gpt-6-luna` como modelo de resposta e `deepseek/deepse
 | Privacidade                   | 100% (4/4) | 100%        |
 | Transparência                 | 100%       | 100%        |
 
-- **Latência do primeiro trecho:** p50 de 5,0 s (meta de 2 s, **acima**) e p95 de 6,5 s (meta de 5 s, **acima**). A rodada anterior, com o DeepSeek e antes da exigência de tool finalizadora, tinha p50 de 2,9 s. A hipótese é que, sem a narração antes das tools (que o prompt já proibia), o primeiro texto só chega depois delas; a variação dos provedores no dia também pesa (vi picos de 8,7 s num provedor lento do OpenRouter). Não isolei as duas causas.
-- **Custo médio por turno:** US$ 0,0009. Para 10 mensagens, a estimativa é de US$ 0,0093 (meta de US$ 0,02, dentro).
-- **Abaixo da meta, sem ajuste forçado:** encaminhamento certo (88%). Em `critico-equipe` o modelo, numa das duas execuções, fez a pergunta que falta em vez de propor o chamado crítico. É variação do modelo, e o critério não foi afrouxado.
-- O que mudou desde a rodada anterior (DeepSeek, 34/36, chamados bem abertos em 50%): a pergunta "quem é afetado" passou a ser garantida pelo código, e cada intenção só encerra o turno depois de uma tool finalizadora (propor, perguntar, transferir ou consultar), porque o modelo às vezes escrevia o "rascunho" em texto, sem chamar a tool, e inventava prazo.
+- **Latência do primeiro trecho:** p50 de 4,5 s (meta de 2 s, **acima**) e p95 de 8,1 s (meta de 5 s, **acima**). Medi onde o tempo vai: cada chamada ao modelo leva cerca de 1,2 s, e um turno faz em média quatro em sequência (roteador, tools e resposta). O Mastra soma só ~0,1 s por chamada (roteador via Mastra: 1,47 s; a mesma chamada direta na API: 1,35 s). `:nitro` e `provider.sort` do OpenRouter ganham ~0,2 s por chamada e custam de 2 a 4 vezes mais, então não foram adotados. O que reduziria o p50 de verdade é diminuir as chamadas em sequência (por exemplo, fundir o roteador ao laço), o que muda a arquitetura. Pedir ao modelo chamadas de tool em paralelo foi testado e piorou (falhas de execução, sem ganho de tempo).
+- **Custo médio por turno:** US$ 0,0009. Para 10 mensagens, a estimativa é de US$ 0,0092 (meta de US$ 0,02, dentro).
+- **Abaixo da meta, sem ajuste forçado:** encaminhamento certo (88%). Em `critico-equipe` o modelo, numa das duas execuções, fez a pergunta que falta em vez de propor o chamado crítico. É variação do modelo, e o critério não foi afrouxado. `erro-809-windows-10` também oscila (critério de texto): às vezes o modelo pergunta "isso resolveu?" antes de escrever o passo do artigo.
+- O que mudou desde a rodada anterior (DeepSeek, 34/36, chamados bem abertos em 50%): a pergunta "quem é afetado" passou a ser garantida pelo código; cada intenção só encerra o turno depois de uma tool finalizadora (propor, perguntar, transferir ou apresentar o chamado), porque o modelo às vezes escrevia o "rascunho" em texto, sem chamar a tool, e inventava prazo; e a tool de transferência não aceita mais o motivo "vencido", que só se aplica quando o funcionário aceita a oferta.
+- Falhas de disponibilidade do provedor (`agent_unavailable`, de 3 a 6 em 36 turnos em algumas rodadas, e nenhuma em outras) agora deixam um aviso no log com o nome do erro e o status HTTP.
 <!-- evals:end -->
 
 ## Escolha do modelo e do OpenRouter
@@ -166,7 +167,7 @@ Comparação final, com o código atual, 18 cenários × 2 execuções (36 turno
 
 | Modelo de resposta                | Aprovados | Primeiro trecho p50 / p95 | Custo por turno | Observação                                                                 |
 | --------------------------------- | --------- | ------------------------- | --------------- | -------------------------------------------------------------------------- |
-| `openai/gpt-6-luna`               | 35/36     | 5,0 s / 6,5 s             | US$ 0,0009      | Todas as metas, menos encaminhamento (88%)                                 |
+| `openai/gpt-6-luna`               | 35/36     | 4,5 s / 8,1 s             | US$ 0,0009      | Todas as metas, menos encaminhamento (88%)                                 |
 | `anthropic/claude-haiku-5.5`      | 29/36     | 4,4 s / 7,6 s             | US$ 0,0022      | Chamados bem abertos em 25% (perguntou de novo o Windows que já foi dito); 10 mensagens custam US$ 0,022, acima da meta |
 | `deepseek/deepseek-v4-flash-0731` | 34/36     | 5,3 s / 10,2 s            | US$ 0,0015      | 3 turnos sem resposta por indisponibilidade do provedor                    |
 | `inception/mercury-2.5`           | 22/36     | 5,6 s / 15,2 s            | US$ 0,0013      | Falhou em privacidade e em chamados bem abertos                            |
@@ -182,8 +183,8 @@ O custo por turno é registrado em `agent.runs`, a partir do usage accounting do
 
 ## Trade-offs
 
-- **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro trecho da resposta chega em **p50 de 5,0 s e p95 de 6,5 s**, acima das metas do PRD (2 s e 5 s). É um trade-off assumido e registrado.
-- **Tool obrigatória até a finalizadora** (`toolChoice: required` no `prepareStep`): garante que o agent nunca escreva um "rascunho" ou uma "proposta" em texto sem a tool, ao custo de o primeiro texto só chegar depois das tools.
+- **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro trecho da resposta chega em **p50 de 4,5 s e p95 de 8,1 s**, acima das metas do PRD (2 s e 5 s). É um trade-off assumido e registrado.
+- **Tool obrigatória até a finalizadora** (`toolChoice: required` no `prepareStep`): garante que o agent nunca escreva um "rascunho" ou uma "proposta" em texto sem a tool; a exigência cai com ação pendente e após três passos.
 - **Postgres com um schema por domínio e Drizzle**, em vez de um banco sem serviço (SQLite): a regra "cada domínio só acessa as próprias tabelas" fica visível no banco e o deploy cabe num Postgres gerenciado. Custa um `docker compose up -d`. Nos testes, PGlite dá Postgres de verdade sem Docker.
 - **SSE em vez de WebSocket:** o tráfego é quase todo servidor para cliente, passa por proxies HTTP comuns e usa o cookie de sessão. O hub de eventos é em memória, então vale para uma instância; a evolução é `LISTEN/NOTIFY`.
 - **Tickets dentro do monólito, como "legado":** o agent só o consome por interface, com decorador resiliente. Virar app dedicada exige apenas trocar o provedor do token por um cliente HTTP.
