@@ -17,6 +17,7 @@ export { TEST_WEB_ORIGIN } from './chat-test-support.js';
 
 export type ChatTestApp = Pick<ChatTestDoubles, 'agent' | 'tickets' | 'events'> & {
   baseUrl: string;
+  resolve<T>(token: abstract new (...args: never[]) => T): T;
   sessionCookie(userId: string): Promise<string>;
   close(): Promise<void>;
 };
@@ -46,6 +47,7 @@ function toTestApp(app: INestApplication, doubles: ChatTestDoubles): ChatTestApp
   return {
     ...doubles,
     baseUrl: `http://127.0.0.1:${port}/api`,
+    resolve: (token) => app.get(token),
     sessionCookie: async (userId) => {
       const role = roleOf(userId) ?? 'employee';
       const { token } = await tokens.issue({ userId, role, remember: false });

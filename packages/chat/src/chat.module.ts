@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CHAT_CONSOLE_PROVIDERS } from './chat-console.providers.js';
 import { CHAT_CORE_PROVIDERS } from './chat-core.providers.js';
 import { MessageAllowance } from './core/allowance/message-allowance.js';
 import {
@@ -11,6 +12,11 @@ import { CONVERSATION_REPOSITORY } from './core/conversation/conversation-reposi
 import { ConversationEventsHub } from './core/events/conversation-events-hub.js';
 import { MESSAGE_REPOSITORY } from './core/messages/message-repository.js';
 import { PENDING_ACTION_REPOSITORY } from './core/pending-actions/pending-action-repository.js';
+import { AnalystProfilePipe } from './http/analyst-profile.pipe.js';
+import { ConsoleActionsController } from './http/console-actions.controller.js';
+import { ConsoleController } from './http/console.controller.js';
+import { ConsoleStreamController } from './http/console-stream.controller.js';
+import { ConversationStreamController } from './http/conversation-stream.controller.js';
 import { EmployeeConversationController } from './http/employee-conversation.controller.js';
 import { EmployeeSessionPipe } from './http/employee-session.pipe.js';
 import { PendingActionsController } from './http/pending-actions.controller.js';
@@ -24,12 +30,20 @@ import { DrizzlePendingActionRepository } from './persistence/drizzle-pending-ac
 import { DrizzleSessionUsageRepository } from './persistence/drizzle-session-usage.repository.js';
 
 @Module({
-  controllers: [EmployeeConversationController, PendingActionsController],
+  controllers: [
+    EmployeeConversationController,
+    PendingActionsController,
+    ConversationStreamController,
+    ConsoleController,
+    ConsoleActionsController,
+    ConsoleStreamController,
+  ],
   providers: [
     ChatMigrator,
     ConsoleSeedStore,
     ConsoleSeeder,
     EmployeeSessionPipe,
+    AnalystProfilePipe,
     UserThrottlerGuard,
     { provide: CLOCK, useClass: SystemClock },
     { provide: CONVERSATION_REPOSITORY, useClass: DrizzleConversationRepository },
@@ -43,6 +57,7 @@ import { DrizzleSessionUsageRepository } from './persistence/drizzle-session-usa
     },
     { provide: ConversationEventsHub, useFactory: () => new ConversationEventsHub() },
     ...CHAT_CORE_PROVIDERS,
+    ...CHAT_CONSOLE_PROVIDERS,
   ],
 })
 export class ChatModule {}

@@ -6,7 +6,15 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AgentModule } from '@nexo/agent';
 import { ChatModule } from '@nexo/chat';
-import { DEMO_EMPLOYEES, type EmployeeConversationView } from '@nexo/contracts';
+import {
+  type ConsoleEmployeeTickets,
+  type ConsoleList,
+  type Conversation,
+  DEMO_ANALYSTS,
+  DEMO_EMPLOYEES,
+  type EmployeeConversationView,
+  type TicketDetail,
+} from '@nexo/contracts';
 import { IdentityModule } from '@nexo/identity';
 import { KnowledgeModule } from '@nexo/knowledge';
 import { NexoAuthModule } from '@nexo/shared/auth';
@@ -23,6 +31,8 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 const WEB_ORIGIN = 'http://localhost:5173';
 const ONE_MINUTE_MS = 60_000;
 const ANA = DEMO_EMPLOYEES[0]!;
+const RAFAEL = DEMO_ANALYSTS[0]!;
+const CITED_TICKET = 'INC-20311';
 
 let testDatabase: TestDatabase;
 let app: INestApplication;
@@ -72,11 +82,11 @@ class SupportModule {}
 })
 class WiringTestModule {}
 
-async function loginCookie(): Promise<string> {
+async function loginCookie(email = ANA.email): Promise<string> {
   const response = await fetch(`${baseUrl}/auth/login`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', origin: WEB_ORIGIN },
-    body: JSON.stringify({ email: ANA.email, password: 'qualquer' }),
+    body: JSON.stringify({ email, password: 'qualquer' }),
   });
   return (response.headers.getSetCookie()[0] ?? '').split(';')[0] ?? '';
 }
@@ -115,5 +125,47 @@ describe('chat sobre os módulos reais', () => {
     expect(sent.headers.get('content-type')).toContain('text/event-stream');
     expect(stream).toContain('event: message.accepted');
     expect(stream).toMatch(/event: turn\.(completed|failed)/);
+  });
+});
+
+function jsonHeaders(cookie: string): Record<string, string> {
+  return { 'content-type': 'application/json', origin: WEB_ORIGIN, cookie };
+}
+
+async function postJson(path: string, cookie: string, body: unknown): Promise<Response> {
+  const headers = jsonHeaders(cookie);
+  return fetch(`${baseUrl}${path}`, { method: 'POST', headers, body: JSON.stringify(body) });
+}
+
+async function getJson<T>(path: string, cookie: string): Promise<{ status: number; body: T }> {
+  const response = await fetch(`${baseUrl}${path}`, { headers: jsonHeaders(cookie) });
+  return { status: response.status, body: (await response.json()) as T };
+}
+
+describe('transferência sobre os módulos reais', () => {
+  it('TI-09: registra a transferência no histórico do chamado citado e a mostra ao analista', async () => {
+    const ana = await loginCookie();
+    const sent = await postJson('/conversations/current/messages', ana, {
+      text: `Quero saber do ${CITED_TICKET}`,
+    });
+    await sent.text();
+    const handoff = await postJson('/conversations/current/handoff', ana, { reason: 'requested' });
+    const conversation = (await handoff.json()) as Conversation;
+    expect(handoff.status).toBe(200);
+    expect(conversation.state).toBe('waiting_analyst');
+    expect(conversation.handoff?.ticketNumbers).toEqual([CITED_TICKET]);
+    const ticket = await getJson<TicketDetail>(`/tickets/${CITED_TICKET}`, ana);
+    expect(ticket.body.latestEvent?.kind).toBe('handed_off');
+    const analyst = await loginCookie(RAFAEL.email);
+    const list = await getJson<ConsoleList>('/console/conversations?filter=for_you', analyst);
+    const item = list.body.items.find((candidate) => candidate.id === conversation.id);
+    expect(item).toMatchObject({ consoleStatus: 'transferred', ticketNumbers: [CITED_TICKET] });
+    const panel = await getJson<ConsoleEmployeeTickets>(
+      `/console/conversations/${conversation.id}/tickets`,
+      analyst,
+    );
+    expect(panel.status).toBe(200);
+    expect(panel.body.fromConversation.map((summary) => summary.number)).toEqual([CITED_TICKET]);
+    expect(panel.body.others.open.length + panel.body.others.closed.length).toBeGreaterThan(0);
   });
 });

@@ -12,6 +12,7 @@ import { describeFailure } from '../core/send/turn-failure.js';
 const STATUS_BY_CODE: Partial<Record<ApiErrorCode, number>> = {
   validation_error: HttpStatus.BAD_REQUEST,
   not_found: HttpStatus.NOT_FOUND,
+  forbidden: HttpStatus.FORBIDDEN,
   conversation_already_claimed: HttpStatus.CONFLICT,
   conversation_not_claimed: HttpStatus.CONFLICT,
   invalid_conversation_state: HttpStatus.CONFLICT,

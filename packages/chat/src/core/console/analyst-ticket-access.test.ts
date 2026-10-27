@@ -1,5 +1,5 @@
-import { type TicketSummary, ticketSummarySchema } from '@nexo/contracts';
-import { describe, expect, it } from 'vitest';
+import { type TicketSummary, ticketSummarySchema, TicketsUnavailableError } from '@nexo/contracts';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { makeChatFixture, type ChatFixture } from '../testing/chat-fixture.js';
 import { seedConversation } from '../testing/conversation-seeds.js';
 import { CONVERSATION_ID, EMPLOYEE_ID, makeTicket } from '../testing/factories.js';
@@ -72,5 +72,38 @@ describe('AnalystTicketAccess', () => {
       access.listFor({ analyst: ANA, conversationId: CONVERSATION_ID }),
     ).rejects.toMatchObject({ code: 'forbidden' });
     expect(reader.requests).toHaveLength(0);
+  });
+});
+
+describe('AnalystTicketAccess com o legado instável', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('tenta de novo e devolve os chamados quando o legado volta dentro da janela', async () => {
+    vi.useFakeTimers();
+    const fixture = makeChatFixture();
+    await seedConversation(fixture, { state: 'waiting_analyst' });
+    const { access, reader } = makeAccess(fixture);
+    const listOwn = vi
+      .spyOn(reader, 'listOwn')
+      .mockRejectedValueOnce(new Error('fora do ar'))
+      .mockRejectedValueOnce(new Error('fora do ar'));
+    const result = access.listFor({ analyst: RAFAEL, conversationId: CONVERSATION_ID });
+    await vi.advanceTimersByTimeAsync(1200);
+    await expect(result).resolves.toBeDefined();
+    expect(listOwn).toHaveBeenCalledTimes(3);
+  });
+
+  it('esgotadas as tentativas, falha com tickets_unavailable', async () => {
+    vi.useFakeTimers();
+    const fixture = makeChatFixture();
+    await seedConversation(fixture, { state: 'waiting_analyst' });
+    const { access, reader } = makeAccess(fixture);
+    vi.spyOn(reader, 'listOwn').mockRejectedValue(new Error('fora do ar'));
+    const result = access.listFor({ analyst: RAFAEL, conversationId: CONVERSATION_ID });
+    const assertion = expect(result).rejects.toBeInstanceOf(TicketsUnavailableError);
+    await vi.advanceTimersByTimeAsync(1200);
+    await assertion;
   });
 });
