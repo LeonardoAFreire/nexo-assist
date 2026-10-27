@@ -3,7 +3,8 @@ import { createOpenRouter, type OpenRouterProvider } from '@openrouter/ai-sdk-pr
 import type { LlmClient } from '../core/llm-client.js';
 import type { AgentSettingsSource } from './agent-settings.factory.js';
 import { MastraLlmClient } from './mastra/mastra-llm-client.js';
-import { ScriptedLlmClient } from './scripted/scripted-llm-client.js';
+import { ScenarioLlmClient } from './scripted/scenario-llm-client.js';
+import { SCENARIOS } from './scripted/scenarios.js';
 
 const MISSING_API_KEY_MESSAGE = 'OPENROUTER_API_KEY não configurada';
 
@@ -15,7 +16,7 @@ function chatModel(provider: OpenRouterProvider, modelId: string): MastraModelCo
 
 export function createLlmClient(config: AgentSettingsSource): LlmClient {
   if (config.get('LLM_PROVIDER') === 'scripted') {
-    return new ScriptedLlmClient([]);
+    return new ScenarioLlmClient(SCENARIOS);
   }
   const apiKey = config.get('OPENROUTER_API_KEY');
   if (apiKey === undefined) {

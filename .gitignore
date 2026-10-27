@@ -11,4 +11,7 @@ packages/agent/evals/results/
 *.db
 data/
 coverage
+e2e/test-results/
+e2e/playwright-report/
+.playwright-mcp/
 .DS_Store

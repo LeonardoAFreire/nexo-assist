@@ -6,6 +6,11 @@
     "lint": { "dependsOn": ["^build"] },
     "test": { "dependsOn": ["^build"] },
     "dev": { "dependsOn": ["^build"], "cache": false, "persistent": true },
+    "e2e": {
+      "dependsOn": ["^build", "@nexo/monolith#build"],
+      "cache": false,
+      "passThroughEnv": ["E2E_DATABASE_URL", "E2E_BACKEND_PORT", "E2E_WEB_PORT"]
+    },
     "eval": { "dependsOn": ["^build"], "cache": false },
     "report": { "dependsOn": ["^build"], "cache": false }
   }

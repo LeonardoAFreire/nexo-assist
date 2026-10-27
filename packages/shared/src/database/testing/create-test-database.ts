@@ -7,8 +7,8 @@ export type TestDatabase = {
   close: () => Promise<void>;
 };
 
-export async function createTestDatabase(): Promise<TestDatabase> {
-  const client = new PGlite();
+export async function createTestDatabase(dataDirectory?: string): Promise<TestDatabase> {
+  const client = new PGlite(dataDirectory);
   await client.waitReady;
   const database: Database = drizzle({ client });
   return { database, close: () => client.close() };
