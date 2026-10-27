@@ -154,6 +154,7 @@ Rodada final, com `openai/gpt-6-luna` como modelo de resposta e `deepseek/deepse
 - **Custo médio por turno:** US$ 0,0009. Para 10 mensagens, a estimativa é de US$ 0,0092 (meta de US$ 0,02, dentro).
 - **Variação entre rodadas:** com 2 execuções por cenário (36 turnos) o resultado oscilou de 33 a 35 aprovados entre rodadas, por critérios de texto (`erro-809-windows-10`: o modelo às vezes pergunta "isso resolveu?" antes de escrever o passo do artigo; `status-sem-numero`) e por falhas transitórias do provedor (`agent_unavailable`, que agora deixam um aviso no log). Por isso a rodada final usa 5 execuções por cenário. Os dois cenários que ainda falham de vez em quando são esses de resolução.
 - O que mudou desde a rodada anterior (DeepSeek, 34/36, chamados bem abertos em 50%): a pergunta "quem é afetado" passou a ser garantida pelo código; cada intenção só encerra o turno depois de uma tool finalizadora (propor, perguntar, transferir ou apresentar o chamado), porque o modelo às vezes escrevia o "rascunho" em texto, sem chamar a tool, e inventava prazo; em relato crítico (equipe ou empresa parada e impedimento de trabalhar) o código recusa a pergunta e manda propor o chamado; e a tool de transferência não aceita mais o motivo "vencido", que só se aplica quando o funcionário aceita a oferta.
+
 <!-- evals:end -->
 
 ## Escolha do modelo e do OpenRouter
@@ -164,12 +165,12 @@ Modelo de resposta escolhido: **`openai/gpt-6-luna`**, a US$ 0,10 por milhão de
 
 Comparação final, com o código atual, 18 cenários × 2 execuções (36 turnos por candidato) e o roteador fixo:
 
-| Modelo de resposta                | Aprovados | Primeiro trecho p50 / p95 | Custo por turno | Observação                                                                 |
-| --------------------------------- | --------- | ------------------------- | --------------- | -------------------------------------------------------------------------- |
-| `openai/gpt-6-luna`               | 88/90 (5 execuções) | 4,6 s / 9,9 s   | US$ 0,0009      | Todas as metas atingidas                                                   |
-| `anthropic/claude-haiku-5.5`      | 29/36     | 4,4 s / 7,6 s             | US$ 0,0022      | Chamados bem abertos em 25% (perguntou de novo o Windows que já foi dito); 10 mensagens custam US$ 0,022, acima da meta |
-| `deepseek/deepseek-v4-flash-0731` | 34/36     | 5,3 s / 10,2 s            | US$ 0,0015      | 3 turnos sem resposta por indisponibilidade do provedor                    |
-| `inception/mercury-2.5`           | 22/36     | 5,6 s / 15,2 s            | US$ 0,0013      | Falhou em privacidade e em chamados bem abertos                            |
+| Modelo de resposta                | Aprovados           | Primeiro trecho p50 / p95 | Custo por turno | Observação                                                                                                              |
+| --------------------------------- | ------------------- | ------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `openai/gpt-6-luna`               | 88/90 (5 execuções) | 4,6 s / 9,9 s             | US$ 0,0009      | Todas as metas atingidas                                                                                                |
+| `anthropic/claude-haiku-5.5`      | 29/36               | 4,4 s / 7,6 s             | US$ 0,0022      | Chamados bem abertos em 25% (perguntou de novo o Windows que já foi dito); 10 mensagens custam US$ 0,022, acima da meta |
+| `deepseek/deepseek-v4-flash-0731` | 34/36               | 5,3 s / 10,2 s            | US$ 0,0015      | 3 turnos sem resposta por indisponibilidade do provedor                                                                 |
+| `inception/mercury-2.5`           | 22/36               | 5,6 s / 15,2 s            | US$ 0,0013      | Falhou em privacidade e em chamados bem abertos                                                                         |
 
 Luna como roteador também foi testado e ficou mais lento (p50 de 6,9 s) sem ganho de qualidade. A escolha seguiu aprovação, latência e custo, nessa ordem: o Luna empata ou ganha em aprovação, custa menos e não teve falha de disponibilidade. Nenhum candidato chega a 2 s até o primeiro texto, porque o turno tem uma chamada de roteador e, em geral, três a quatro chamadas do laço. Trocar de modelo é mudar `LLM_MODEL` no `.env`. Aprendizados da escolha:
 

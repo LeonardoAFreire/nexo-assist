@@ -1,133 +1,111 @@
 # Relatório de revisão de código — Nexo Assist
 
 ## Resumo
+
 - Data: 2026-10-27
-- Branch: main (commit `9d2dbf5`)
+- Branch: main (commit `9fe14f9`, com três ajustes de revisão descritos abaixo)
 - Status: APROVADO COM RESSALVAS
 
-Escopo: revisão geral da solução contra o PDF do desafio (`docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.pdf`), a TechSpec, as tarefas 1.0 a 27.0 e as regras do projeto. Nenhum código foi alterado: nada bloqueante apareceu.
+Escopo: revisão da solução inteira (tarefas 1.0 a 27.0) contra o `CLAUDE.md`, as rules de `.claude/rules/`, a TechSpec e o `tasks.md`, com foco no que mudou desde a revisão anterior (`2f6287a`): 28 commits, em sua maioria as correções da QA (BUG-01 a BUG-15), a troca do modelo padrão para `openai/gpt-6-luna`, a tool finalizadora obrigatória por intenção e a revisão da meta de latência do PRD. A revisão anterior e as correções que ela originou continuam válidas e estão resumidas em "Problemas encontrados".
 
-O PDF já estava transcrito em `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.md` (commit `52f01ed`). Conferi essa transcrição contra o texto extraído do PDF (seções, histórias, requisitos, Anexos A, B e C) e ela bate, então a usei como fonte da revisão. A extração do PDF sai com camadas de texto sobrepostas e não serve para leitura direta.
-
-## Aderência ao PDF do desafio
-
-| Exigência do PDF | Status | Evidência |
-|------------------|--------|-----------|
-| Login com e-mail corporativo e qualquer senha | OK | `packages/identity`, README (8 usuários de exemplo) |
-| Chat com respostas em tempo real, cards, seleção de chamado, rascunho, opções rápidas | OK | SSE em `chat/http`; `apps/web/src/modules/chat/components` (`draft-card`, `ticket-selection`, `quick-options`) |
-| Limite de 30 mensagens por sessão | OK | `chat/core/allowance/message-allowance.ts`, `chat-limit.integration.test.tsx` |
-| Agent decide por mensagem usando central e chamados | OK | `packages/agent/src/core` (roteador `understand`, política de turno, laço de até 6 passos) |
-| Serviço de chamados simulado, separado do agent | OK | `packages/tickets` acessado só pelo token `TICKETS_API`; simulador de indisponibilidade do legado |
-| Transferência: agent para de responder até ser liberado | OK | `chat/core/handoff`, E2E-03 |
-| Console do analista: filtros, status, histórico, assumir, devolver, encerrar, painel de chamados | OK | `apps/web/src/modules/console`, `chat/http` do console |
-| Visibilidade das decisões (a parte mais importante) | OK | `components/agent-turn` com "O que entendeu", ação, confiança e motivo; passos gravados por decorador de execução real |
-| TypeScript estrito | OK | `pnpm typecheck` verde, sem `any` |
-| Mastra | OK | `@mastra/core` isolado em `agent/persistence` atrás da porta `LlmClient` |
-| Escolha do modelo explicada no README | OK | Seção "Escolha do modelo e do OpenRouter" com comparação medida |
-| Persistência sobrevive a reinício | OK | Postgres/Drizzle; `restart.integration.test.ts` (TI-14) |
-| Rodar com poucos comandos e `.env.example` | OK | 4 comandos no README; `.env.example` sem segredos |
-| Arquitetura clara, testes, tratamento de erros, commits | OK | `check:boundaries`, 691 testes, histórico em Conventional Commits |
-| Eficiência e custo por conversa | RESSALVA | US$ 0,0013 por turno (dentro da meta); latência do primeiro trecho p50 de 2,9 s, acima dos 2 s do PRD |
-| Chaves fora do código e privacidade entre funcionários | OK | `requesterId` da sessão; "não encontrado" indistinguível de "sem permissão"; E2E-02 |
-| Anexo A: tipos, categorias, abertura com confirmação, duplicidade, reabertura de 7 dias, privacidade, escopo | OK | `tickets/core` (testes TU-01 a TU-08); confirmação verificada no código |
-| Anexo A: prioridade e prazos (1 h, 4 h úteis, 3 d úteis, 5 d úteis) | OK | `tickets/core`, `business-time.ts` |
-| Anexo A: transferência a pedido, em caso crítico, em chamado vencido, por baixa confiança | OK | Pedido e baixa confiança por código; crítico por `turn-finisher.ts`; vencido por oferta de analista (ver problema 4) |
-| Anexo B: 5 a 10 artigos e chamados variados (aberto, vencido, resolvido recente, de terceiros) | OK | 8 artigos; INC-20311, REQ-10442 e INC-20150 como no PDF, mais chamados de outros funcionários |
-| Anexo C: telas 1 a 5 | OK | Rotas de identity, chat e console; fidelidade visual aferida por testes de interface, não por comparação com o `.pen` |
-| README com as seis seções pedidas | OK | Como rodar, arquitetura, como o agent decide, qualidade, trade-offs e o que faria com mais tempo |
-| Deploy (diferencial) | PENDENTE | Dockerfile, serve-static e passos do Railway prontos; publicação (27.3, 27.4) aguarda confirmação do usuário |
+Nada bloqueante apareceu. Os pontos abertos são o deploy (tarefa 27.0) e margens estreitas nas metas dos evals.
 
 ## Conformidade com regras
 
-| Regra | Status | Observações |
-|------|--------|-------------|
-| `modular-architecture.md` | OK | `pnpm check:boundaries`: "Fronteiras OK (9 pacotes verificados)" |
-| `folder-structure.md` | OK | Estrutura `http`, `core`, `persistence` por domínio; módulos do web sem importação cruzada |
-| `code-standards.md` (100 linhas, 30 por função, 3 parâmetros, profundidade 3, sem comentários) | OK | Imposto pelo oxlint; nenhum arquivo `.ts` de produção acima de 100 linhas; nenhum comentário em código de produção |
-| `javascript-typescript.md` | OK | Sem `any`, `eqeqeq`, `no-nested-ternary`, `prefer-const` ativos no lint |
-| `security-privacy.md` | OK | `process.env` só em `@nexo/shared/config` (as outras ocorrências ficam em `e2e/`); cookie `HttpOnly`, produção recusa `scripted`, `LOG_LEVEL=debug` e segredo de exemplo |
-| `evals.md` | OK | Evals fora de `pnpm test`; resultados fora do Git; 18 cenários com roteiro de ensaio |
-| `git-commits.md` | OK com nota | Um commit usa escopo fora da lista (`test(e2e): ...`, problema 5) |
+| Regra                      | Status      | Observações                                                                                                                                                                                                                                                                                                                                       |
+| -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modular-architecture.md`  | OK          | `pnpm check:boundaries`: "Fronteiras OK (9 pacotes verificados)". As mudanças novas em `agent` e `chat` só importam `@nexo/contracts` e `@nexo/shared`                                                                                                                                                                                            |
+| `folder-structure.md`      | OK          | Arquivos novos nos lugares certos (`agent/core`, `agent/persistence/mastra`, `chat/persistence`, `web/modules/chat/hooks`); nenhum módulo do web importa outro                                                                                                                                                                                    |
+| `code-standards.md`        | OK          | Nenhum arquivo `.ts` de produção acima de 100 linhas, nenhum comentário, funções e parâmetros dentro do limite (oxlint, 0 avisos). Varredura própria de linhas em branco dentro de funções: só `components/ui/button.tsx` (gerado pelo shadcn, fora da regra) e uma ocorrência em `app-config.service.ts` que é separação entre membros da classe |
+| `javascript-typescript.md` | OK          | Sem `any`, sem `==`, imports relativos com `.js`, `catch` com `unknown`. Corrigidos nesta revisão: variável `input` que escondia o parâmetro em `turn-runner.ts` e `import { type ... }` só de tipo em `conversation-column-updates.ts`                                                                                                           |
+| `security-privacy.md`      | OK com nota | `process.env` só em `@nexo/shared/config`; nenhum segredo, `.env` ou resultado de eval versionado (busca por `sk-` sem ocorrências); `requesterId` da sessão; tools validam argumentos com zod. Nota: problema 3 (mensagem do provedor no log)                                                                                                    |
+| `evals.md`                 | OK          | Evals fora de `pnpm test`; preços dos candidatos em `model-prices.ts`; `reasoning.enabled=false`; rodada completa de 90 turnos registrada no README com modelo, latência e custo; resultados fora do Git                                                                                                                                          |
+| `git-commits.md`           | OK com nota | Conventional Commits, escopos válidos, corpo com a causa. Quatro assuntos passam de 72 caracteres (problema 8)                                                                                                                                                                                                                                    |
 
 ## Aderência à TechSpec
 
-| Decisão Técnica | Implementado | Observações |
-|-----------------|--------------|-------------|
-| Monólito modular com domínios em `packages/` e apps que só compõem | SIM | `apps/monolith` tem `main.ts`, módulos e health check |
-| Domínios só falam por tokens e eventos de `@nexo/contracts` | SIM | `TICKETS_API`, `KNOWLEDGE_API`, eventos de transferência |
-| Postgres com um schema por domínio (Drizzle) e PGlite nos testes | SIM | Migrations rodam no boot; seed controlado por `SEED_DEMO_DATA` |
-| Roteador `understand` seguido de política de turno no código e laço de tools | SIM | Registro em `agent.runs` |
-| O modelo só propõe; o código escreve após confirmação com `idempotencyKey` | SIM | Tools `propor_*`; confirmação por botão, opção rápida ou frase afirmativa |
-| SSE para o turno e para o console | SIM | Hub em memória, evolução para `LISTEN/NOTIFY` registrada como trade-off |
-| Resiliência com o legado: timeout, nova tentativa e resposta degradada | SIM | `@nexo/shared/resilience`, `TICKETS_OUTAGE_MODE` |
-| Limites de uso: rate limit, 30 mensagens, teto diário de custo | SIM | `CHAT_RATE_LIMIT_PER_MINUTE`, `LLM_DAILY_BUDGET_USD` |
-| Deploy como serviço único com Postgres gerenciado | PARCIAL | Artefatos prontos; publicação pendente (tarefa 27.0) |
+| Decisão Técnica                                                                             | Implementado | Observações                                                                                                                                                                                            |
+| ------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Monólito modular; apps só compõem; domínios falam por tokens e eventos de `@nexo/contracts` | SIM          | Confirmado por `check:boundaries`                                                                                                                                                                      |
+| Roteador `understand`, política de turno no código e laço limitado de tools                 | SIM          | `TurnRunner` → `TurnPolicy` → `ResponseLoop`; `TurnFinisher` aplica as pós-regras (transferência crítica, oferta de vencido, pergunta de impacto) em código                                            |
+| O modelo só propõe; o código escreve após confirmação                                       | SIM          | Tools `propor_*`; BUG-03 fechou a brecha de o modelo escrever o "rascunho" em texto: `tool-choice.ts` exige a finalizadora (`FINISHING_TOOLS`) por intenção, com corte em 3 passos e com ação pendente |
+| Chamado vencido oferece o analista e só transfere se o funcionário aceitar                  | SIM          | `transferir_para_analista` não aceita `overdue` (BUG-13); `offerOverdueOptions` no `TurnFinisher`                                                                                                      |
+| Relato crítico propõe o chamado e transfere                                                 | SIM          | `isCriticalReport` (código) faz `perguntar_opcoes` recusar a pergunta; `TurnFinisher` solicita a transferência `critical`                                                                              |
+| Orçamento por conversa e teto diário de custo                                               | SIM          | Orçamento de 600.000 tokens (BUG-06); TechSpec e README atualizados                                                                                                                                    |
+| Persistência e concorrência do turno                                                        | SIM          | `markAnalystRead` atualiza só a coluna (BUG-08); `RecoverInterruptedTurns` no boot (vale para uma instância, registrado no README)                                                                     |
+| SSE para turno e console; resiliência com o legado                                          | SIM          | Sem mudança; E2E e QA cobrem                                                                                                                                                                           |
+| Interface: passos, detalhe da decisão, teclado e contraste                                  | SIM          | Foco e Esc na edição (BUG-11), contraste AA (BUG-10), layout de 375 px (BUG-09)                                                                                                                        |
+| Deploy como serviço único com Postgres gerenciado                                           | PARCIAL      | `serve-static` e `Dockerfile` prontos; publicação (27.3) e verificação (27.4) pendentes                                                                                                                |
 
 ## Tarefas verificadas
 
-| Tarefa | Status | Observações |
-|------|--------|-------------|
-| 1.0 a 26.0 | COMPLETA | Marcadas como concluídas em `tasks.md`; código e testes presentes |
-| 27.0 Deploy e README | INCOMPLETA | 27.1, 27.2 e 27.5 concluídas; 27.3 (Railway) e 27.4 (verificação no ambiente publicado) pendentes por serem ações externas que exigem confirmação |
+| Tarefa               | Status     | Observações                                                                                                                                                                                       |
+| -------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0 a 26.0           | COMPLETA   | Código e testes presentes; as correções da QA vieram com teste de regressão cada                                                                                                                  |
+| 27.0 Deploy e README | INCOMPLETA | 27.1, 27.2 e 27.5 concluídas; 27.3 (Railway) e 27.4 (limite no ambiente publicado) pendentes por serem ações externas que exigem a confirmação do usuário. É o que mantém o CA-39 bloqueado na QA |
 
 ## Testes
 
-Comandos executados na raiz: `pnpm typecheck`, `pnpm lint`, `pnpm check:boundaries` e `pnpm test`. Todos terminaram com sucesso (código de saída 0). O Turborepo reaproveitou o cache (`FULL TURBO`) para parte das tarefas, porque nenhum arquivo mudou desde a última execução.
+Comandos executados na raiz: `pnpm typecheck`, `pnpm lint`, `pnpm check:boundaries`, `pnpm test` e `pnpm e2e`. Todos terminaram com sucesso. Depois dos três ajustes desta revisão, repeti typecheck, lint, fronteiras e os testes de `@nexo/agent` e `@nexo/chat`.
 
-- Total de testes: 706 (691 da execução inicial mais os testes de regressão das correções)
-- Passando: 706
+- Total de testes: 751 (unidade e integração) mais 4 E2E
+- Passando: 751 e 4 E2E
 - Falhando: 0
-- Cobertura: NÃO APLICÁVEL (o projeto não define meta de cobertura numérica; a regra é testar por risco)
+- Cobertura: NÃO APLICÁVEL (o projeto não define meta numérica; a regra é testar por risco)
 
-| Pacote | Testes |
-|--------|--------|
-| `@nexo/contracts` | 24 |
-| `@nexo/shared` | 47 |
-| `@nexo/identity` | 19 |
-| `@nexo/tickets` | 95 |
-| `@nexo/knowledge` | 22 |
-| `@nexo/agent` | 198 |
-| `@nexo/chat` | 229 |
-| `@nexo/monolith` | 11 |
-| `@nexo/web` | 61 |
+| Pacote            | Testes |
+| ----------------- | ------ |
+| `@nexo/contracts` | 24     |
+| `@nexo/shared`    | 47     |
+| `@nexo/identity`  | 19     |
+| `@nexo/tickets`   | 95     |
+| `@nexo/knowledge` | 22     |
+| `@nexo/agent`     | 235    |
+| `@nexo/chat`      | 231    |
+| `@nexo/monolith`  | 11     |
+| `@nexo/web`       | 67     |
 
-`pnpm e2e` (Playwright): 3 de 3 passaram (E2E-01, E2E-02, E2E-03). A porta 5432 é do container `truck-postgres`, de outro projeto, e não foi tocada. Rodei o E2E contra um Postgres 17 descartável na porta 5433 (`E2E_DATABASE_URL=postgres://nexo:nexo@127.0.0.1:5433/nexo_e2e`), com o backend na 3017 e o web na 5177.
+`pnpm e2e` (Playwright): 4 de 4 (E2E-01 a E2E-04), contra um Postgres 17 descartável na porta 5433, com o backend na 3090 e o web na 5190.
 
-Também subi o app (`pnpm dev`) e usei o chat e o detalhe da decisão no navegador com o modelo real, como Ana Souza. O login, o card do INC-20311 com prazo vencido, os passos do agent e o detalhe (entendimento, ação, confiança de 95%, motivo e passos) funcionaram.
+Não executei `pnpm eval`: gasta dinheiro e a regra do projeto o mantém fora da revisão. Usei os números da rodada de 90 turnos registrada no README e no `qa.md`.
 
-Não executei `pnpm eval`: gasta dinheiro e a regra do projeto o mantém fora da revisão. Usei os números já registrados no README.
+`pnpm format:check` falha em 871 arquivos neste computador porque o Git está com `core.autocrlf=true` e o working tree está em CRLF (o índice está em LF). Conferi a versão do `HEAD` em LF: o código `.ts`/`.tsx` está formatado; sobraram o `README.md` (corrigido, problema 6), os `.md` de `tasks/` e os metadados gerados do drizzle-kit (problema 9).
 
-Ambiente: o `pnpm dev` (portas 3000 e 5173) e o Postgres do `docker compose` (5432) ficaram no ar a pedido do usuário. O container `nexo-review-pg` (porta 5433) e os servidores do Playwright (3017 e 5177) foram encerrados, e as portas ficaram livres. Para liberar a 5432, o usuário pediu para parar os containers do projeto truck (`truck-postgres`, `truck-redis` e `truck-sync`), que foram parados com `docker stop`, sem remoção, e voltam com `docker start`.
+Ambiente: o container `nexo-review-pg` foi removido e as portas 5433, 3090 e 5190 não têm mais ouvintes (só conexões em `TIME_WAIT`). O `pnpm dev` (3000 e 5173) e o `nexo-postgres-1` (5432) do usuário ficaram intocados.
 
 ## Problemas encontrados
 
-Os cinco primeiros problemas saíram da execução do app no navegador (Playwright) com o modelo real. Todos foram corrigidos nesta revisão, cada um com teste de regressão e um commit próprio. O último é uma observação sobre os testes.
+| Severidade        | Arquivo                                                        | Linha     | Descrição                                                                                                                                                                                                                                                                                | Sugestão                                                                                                                                                                                   |
+| ----------------- | -------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Média             | `tasks/prd-nexo-assist/tasks.md`, `task_27.md`                 | 33; 35-36 | A tarefa 27.0 segue aberta: sem publicação, o CA-39 fica BLOQUEADO na QA e não há link de deploy. O PDF trata o deploy como diferencial                                                                                                                                                  | Publicar no Railway após a confirmação do usuário, verificar o limite de uso (27.4) e marcar a tarefa                                                                                      |
+| Baixa             | `README.md` (evals)                                            | —         | Margens estreitas nas metas: resolução sem fila em 90% (18/20), exatamente a meta; primeiro texto em p95 de 9,9 s contra 10 s. A meta de latência foi revista depois da medição, com a aprovação do usuário e registro no PRD. Com 5 execuções por cenário, uma falha a mais tira a meta | Manter a decisão documentada; se houver tempo, reduzir chamadas em sequência (fundir o roteador ao laço) e atacar `erro-809-windows-10` e `status-sem-numero`, que são os dois que oscilam |
+| Baixa             | `packages/agent/src/core/failure-log-fields.ts`                | 12        | O aviso de turno que falha registra `errorMessage` (até 200 caracteres) da exceção do provedor. `security-privacy.md` proíbe o conteúdo de prompts em logs `info` ou acima; mensagens de provedor normalmente não trazem o prompt, mas não há garantia                                   | Registrar só `errorName` e `statusCode`, ou passar a mensagem por uma lista de códigos conhecidos                                                                                          |
+| Baixa (CORRIGIDO) | `packages/agent/src/core/turn-runner.ts`                       | 45        | `const input` dentro de `run` escondia o parâmetro `input` do método                                                                                                                                                                                                                     | Renomeado para `exhausted`                                                                                                                                                                 |
+| Baixa (CORRIGIDO) | `packages/chat/src/persistence/conversation-column-updates.ts` | 4         | `import { type ConversationRow }` só de tipo, fora do padrão `import type` do restante do código                                                                                                                                                                                         | Trocado por `import type`                                                                                                                                                                  |
+| Baixa (CORRIGIDO) | `README.md`                                                    | 168-173   | A tabela de comparação de modelos e a linha em branco antes de `<!-- evals:end -->` fugiam do `oxfmt`                                                                                                                                                                                    | Reformatado com `oxfmt`                                                                                                                                                                    |
+| Baixa (CORRIGIDO) | `tasks/prd-nexo-assist/task_27.md`                             | 39        | A nota dizia que o bloco de evals do README "espera os resultados", mas ele já está preenchido                                                                                                                                                                                           | Nota atualizada                                                                                                                                                                            |
+| Baixa             | histórico git                                                  | —         | Quatro assuntos de commit têm de 74 a 80 caracteres (`4a5fa71`, `514f5d9`, `5c72d3d`, `7e17277`), acima do limite de 72 de `git-commits.md`                                                                                                                                              | Nenhuma ação: corrigir exigiria `rebase`, que não foi pedido. Manter o limite nos próximos                                                                                                 |
+| Baixa             | `.oxfmtrc.json`; `tasks/prd-nexo-assist/*.md`                  | —         | `format:check` aponta os `.md` de `tasks/` (prd, techspec, tasks, qa) e `packages/*/drizzle/meta/*.json` (gerados). Não é exigido pelo `CLAUDE.md`, mas fica ruído para quem rodar a checagem                                                                                            | Incluir `**/drizzle/meta` em `ignorePatterns` e rodar `pnpm format` nos `.md`, ou documentar que `format:check` não é critério de aceite                                                   |
+| Baixa             | `.gitattributes`                                               | —         | Só `Dockerfile` e `.dockerignore` têm `eol=lf`. Com `autocrlf=true`, o working tree no Windows fica em CRLF e `format:check` reprova tudo                                                                                                                                                | Adicionar `* text=auto eol=lf`                                                                                                                                                             |
 
-| Severidade | Arquivo | Linha | Descrição | Sugestão |
-|------------|---------|-------|-----------|----------|
-| Alta (CORRIGIDO) | `apps/web/vite.config.ts` | 9 | Com `pnpm dev`, o Vite lia o `.env` só de `apps/web`, mas o `VITE_API_URL` está no `.env` da raiz. O axios ficava sem `baseURL` e o front chamava `localhost:5173/auth/me`, que devolve o `index.html`; a tela mostrava "Não foi possível verificar sua sessão" em vez do login. Quebrava os 4 comandos do README numa instalação limpa. O E2E não pegou porque injeta a variável por conta própria. | Corrigido com `envDir` apontando para a raiz do repositório. Teste de regressão em `apps/web/src/lib/vite-env-dir.test.ts` (falha sem a correção). |
-| Média (CORRIGIDO) | `packages/chat/src/core` (travamento do turno, `TURN_LOCK_MS` de 120 s) e `apps/web/src/modules/chat` | — | Se o backend cai ou reinicia no meio de um turno, a mensagem fica salva sem resposta. O "Tentar novamente" devolve 404 ("Não há resposta com falha para refazer") e o campo de mensagem fica desabilitado, sem explicação, até o travamento expirar em 120 s. Depois a conversa se recupera sozinha. É o cenário de um deploy no Railway. | Corrigido: no boot, `RecoverInterruptedTurns` libera os travamentos e grava uma resposta com falha, o que habilita o "Tentar novamente". Vale para uma instância. Teste de regressão em `restart.integration.test.ts`. |
-| Baixa (CORRIGIDO) | `apps/web/src/modules/chat/components/agent-bubble.tsx` e prompt do agent | — | A resposta do agent mostra `**aguardando analista**` com os asteriscos literais e junta frases sem espaço ("andamento?Aguardo"). | Corrigido: `FormattedText` renderiza o negrito sem os asteriscos e o adaptador do Mastra insere uma quebra de parágrafo depois de cada tool. |
-| Baixa (CORRIGIDO) | `packages/agent/src/core/tools/mostrar-chamado.ts`, `fixed-replies.ts` | 44 | Ao consultar um chamado vencido aparecem duas perguntas de opções empilhadas: "Sim, quero falar com um analista / Não, só queria saber o status" (do modelo, via `perguntar_opcoes`) e "Falar com um analista / Adicionar informação / Não, obrigado" (resposta fixa do código). | Corrigido: o código só oferece as opções quando o modelo não perguntou no turno, e a descrição da tool deixa de pedir a pergunta. Reexecutar o cenário `chamado-vencido` nos evals. |
-| Baixa (CORRIGIDO) | `packages/agent/src/core/decision-builder.ts` | — | No detalhe da decisão, "Regras aplicadas" diz "Nenhuma regra específica" mesmo quando o vencimento do prazo foi aplicado. | Corrigido: `mostrar_chamado` devolve a regra do vencimento. |
-| Média | `README.md` (bloco `evals`) | — | "Chamados bem abertos" fecha em 50% (2/4) contra a meta de 90%. O README informa o número e não afrouxa o critério. | Endurecer a pergunta de impacto e o registro do compromisso do dia em `erro-809-windows-11` e `abertura-coleta-minima`, depois rodar só esses cenários com `--runs 1`. |
-| Média | `README.md` (Trade-offs) | — | Latência do primeiro trecho em p50 de 2,9 s, acima dos 2 s do PRD (p95 de 3,9 s está dentro). Causa: roteador sequencial antes do laço. | Aceito e documentado como trade-off; o caminho está em "O que eu faria com mais tempo". |
-| Baixa | `tasks/prd-nexo-assist/tasks.md` | 33 | A tarefa 27.0 segue desmarcada; não há link de deploy para entregar. O PDF trata o deploy como diferencial sem penalidade. | Publicar no Railway após a confirmação do usuário, verificar o limite de uso (27.4) e marcar a tarefa. |
-| Baixa (CORRIGIDO) | `packages/agent/src/core/tools/mostrar-chamado.ts` | 44 | O PDF diz que a transferência "acontece em chamados vencidos"; a implementação mostra o aviso e oferece o analista, sem transferir sozinha. Isso casa com a Tela 3 ("oferta de chamar um analista"), então é uma leitura válida. | Corrigido: o README explica que o chamado vencido gera uma oferta de transferência, não uma transferência automática. |
-| Baixa | `packages/chat` (testes de integração) | — | Na primeira rodada completa de `pnpm test`, feita com o `pnpm dev` ainda rodando, 7 arquivos do `chat` falharam com `Hook timed out in 30000ms` ao subir o banco de teste. Isolado o pacote passa (229), e a segunda rodada completa passou (706). É carga de máquina, não regressão, mas num computador lento do avaliador pode se repetir. | Subir o `hookTimeout` do Vitest nos pacotes com PGlite ou limitar a concorrência do Turborepo nos testes. |
-| Baixa | histórico git | — | O commit `test(e2e): cobre abertura de chamado, privacidade e transferência` usa um escopo fora da lista de `git-commits.md`. | Nenhuma ação (reescrever o histórico exigiria rebase, que não foi pedido); usar `repo` em casos futuros. |
+Problemas da revisão anterior, todos já corrigidos e confirmados nesta: `VITE_API_URL` não lido no `pnpm dev` (`envDir`), turno cortado por queda do servidor (`RecoverInterruptedTurns`), opções duplicadas no chamado vencido, markdown cru no balão, regra de vencimento ausente no detalhe da decisão e `hookTimeout` do PGlite (agora 120 s). "Chamados bem abertos" saiu de 50% para 100% e o cenário `chamado-vencido` foi reexecutado na rodada de 90 turnos.
 
 ## Pontos positivos
-- Aderência alta ao PDF: todos os requisitos obrigatórios e as regras do Anexo A estão implementados e rastreados até testes.
-- A parte que o PDF chama de mais importante, a visibilidade das decisões, tem componente próprio (entendimento, ação, confiança e motivo), e os passos vêm da execução real das tools, não do texto do modelo.
-- Segurança: o `requesterId` vem só da sessão, a confirmação é verificada no código, "não encontrado" e "sem permissão" são indistinguíveis, e a produção recusa configurações inseguras.
-- Os números do README são honestos: ele mostra as metas não atingidas em vez de afrouxar critérios.
-- Fronteiras entre domínios impostas por script e limites de tamanho impostos pelo linter, sem desligar regras.
+
+- As regras do service desk ficaram no código, não no prompt: a tool finalizadora obrigatória (`tool-choice.ts`), a recusa de pergunta em relato crítico, a pergunta de impacto e a oferta de analista no chamado vencido são pós-regras do `TurnFinisher`, cada uma com teste.
+- Cada defeito da QA tem teste de regressão e commit próprio; a concorrência do `turn_lock_until` (BUG-08) foi resolvida na causa, com atualização atômica de uma coluna e teste de corrida.
+- Segurança preservada nas mudanças: `requesterId` só da sessão, tools que rejeitam argumentos extras (`z.strictObject`) e `transferir_para_analista` sem o motivo `overdue`.
+- Acessibilidade tratada com testes (foco, Esc, contraste de todo token `*-text`, texto anunciado sem asteriscos) e E2E em 375 px.
+- Os números do README e do `qa.md` batem com a execução: 751 testes, 4 E2E, 88 de 90 nos evals, custo de US$ 0,0092 por 10 mensagens.
+- Fronteiras entre domínios impostas por script e limites de tamanho impostos pelo linter, sem regras desligadas.
 
 ## Recomendações
-- Fechar a tarefa 27.0: confirmar com o usuário e publicar no Railway, para ter um link a enviar junto com o repositório.
-- Se houver tempo, melhorar "chamados bem abertos" e a latência do primeiro trecho, que são as duas metas abertas.
-- Explicitar no README que o chamado vencido gera oferta de transferência, não transferência automática.
+
+- Fechar a tarefa 27.0: publicar no Railway com a confirmação do usuário e verificar o limite de uso para liberar o CA-39.
+- Decidir sobre o log do erro do provedor (problema 3) antes de publicar: em produção o `LOG_LEVEL` é `info` ou acima.
+- Adicionar `.gitattributes` com `* text=auto eol=lf` e ajustar o `ignorePatterns` do `oxfmt`, para `pnpm format:check` virar uma checagem útil em qualquer máquina.
+- Se houver tempo, reduzir as chamadas em sequência do turno; é o que melhora a latência e a margem das metas.
 
 ## Conclusão
-A implementação atende ao que o PDF pede. Typecheck, lint, fronteiras e os 706 testes passam, e o código segue as regras e a TechSpec. O E2E também passou (3 de 3), inclusive depois das correções. O uso real no navegador achou um defeito alto, que o E2E não via: o front não lia o `VITE_API_URL` no `pnpm dev`. Ele e os outros quatro defeitos do chat (turno cortado por queda do backend, opções duplicadas, markdown cru e regra de prazo ausente no detalhe da decisão) foram corrigidos. Fica **APROVADO COM RESSALVAS** por três motivos: o deploy (diferencial) ainda não foi publicado; duas metas do PRD (chamados bem abertos e latência do primeiro trecho) seguem abaixo do alvo e ficam para os evals; e a descrição da tool `mostrar_chamado` mudou, então o cenário `chamado-vencido` precisa ser reexecutado nos evals. Nenhum problema é bloqueante.
+
+Typecheck, lint, fronteiras, 751 testes e os 4 E2E passam, e o código segue as rules e a TechSpec. Os defeitos da QA foram corrigidos na causa raiz com teste de regressão, e as metas dos evals estão atingidas com o modelo real, algumas com pouca margem. Fica **APROVADO COM RESSALVAS** por dois motivos: o deploy (tarefa 27.0, CA-39) ainda não foi publicado, o que depende da confirmação do usuário, e a meta de latência foi revista depois da medição e fecha no limite. Nenhum problema é bloqueante.

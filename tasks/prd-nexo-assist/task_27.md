@@ -36,7 +36,7 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 - [ ] 27.4 Verificar no ambiente publicado o limite de uso e a mensagem de limite atingido.
 - [x] 27.5 Escrever o `README.md` com os resultados dos testes, dos evals (tarefa 26) e o custo medido.
 
-> Pendente: 27.3 e 27.4 são ações externas (Railway) e aguardam a confirmação do usuário. O README já traz os passos do deploy como instruções, e o bloco `evals:start`/`evals:end` espera os resultados dos evals e o custo medido.
+> Pendente: 27.3 e 27.4 são ações externas (Railway) e aguardam a confirmação do usuário. O README já traz os passos do deploy como instruções e os resultados dos evals e o custo medido.
 
 ## Detalhes de implementação
 
