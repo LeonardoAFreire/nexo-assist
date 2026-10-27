@@ -49,6 +49,16 @@ describe('mostrar_chamado', () => {
     expect(tool.stepResult(input, { status: 'not_found' })).toBe('chamado não encontrado');
   });
 
+  it('registra a regra de prazo vencido só quando o chamado está vencido', () => {
+    const tool = makeTool();
+    const input = { number: 'INC-20311' };
+    expect(tool.rules?.(input, { status: 'shown', overdue: true })).toEqual([
+      'chamado vencido: o prazo passou, então o agent oferece falar com um analista',
+    ]);
+    expect(tool.rules?.(input, { status: 'shown', overdue: false })).toEqual([]);
+    expect(tool.rules?.(input, { status: 'not_found' })).toEqual([]);
+  });
+
   it('rejeita argumentos extras', () => {
     const { inputSchema } = makeTool();
     expect(inputSchema.safeParse({ number: 'INC-20311', requesterId: BRUNO_ID }).success).toBe(

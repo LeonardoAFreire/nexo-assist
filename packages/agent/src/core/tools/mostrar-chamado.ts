@@ -10,6 +10,8 @@ const outputSchema = z.discriminatedUnion('status', [
   z.object({ status: z.literal('not_found') }),
 ]);
 
+const OVERDUE_RULE = 'chamado vencido: o prazo passou, então o agent oferece falar com um analista';
+
 export type MostrarChamadoInput = z.infer<typeof inputSchema>;
 export type MostrarChamadoOutput = z.infer<typeof outputSchema>;
 export type MostrarChamadoDeps = { tickets: OwnTicketLookup };
@@ -51,6 +53,7 @@ export function createMostrarChamadoTool(
         ? `consultou o SLA do ${input.number}`
         : `mostrou o ${input.number}`,
     stepResult: (_input, output) => describeResult(output),
+    rules: (_input, output) => (output.status === 'shown' && output.overdue ? [OVERDUE_RULE] : []),
     execute: (input, context) => showTicket(deps.tickets, input, context),
   };
 }
