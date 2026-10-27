@@ -37,7 +37,7 @@ export const evalArticles: ArticleExcerpt[] = [
     id: 'horario-service-desk',
     title: 'Horário do service desk',
     excerpt:
-      'O service desk de TI atende de segunda a sexta-feira, das 8h às 18h, no horário de Brasília, exceto feriados. Fora desse horário, os chamados abertos são tratados no próximo dia útil, e os prazos de atendimento contam apenas o expediente.',
+      'O service desk de TI atende de segunda a sexta-feira, das 8h às 18h, no horário de Brasília, exceto feriados. Chamados críticos têm plantão 24 horas. Fora desse horário, os demais chamados abertos são tratados no próximo dia útil, e os prazos de atendimento contam apenas o expediente.',
     conditions: null,
     category: 'other',
   },
