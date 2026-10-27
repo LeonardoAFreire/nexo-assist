@@ -11,9 +11,9 @@ const PRIORITY_FACTS = {
 };
 
 const TICKET_DRAFT = {
-  title: 'VPN com erro 809 no Windows 11',
+  title: 'VPN com erro 809 ao conectar',
   description:
-    'Erro 809 ao conectar na VPN em um notebook com Windows 11. O funcionário não consegue trabalhar remotamente.',
+    'Erro 809 ao conectar na VPN do trabalho remoto. O funcionário não consegue acessar os sistemas.',
   type: 'incident',
   category: 'network_vpn',
   affected: 'only_me',
