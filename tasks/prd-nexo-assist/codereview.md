@@ -74,8 +74,8 @@ O PDF já estava transcrito em `docs/Desafio_Tecnico_Nexo_Assist_PRD_v5.md` (com
 
 Comandos executados na raiz: `pnpm typecheck`, `pnpm lint`, `pnpm check:boundaries` e `pnpm test`. Todos terminaram com sucesso (código de saída 0). O Turborepo reaproveitou o cache (`FULL TURBO`) para parte das tarefas, porque nenhum arquivo mudou desde a última execução.
 
-- Total de testes: 692 (691 da execução inicial mais o teste de regressão do Vite)
-- Passando: 692
+- Total de testes: 706 (691 da execução inicial mais os testes de regressão das correções)
+- Passando: 706
 - Falhando: 0
 - Cobertura: NÃO APLICÁVEL (o projeto não define meta de cobertura numérica; a regra é testar por risco)
 
@@ -86,10 +86,10 @@ Comandos executados na raiz: `pnpm typecheck`, `pnpm lint`, `pnpm check:boundari
 | `@nexo/identity` | 19 |
 | `@nexo/tickets` | 95 |
 | `@nexo/knowledge` | 22 |
-| `@nexo/agent` | 193 |
-| `@nexo/chat` | 225 |
-| `@nexo/monolith` | 10 |
-| `@nexo/web` | 57 |
+| `@nexo/agent` | 198 |
+| `@nexo/chat` | 229 |
+| `@nexo/monolith` | 11 |
+| `@nexo/web` | 61 |
 
 `pnpm e2e` (Playwright): 3 de 3 passaram (E2E-01, E2E-02, E2E-03). A porta 5432 é do container `truck-postgres`, de outro projeto, e não foi tocada. Rodei o E2E contra um Postgres 17 descartável na porta 5433 (`E2E_DATABASE_URL=postgres://nexo:nexo@127.0.0.1:5433/nexo_e2e`), com o backend na 3017 e o web na 5177.
 
@@ -101,19 +101,20 @@ Ambiente: o `pnpm dev` (portas 3000 e 5173) e o Postgres do `docker compose` (54
 
 ## Problemas encontrados
 
-Os problemas 1 a 4 saíram da execução do app no navegador (Playwright) com o modelo real; o primeiro foi corrigido nesta revisão.
+Os cinco primeiros problemas saíram da execução do app no navegador (Playwright) com o modelo real. Todos foram corrigidos nesta revisão, cada um com teste de regressão e um commit próprio. O último é uma observação sobre os testes.
 
 | Severidade | Arquivo | Linha | Descrição | Sugestão |
 |------------|---------|-------|-----------|----------|
 | Alta (CORRIGIDO) | `apps/web/vite.config.ts` | 9 | Com `pnpm dev`, o Vite lia o `.env` só de `apps/web`, mas o `VITE_API_URL` está no `.env` da raiz. O axios ficava sem `baseURL` e o front chamava `localhost:5173/auth/me`, que devolve o `index.html`; a tela mostrava "Não foi possível verificar sua sessão" em vez do login. Quebrava os 4 comandos do README numa instalação limpa. O E2E não pegou porque injeta a variável por conta própria. | Corrigido com `envDir` apontando para a raiz do repositório. Teste de regressão em `apps/web/src/lib/vite-env-dir.test.ts` (falha sem a correção). |
-| Média | `packages/chat/src/core` (travamento do turno, `TURN_LOCK_MS` de 120 s) e `apps/web/src/modules/chat` | — | Se o backend cai ou reinicia no meio de um turno, a mensagem fica salva sem resposta. O "Tentar novamente" devolve 404 ("Não há resposta com falha para refazer") e o campo de mensagem fica desabilitado, sem explicação, até o travamento expirar em 120 s. Depois a conversa se recupera sozinha. É o cenário de um deploy no Railway. | Ao carregar a conversa, tratar o turno órfão como falha (permitir refazer) ou mostrar "resposta interrompida" com a ação de reenviar; reduzir o travamento ou liberá-lo no boot. |
-| Baixa | `apps/web/src/modules/chat/components/agent-bubble.tsx` e prompt do agent | — | A resposta do agent mostra `**aguardando analista**` com os asteriscos literais e junta frases sem espaço ("andamento?Aguardo"). | Renderizar markdown simples ou instruir o modelo a não usá-lo; normalizar o espaço entre trechos do streaming. |
-| Baixa | `packages/agent/src/core/tools/mostrar-chamado.ts`, `fixed-replies.ts` | 44 | Ao consultar um chamado vencido aparecem duas perguntas de opções empilhadas: "Sim, quero falar com um analista / Não, só queria saber o status" (do modelo, via `perguntar_opcoes`) e "Falar com um analista / Adicionar informação / Não, obrigado" (resposta fixa do código). | Deixar só a pergunta do código e tirar do modelo a instrução de oferecer o analista nesse caso. |
-| Baixa | `packages/agent/src/core/decision-builder.ts` | — | No detalhe da decisão, "Regras aplicadas" diz "Nenhuma regra específica" mesmo quando o vencimento do prazo foi aplicado. | Registrar o vencimento do prazo como regra aplicada. |
+| Média (CORRIGIDO) | `packages/chat/src/core` (travamento do turno, `TURN_LOCK_MS` de 120 s) e `apps/web/src/modules/chat` | — | Se o backend cai ou reinicia no meio de um turno, a mensagem fica salva sem resposta. O "Tentar novamente" devolve 404 ("Não há resposta com falha para refazer") e o campo de mensagem fica desabilitado, sem explicação, até o travamento expirar em 120 s. Depois a conversa se recupera sozinha. É o cenário de um deploy no Railway. | Corrigido: no boot, `RecoverInterruptedTurns` libera os travamentos e grava uma resposta com falha, o que habilita o "Tentar novamente". Vale para uma instância. Teste de regressão em `restart.integration.test.ts`. |
+| Baixa (CORRIGIDO) | `apps/web/src/modules/chat/components/agent-bubble.tsx` e prompt do agent | — | A resposta do agent mostra `**aguardando analista**` com os asteriscos literais e junta frases sem espaço ("andamento?Aguardo"). | Corrigido: `FormattedText` renderiza o negrito sem os asteriscos e o adaptador do Mastra insere uma quebra de parágrafo depois de cada tool. |
+| Baixa (CORRIGIDO) | `packages/agent/src/core/tools/mostrar-chamado.ts`, `fixed-replies.ts` | 44 | Ao consultar um chamado vencido aparecem duas perguntas de opções empilhadas: "Sim, quero falar com um analista / Não, só queria saber o status" (do modelo, via `perguntar_opcoes`) e "Falar com um analista / Adicionar informação / Não, obrigado" (resposta fixa do código). | Corrigido: o código só oferece as opções quando o modelo não perguntou no turno, e a descrição da tool deixa de pedir a pergunta. Reexecutar o cenário `chamado-vencido` nos evals. |
+| Baixa (CORRIGIDO) | `packages/agent/src/core/decision-builder.ts` | — | No detalhe da decisão, "Regras aplicadas" diz "Nenhuma regra específica" mesmo quando o vencimento do prazo foi aplicado. | Corrigido: `mostrar_chamado` devolve a regra do vencimento. |
 | Média | `README.md` (bloco `evals`) | — | "Chamados bem abertos" fecha em 50% (2/4) contra a meta de 90%. O README informa o número e não afrouxa o critério. | Endurecer a pergunta de impacto e o registro do compromisso do dia em `erro-809-windows-11` e `abertura-coleta-minima`, depois rodar só esses cenários com `--runs 1`. |
 | Média | `README.md` (Trade-offs) | — | Latência do primeiro trecho em p50 de 2,9 s, acima dos 2 s do PRD (p95 de 3,9 s está dentro). Causa: roteador sequencial antes do laço. | Aceito e documentado como trade-off; o caminho está em "O que eu faria com mais tempo". |
 | Baixa | `tasks/prd-nexo-assist/tasks.md` | 33 | A tarefa 27.0 segue desmarcada; não há link de deploy para entregar. O PDF trata o deploy como diferencial sem penalidade. | Publicar no Railway após a confirmação do usuário, verificar o limite de uso (27.4) e marcar a tarefa. |
-| Baixa | `packages/agent/src/core/tools/mostrar-chamado.ts` | 44 | O PDF diz que a transferência "acontece em chamados vencidos"; a implementação mostra o aviso e oferece o analista, sem transferir sozinha. Isso casa com a Tela 3 ("oferta de chamar um analista"), então é uma leitura válida. | Registrar a interpretação na TechSpec ou no README, para o avaliador não ler como omissão. |
+| Baixa (CORRIGIDO) | `packages/agent/src/core/tools/mostrar-chamado.ts` | 44 | O PDF diz que a transferência "acontece em chamados vencidos"; a implementação mostra o aviso e oferece o analista, sem transferir sozinha. Isso casa com a Tela 3 ("oferta de chamar um analista"), então é uma leitura válida. | Corrigido: o README explica que o chamado vencido gera uma oferta de transferência, não uma transferência automática. |
+| Baixa | `packages/chat` (testes de integração) | — | Na primeira rodada completa de `pnpm test`, feita com o `pnpm dev` ainda rodando, 7 arquivos do `chat` falharam com `Hook timed out in 30000ms` ao subir o banco de teste. Isolado o pacote passa (229), e a segunda rodada completa passou (706). É carga de máquina, não regressão, mas num computador lento do avaliador pode se repetir. | Subir o `hookTimeout` do Vitest nos pacotes com PGlite ou limitar a concorrência do Turborepo nos testes. |
 | Baixa | histórico git | — | O commit `test(e2e): cobre abertura de chamado, privacidade e transferência` usa um escopo fora da lista de `git-commits.md`. | Nenhuma ação (reescrever o histórico exigiria rebase, que não foi pedido); usar `repo` em casos futuros. |
 
 ## Pontos positivos
@@ -129,4 +130,4 @@ Os problemas 1 a 4 saíram da execução do app no navegador (Playwright) com o 
 - Explicitar no README que o chamado vencido gera oferta de transferência, não transferência automática.
 
 ## Conclusão
-A implementação atende ao que o PDF pede. Typecheck, lint, fronteiras e os 692 testes passam, e o código segue as regras e a TechSpec. O E2E também passou (3 de 3). O uso real no navegador achou um defeito alto, que o E2E não via: o front não lia o `VITE_API_URL` no `pnpm dev`. Ele foi corrigido e ganhou teste de regressão. Fica **APROVADO COM RESSALVAS** por quatro motivos: o deploy (diferencial) ainda não foi publicado, duas metas de qualidade e latência do PRD seguem abaixo do alvo e estão documentadas, o turno interrompido por queda do backend deixa a conversa sem resposta por até 2 minutos, e há pequenos defeitos de interface no chat (markdown cru, perguntas duplicadas). Nenhum problema restante é bloqueante.
+A implementação atende ao que o PDF pede. Typecheck, lint, fronteiras e os 706 testes passam, e o código segue as regras e a TechSpec. O E2E também passou (3 de 3), inclusive depois das correções. O uso real no navegador achou um defeito alto, que o E2E não via: o front não lia o `VITE_API_URL` no `pnpm dev`. Ele e os outros quatro defeitos do chat (turno cortado por queda do backend, opções duplicadas, markdown cru e regra de prazo ausente no detalhe da decisão) foram corrigidos. Fica **APROVADO COM RESSALVAS** por três motivos: o deploy (diferencial) ainda não foi publicado; duas metas do PRD (chamados bem abertos e latência do primeiro trecho) seguem abaixo do alvo e ficam para os evals; e a descrição da tool `mostrar_chamado` mudou, então o cenário `chamado-vencido` precisa ser reexecutado nos evals. Nenhum problema é bloqueante.
