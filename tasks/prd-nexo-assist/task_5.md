@@ -33,13 +33,13 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 5.1 `identity/`: `SessionUser`, `UserProfile`, `LoginRequest`, `IdentityApi` e o token.
-- [ ] 5.2 `tickets/`: `TicketSummary`, `TicketDetail`, enums, `PriorityFacts`, `PriorityAssessment`, `DuplicateCheck`, `TicketDraft`, `TicketsApi` e o token.
-- [ ] 5.3 `knowledge/`: `ArticleExcerpt`, `KnowledgeApi` e o token.
-- [ ] 5.4 `agent/`: `Understanding`, `AgentStep`, `AgentDecision`, `AgentTurnInput`, `AgentTurnEvent`, `AgentApi` e o token.
-- [ ] 5.5 `chat/`: `ChatMessage`, `MessagePart`, `PendingAction`, `Conversation`, `HandoffInfo`, `EmployeeConversationView`, `ChatStreamEvent`, `ConversationStreamEvent` e os corpos das rotas.
-- [ ] 5.6 `console/`: `ConsoleConversationItem`, `ConsoleList`, `ConsoleStreamEvent` e as consultas.
-- [ ] 5.7 `events.ts`, `errors.ts`, `demo-people.ts` e `index.ts`.
+- [x] 5.1 `identity/`: `SessionUser`, `UserProfile`, `LoginRequest`, `IdentityApi` e o token.
+- [x] 5.2 `tickets/`: `TicketSummary`, `TicketDetail`, enums, `PriorityFacts`, `PriorityAssessment`, `DuplicateCheck`, `TicketDraft`, `TicketsApi` e o token.
+- [x] 5.3 `knowledge/`: `ArticleExcerpt`, `KnowledgeApi` e o token.
+- [x] 5.4 `agent/`: `Understanding`, `AgentStep`, `AgentDecision`, `AgentTurnInput`, `AgentTurnEvent`, `AgentApi` e o token.
+- [x] 5.5 `chat/`: `ChatMessage`, `MessagePart`, `PendingAction`, `Conversation`, `HandoffInfo`, `EmployeeConversationView`, `ChatStreamEvent`, `ConversationStreamEvent` e os corpos das rotas.
+- [x] 5.6 `console/`: `ConsoleConversationItem`, `ConsoleList`, `ConsoleStreamEvent` e as consultas.
+- [x] 5.7 `events.ts`, `errors.ts`, `demo-people.ts` e `index.ts`.
 
 ## Detalhes de implementação
 
@@ -56,8 +56,8 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] Os corpos de requisição recusam campos extras (`requesterId`) e aceitam os exemplos da TechSpec.
-- [ ] `MessagePart` e `AgentTurnEvent` discriminam corretamente pelo `type`.
+- [x] Os corpos de requisição recusam campos extras (`requesterId`) e aceitam os exemplos da TechSpec.
+- [x] `MessagePart` e `AgentTurnEvent` discriminam corretamente pelo `type`.
 
 ## Arquivos relevantes
 
