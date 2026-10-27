@@ -31,10 +31,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 25.1 Revisar `monolith.module.ts` com todos os módulos de domínio e o script `db:reset`.
-- [ ] 25.2 Teste de reinício sobre o mesmo PGlite (TI-14).
-- [ ] 25.3 `e2e/playwright.config.ts` subindo o monólito com `LLM_PROVIDER=scripted` e o `web`.
-- [ ] 25.4 Roteiros dos cenários e os três specs.
+- [x] 25.1 Revisar `monolith.module.ts` com todos os módulos de domínio e o script `db:reset`.
+- [x] 25.2 Teste de reinício sobre o mesmo PGlite (TI-14).
+- [x] 25.3 `e2e/playwright.config.ts` subindo o monólito com `LLM_PROVIDER=scripted` e o `web`.
+- [x] 25.4 Roteiros dos cenários e os três specs.
 
 ## Detalhes de implementação
 
@@ -61,13 +61,13 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-14 — mantém histórico, cards, rascunho pendente e estado após reiniciar a aplicação.
+- [x] TI-14 — mantém histórico, cards, rascunho pendente e estado após reiniciar a aplicação.
 
 ### Testes E2E
 
-- [ ] E2E-01 — funcionário entra, relata VPN com erro 809, responde as perguntas e confirma o rascunho.
-- [ ] E2E-02 — funcionário pede chamado de outra pessoa e recebe a mesma resposta de inexistente.
-- [ ] E2E-03 — funcionário pede analista, analista assume, responde, devolve e o agent volta a responder.
+- [x] E2E-01 — funcionário entra, relata VPN com erro 809, responde as perguntas e confirma o rascunho.
+- [x] E2E-02 — funcionário pede chamado de outra pessoa e recebe a mesma resposta de inexistente.
+- [x] E2E-03 — funcionário pede analista, analista assume, responde, devolve e o agent volta a responder.
 
 ## Arquivos relevantes
 
