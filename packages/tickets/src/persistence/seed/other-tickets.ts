@@ -1,0 +1,47 @@
+import { employeeIdByName, type SeedTicketSpec } from './seed-ticket-spec.js';
+
+export const otherEmployeesTickets: readonly SeedTicketSpec[] = [
+  {
+    number: 'INC-20517',
+    type: 'incident',
+    title: 'VPN sem acesso à rede da filial',
+    description:
+      'Ninguém da equipe de Operações consegue acessar os servidores da filial pela VPN.',
+    category: 'network_vpn',
+    priority: 'high',
+    affected: 'my_team',
+    status: 'open',
+    requesterId: employeeIdByName('Carla Mendes'),
+    openedDaysAgo: 1,
+    updatedDaysAgo: 1,
+    updateLabel: 'Aberto',
+  },
+  {
+    number: 'REQ-10448',
+    type: 'request',
+    title: 'Acesso à pasta de propostas comerciais',
+    description: 'Preciso de acesso de leitura à pasta de propostas comerciais no SharePoint.',
+    category: 'access',
+    priority: 'low',
+    affected: 'only_me',
+    status: 'open',
+    requesterId: employeeIdByName('Bruno Tavares'),
+    openedDaysAgo: 2,
+    updatedDaysAgo: 2,
+    updateLabel: 'Aberto',
+  },
+  {
+    number: 'INC-20402',
+    type: 'incident',
+    title: 'Outlook não sincroniza no celular',
+    description: 'As mensagens novas não aparecem no Outlook do celular desde a troca de senha.',
+    category: 'email',
+    priority: 'low',
+    affected: 'only_me',
+    status: 'resolved',
+    requesterId: employeeIdByName('Diego Ramos'),
+    openedDaysAgo: 10,
+    updatedDaysAgo: 9,
+    updateLabel: 'Resolvido',
+  },
+];

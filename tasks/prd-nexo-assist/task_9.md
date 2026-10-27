@@ -32,12 +32,12 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 9.1 Schemas Drizzle `tickets.tickets`, `ticket_events` (`idempotency_key` único parcial) e `ticket_sequences`, com as migrations.
-- [ ] 9.2 `DrizzleTicketRepository`, com busca textual em `title || description`.
-- [ ] 9.3 `LegacyOutageSimulator` como decorador do repositório, configurado pelo `.env`.
-- [ ] 9.4 Seed com datas relativas.
-- [ ] 9.5 `TicketsController` e listener do evento de transferência.
-- [ ] 9.6 `TicketsModule` `@Global()` com o token `TICKETS_API`.
+- [x] 9.1 Schemas Drizzle `tickets.tickets`, `ticket_events` (`idempotency_key` único parcial) e `ticket_sequences`, com as migrations.
+- [x] 9.2 `DrizzleTicketRepository`, com busca textual em `title || description`.
+- [x] 9.3 `LegacyOutageSimulator` como decorador do repositório, configurado pelo `.env`.
+- [x] 9.4 Seed com datas relativas.
+- [x] 9.5 `TicketsController` e listener do evento de transferência.
+- [x] 9.6 `TicketsModule` `@Global()` com o token `TICKETS_API`.
 
 ## Detalhes de implementação
 
@@ -59,14 +59,14 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] TU-28 — simula indisponibilidade do legado pela duração configurada.
+- [x] TU-28 — simula indisponibilidade do legado pela duração configurada.
 
 ### Testes de integração
 
-- [ ] TI-02 — responde igual para chamado de outro funcionário e chamado inexistente.
-- [ ] TI-03 — aplica o filtro por solicitante em listar, consultar, complementar, reabrir e deduplicar.
-- [ ] TI-19 — carrega os dados de exemplo com o INC-20311 vencido e o INC-20150 reabrível.
-- [ ] Listener: o evento `chat.conversation.handed-off` grava `handed_off` no histórico do chamado citado; falha do legado não propaga.
+- [x] TI-02 — responde igual para chamado de outro funcionário e chamado inexistente.
+- [x] TI-03 — aplica o filtro por solicitante em listar, consultar, complementar, reabrir e deduplicar.
+- [x] TI-19 — carrega os dados de exemplo com o INC-20311 vencido e o INC-20150 reabrível.
+- [x] Listener: o evento `chat.conversation.handed-off` grava `handed_off` no histórico do chamado citado; falha do legado não propaga.
 
 ## Arquivos relevantes
 
