@@ -1,0 +1,1 @@
+ALTER TABLE "identity"."users" ADD COLUMN "password_hash" text;

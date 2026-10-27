@@ -18,7 +18,7 @@ pnpm dev
 - O front sobe em http://localhost:5173 e a API em http://localhost:3000/api.
 - As migrations e os dados de exemplo (pessoas, central de ajuda e chamados) rodam sozinhos no boot da API.
 - **Antes do `pnpm dev`, abra o `.env` e preencha `OPENROUTER_API_KEY`.** A chave é obrigatória quando `LLM_PROVIDER=openrouter`; sem ela a API recusa a subir. Para rodar sem chave, troque para `LLM_PROVIDER=scripted`: um modelo roteirizado, determinístico, usado também nos testes. Ele só serve para conhecer a interface e é recusado em produção.
-- A senha de demonstração é qualquer texto não vazio. Entre com um dos usuários abaixo.
+- Fora de produção, a senha de demonstração é qualquer texto não vazio. Com `NODE_ENV=production` (a imagem Docker e o deploy), o login exige a senha padrão do seed, `senha@1234` (`SEED_USER_PASSWORD`), guardada com hash bcrypt. Entre com um dos usuários abaixo.
 
 | Perfil      | Nome           | E-mail                       | Observação       |
 | ----------- | -------------- | ---------------------------- | ---------------- |
@@ -107,19 +107,19 @@ Princípios que valem mais que o prompt:
 
 ### Testes
 
-`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **751 testes, todos passando**.
+`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **760 testes, todos passando**.
 
 | Pacote            | Testes |
 | ----------------- | ------ |
 | `@nexo/contracts` | 24     |
 | `@nexo/shared`    | 47     |
-| `@nexo/identity`  | 19     |
+| `@nexo/identity`  | 25     |
 | `@nexo/tickets`   | 95     |
 | `@nexo/knowledge` | 22     |
 | `@nexo/agent`     | 235    |
 | `@nexo/chat`      | 231    |
 | `@nexo/monolith`  | 11     |
-| `@nexo/web`       | 67     |
+| `@nexo/web`       | 68     |
 
 `pnpm e2e` roda quatro jornadas no navegador com Playwright (abertura de chamado, chamado de terceiro, transferência para o analista e o chat em 375 px), contra um banco `nexo_e2e` próprio e o modelo roteirizado. É preciso ter o Postgres do `docker compose` no ar e instalar o Chromium uma vez (`pnpm --filter @nexo/e2e exec playwright install chromium`).
 
@@ -232,6 +232,7 @@ docker run --rm -p 3000:3000 \
    - `LLM_DAILY_BUDGET_USD` e `CHAT_RATE_LIMIT_PER_MINUTE` conforme o orçamento
    - `LOG_LEVEL=info`
    - `SEED_DEMO_DATA=true` para carregar as pessoas, a central de ajuda e os chamados de exemplo
+   - `SEED_USER_PASSWORD=senha@1234` (padrão): a senha que os usuários de exemplo usam no ambiente publicado
    - `SERVE_WEB_DIR=/app/web` (já vem na imagem)
 4. Em Settings, defina o **health check** como `/api/health` e gere um domínio público. O Railway injeta `PORT`.
 5. Faça o deploy, abra o domínio, entre com um usuário de demonstração e confira o fluxo: login, uma conversa completa e o limite de mensagens.

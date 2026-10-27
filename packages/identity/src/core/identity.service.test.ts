@@ -2,12 +2,15 @@ import { DEMO_ANALYSTS, DEMO_EMPLOYEES, DEMO_PEOPLE } from '@nexo/contracts';
 import { describe, expect, it } from 'vitest';
 import { IdentityService } from './identity.service.js';
 import { InMemoryUserRepository } from './in-memory-user-repository.js';
+import type { UserRecord } from './user-record.js';
 
 const [ana, bruno] = DEMO_EMPLOYEES;
 const [rafael] = DEMO_ANALYSTS;
 
+const RECORDS: UserRecord[] = DEMO_PEOPLE.map((person) => ({ ...person, passwordHash: null }));
+
 function makeService(): IdentityService {
-  return new IdentityService(new InMemoryUserRepository(DEMO_PEOPLE));
+  return new IdentityService(new InMemoryUserRepository(RECORDS));
 }
 
 describe('IdentityService', () => {

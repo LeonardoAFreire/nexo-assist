@@ -1,3 +1,3 @@
 import type { UserProfile } from '@nexo/contracts';
 
-export type UserRecord = UserProfile & { email: string };
+export type UserRecord = UserProfile & { email: string; passwordHash: string | null };

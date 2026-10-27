@@ -20,6 +20,7 @@
     "@nestjs/common": "^12.2.0",
     "@nexo/contracts": "workspace:*",
     "@nexo/shared": "workspace:*",
+    "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.4",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"

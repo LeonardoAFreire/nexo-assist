@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 const MIN_SECRET_LENGTH = 32;
 const DEFAULT_PORT = 3000;
+const DEFAULT_SEED_PASSWORD = 'senha@1234';
 const DEFAULT_MODEL = 'openai/gpt-4o-mini';
 const DEFAULT_CONFIDENCE_THRESHOLD = 0.6;
 const DEFAULT_DAILY_BUDGET_USD = 2;
@@ -50,5 +51,6 @@ export const envFields = {
     .positive()
     .default(DEFAULT_OUTAGE_DURATION_MS),
   SEED_DEMO_DATA: booleanText.default(true),
+  SEED_USER_PASSWORD: z.string().min(1).default(DEFAULT_SEED_PASSWORD),
   SERVE_WEB_DIR: optionalText(),
 };

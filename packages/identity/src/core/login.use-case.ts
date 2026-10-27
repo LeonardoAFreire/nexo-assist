@@ -1,5 +1,6 @@
 import type { LoginRequest, SessionUser, UserRole } from '@nexo/contracts';
 import { InvalidCredentialsError } from './invalid-credentials.error.js';
+import type { PasswordPolicy } from './password-policy.js';
 import { toSessionUser } from './user-profile.js';
 import type { UserRepository } from './user-repository.js';
 
@@ -21,6 +22,7 @@ export class LoginUseCase {
   constructor(
     private readonly users: UserRepository,
     private readonly sessions: SessionIssuer,
+    private readonly passwords: PasswordPolicy,
   ) {}
 
   async execute(input: LoginRequest): Promise<LoginResult> {
@@ -28,7 +30,7 @@ export class LoginUseCase {
       throw new InvalidCredentialsError();
     }
     const record = await this.users.findByEmail(input.email.trim().toLowerCase());
-    if (!record) {
+    if (!record || !(await this.passwords.accepts(input.password, record.passwordHash))) {
       throw new InvalidCredentialsError();
     }
     const { token, claims } = await this.sessions.issue({

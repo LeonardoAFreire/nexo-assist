@@ -13,4 +13,5 @@ export const usersTable = identitySchema.table('users', {
   department: text('department'),
   supportLevel: text('support_level').$type<SupportLevel>(),
   initials: text('initials').notNull(),
+  passwordHash: text('password_hash'),
 });
