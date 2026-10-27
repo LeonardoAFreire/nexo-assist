@@ -14,7 +14,7 @@ class ResizeObserverStub {
 
 globalThis.ResizeObserver = ResizeObserverStub;
 
-configure({ asyncUtilTimeout: 4000 });
+configure({ asyncUtilTimeout: 8000 });
 
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
 

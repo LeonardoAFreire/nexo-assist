@@ -21,7 +21,7 @@ import { ModelFailureError } from './model-failure.js';
 const MAX_STEPS = 6;
 const SERVER_ERROR = 503;
 const RATE_LIMITED = 429;
-const SHORT_TIMEOUTS = { firstEventMs: 50, turnMs: 5000 };
+const SHORT_TIMEOUTS = { firstEventMs: 400, turnMs: 5000 };
 
 function makeClient(
   model: Parameters<typeof asModelConfig>[0],

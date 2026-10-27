@@ -3,6 +3,7 @@ import { http as mswHttp } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { http } from '@/lib/http';
 import { currentConversationMock } from '@/test/chat-api-mock';
+import { conversationEventsMock } from '@/test/chat-events-mock';
 import { consoleApiMock } from '@/test/console-api-mock';
 import {
   identityApiMock,
@@ -28,6 +29,7 @@ async function signedInAs(email: string): Promise<RenderedApp> {
   server.use(
     ...identityApiMock(accounts),
     currentConversationMock(),
+    conversationEventsMock().handler,
     ...consoleApiMock([], makeAnalyst()).handlers,
   );
   const app = renderApp('/login');
