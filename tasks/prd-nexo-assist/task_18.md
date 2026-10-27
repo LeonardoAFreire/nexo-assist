@@ -30,10 +30,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 18.1 `EmployeeConversationController`: `current`, `messages` e `turns/retry`.
-- [ ] 18.2 `PendingActionsController`: editar, confirmar e cancelar.
-- [ ] 18.3 Throttler por usuário no `monolith.module.ts` e nos endpoints de chat.
-- [ ] 18.4 Montar o módulo de teste de integração compartilhado (identity, tickets, agent com fake, chat sobre PGlite).
+- [x] 18.1 `EmployeeConversationController`: `current`, `messages` e `turns/retry`.
+- [x] 18.2 `PendingActionsController`: editar, confirmar e cancelar.
+- [x] 18.3 Throttler por usuário no `monolith.module.ts` e nos endpoints de chat.
+- [x] 18.4 Montar o módulo de teste de integração compartilhado (identity, tickets, agent com fake, chat sobre PGlite).
 
 ## Detalhes de implementação
 
@@ -57,13 +57,13 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de integração
 
-- [ ] TI-04 — rejeita identificador de outro usuário no corpo e mantém os dados da sessão.
-- [ ] TI-05 — entrega o turno por SSE na ordem aceite → passos → texto → concluído e grava o turno.
-- [ ] TI-06 — cria o chamado na confirmação com os seis campos e número definitivo.
-- [ ] TI-07 — confirma por frase afirmativa e não grava com outra resposta ou cancelamento.
-- [ ] TI-08 — recalcula a prioridade ao editar o rascunho.
-- [ ] TI-15 — recusa a 31ª mensagem e o excesso por minuto sem chamar o modelo.
-- [ ] TI-16 — conclui a ação após indisponibilidade curta e degrada quando persiste.
+- [x] TI-04 — rejeita identificador de outro usuário no corpo e mantém os dados da sessão.
+- [x] TI-05 — entrega o turno por SSE na ordem aceite → passos → texto → concluído e grava o turno.
+- [x] TI-06 — cria o chamado na confirmação com os seis campos e número definitivo.
+- [x] TI-07 — confirma por frase afirmativa e não grava com outra resposta ou cancelamento.
+- [x] TI-08 — recalcula a prioridade ao editar o rascunho.
+- [x] TI-15 — recusa a 31ª mensagem e o excesso por minuto sem chamar o modelo.
+- [x] TI-16 — conclui a ação após indisponibilidade curta e degrada quando persiste.
 
 ## Arquivos relevantes
 
