@@ -33,7 +33,7 @@ export class TurnFinisher {
       requestHandoff(turn, input.understanding, 'critical');
       turn.say(CRITICAL_HANDOFF_TEXT);
     }
-    if (turn.observer.overdueShown) {
+    if (turn.observer.overdueShown && !turn.observer.quickOptionsShown) {
       offerOverdueOptions(turn);
     }
   }

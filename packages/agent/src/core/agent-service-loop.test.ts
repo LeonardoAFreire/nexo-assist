@@ -148,6 +148,27 @@ describe('AgentService, laço de resposta', () => {
     expect(labels).toEqual(['Falar com um analista', 'Adicionar informação', 'Não, obrigado']);
   });
 
+  it('RF20: não repete as opções quando o modelo já perguntou no chamado vencido', async () => {
+    const overdue = makeTicket({ number: 'INC-20311', overdue: true });
+    const asked = { question: 'Quer falar com um analista?', options: ['Sim', 'Não'] };
+    const { collect } = makeAgentHarness({
+      tickets: new InMemoryTicketsApi([{ requesterId: REQUESTER_ID, ticket: overdue }]),
+      script: [
+        understand({ intent: 'ticket_status' }),
+        {
+          type: 'respond',
+          text: 'Seu chamado está vencido.',
+          toolCalls: [
+            { name: 'mostrar_chamado', input: { number: 'INC-20311' } },
+            { name: 'perguntar_opcoes', input: asked },
+          ],
+        },
+      ],
+    });
+    const parts = partsOf(await collect());
+    expect(parts.filter((part) => part.type === 'quick_options')).toHaveLength(1);
+  });
+
   it('RF25: transfere no mesmo turno quando o rascunho tem prioridade crítica', async () => {
     const { collect, runs } = makeAgentHarness({
       tickets: new InMemoryTicketsApi([], { assessment: { priority: 'critical' } }),

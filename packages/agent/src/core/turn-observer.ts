@@ -7,6 +7,7 @@ export class TurnObserver {
   firstTokenMs: number | null = null;
   handoff: HandoffRequest | null = null;
   overdueShown = false;
+  quickOptionsShown = false;
   criticalDraft: TicketDraft | null = null;
 
   watch(event: AgentTurnEvent, elapsedMs: number): void {
@@ -19,6 +20,9 @@ export class TurnObserver {
     }
     if (event.type === 'part' && event.part.type === 'ticket_card' && event.part.ticket.overdue) {
       this.overdueShown = true;
+    }
+    if (event.type === 'part' && event.part.type === 'quick_options') {
+      this.quickOptionsShown = true;
     }
     if (event.type === 'proposal' && event.draft?.priority === 'critical') {
       this.criticalDraft = event.draft;
