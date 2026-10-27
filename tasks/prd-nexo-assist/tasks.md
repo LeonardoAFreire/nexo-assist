@@ -14,7 +14,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [ ] 8.0 `tickets/core`: casos de uso, numeração e `TicketsService`
 - [ ] 9.0 `tickets`: persistência, seed, simulador do legado, leitura HTTP e listener de transferência
 - [ ] 10.0 Domínio `knowledge`: artigos, busca em português e seed
-- [ ] 11.0 `agent/core`: fundações (`LlmClient`, fake, `StepRecorder`) e tools de consulta
+- [x] 11.0 `agent/core`: fundações (`LlmClient`, fake, `StepRecorder`) e tools de consulta
 - [ ] 12.0 `agent/core`: tools de proposta e `DecisionBuilder`
 - [ ] 13.0 `agent/core`: entendimento, política de turno, contexto, laço e `AgentService`
 - [ ] 14.0 `agent/persistence`: `MastraLlmClient`, decoradores resilientes, `agent.runs` e módulo

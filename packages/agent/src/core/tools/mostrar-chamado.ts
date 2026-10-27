@@ -1,0 +1,56 @@
+import { ticketNumberSchema } from '@nexo/contracts';
+import { z } from 'zod';
+import type { AgentTool } from '../agent-tool.js';
+import type { TurnContext } from '../turn-context.js';
+import { type OwnTicketLookup, findOwnTicket } from './find-own-ticket.js';
+
+const inputSchema = z.strictObject({ number: ticketNumberSchema });
+const outputSchema = z.discriminatedUnion('status', [
+  z.object({ status: z.literal('shown'), overdue: z.boolean() }),
+  z.object({ status: z.literal('not_found') }),
+]);
+
+export type MostrarChamadoInput = z.infer<typeof inputSchema>;
+export type MostrarChamadoOutput = z.infer<typeof outputSchema>;
+export type MostrarChamadoDeps = { tickets: OwnTicketLookup };
+
+async function showTicket(
+  tickets: OwnTicketLookup,
+  input: MostrarChamadoInput,
+  context: TurnContext,
+): Promise<MostrarChamadoOutput> {
+  const owner = { requesterId: context.requesterId, number: input.number };
+  const ticket = await findOwnTicket(tickets, owner);
+  if (!ticket) {
+    return { status: 'not_found' };
+  }
+  context.emit({ type: 'part', part: { type: 'ticket_card', ticket } });
+  return { status: 'shown', overdue: ticket.overdue };
+}
+
+function describeResult(output: MostrarChamadoOutput): string {
+  if (output.status === 'not_found') {
+    return 'chamado não encontrado';
+  }
+  return output.overdue ? 'chamado vencido' : 'chamado exibido';
+}
+
+export function createMostrarChamadoTool(
+  deps: MostrarChamadoDeps,
+): AgentTool<MostrarChamadoInput, MostrarChamadoOutput> {
+  return {
+    name: 'mostrar_chamado',
+    description:
+      'Mostra ao funcionário o cartão de um dos próprios chamados, com status, prazo e se está vencido.',
+    stepKind: 'viewed_ticket',
+    failureLabel: 'mostrou um chamado',
+    inputSchema,
+    outputSchema,
+    stepLabel: (input, output) =>
+      output.status === 'shown' && output.overdue
+        ? `consultou o SLA do ${input.number}`
+        : `mostrou o ${input.number}`,
+    stepResult: (_input, output) => describeResult(output),
+    execute: (input, context) => showTicket(deps.tickets, input, context),
+  };
+}
