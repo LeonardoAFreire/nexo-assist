@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const loginRequestSchema = z.strictObject({
   email: z.string().trim().toLowerCase().pipe(z.email()),
-  password: z.string().min(1),
+  password: z.string(),
   remember: z.boolean().default(false),
 });
 

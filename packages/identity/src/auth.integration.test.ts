@@ -107,9 +107,15 @@ describe('autenticação (TI-01)', () => {
   });
 
   it('recusa corpo inválido com validation_error', async () => {
-    const response = await post('/auth/login', { email: ANA.email, password: '' });
+    const response = await post('/auth/login', { email: 'nao-e-email', password: 'x' });
     expect(response.status).toBe(400);
     expect(await response.json()).toMatchObject({ error: { code: 'validation_error' } });
+  });
+
+  it('recusa senha vazia com invalid_credentials', async () => {
+    const response = await post('/auth/login', { email: ANA.email, password: '' });
+    expect(response.status).toBe(401);
+    expect(await response.json()).toMatchObject({ error: { code: 'invalid_credentials' } });
   });
 
   it('recusa login vindo de outra origem', async () => {

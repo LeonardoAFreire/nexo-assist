@@ -14,10 +14,13 @@ describe('loginRequestSchema', () => {
     });
   });
 
-  it('recusa senha vazia, e-mail inválido e campos extras', () => {
+  it('aceita senha vazia para o caso de uso recusar com erro genérico', () => {
     expect(loginRequestSchema.safeParse({ email: 'ana@nexo.com.br', password: '' }).success).toBe(
-      false,
+      true,
     );
+  });
+
+  it('recusa e-mail inválido e campos extras', () => {
     expect(loginRequestSchema.safeParse({ email: 'ana', password: 'x' }).success).toBe(false);
     expect(
       loginRequestSchema.safeParse({ email: 'ana@nexo.com.br', password: 'x', role: 'analyst' })
