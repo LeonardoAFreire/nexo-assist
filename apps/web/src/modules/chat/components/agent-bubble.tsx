@@ -1,3 +1,4 @@
+import { FormattedText } from './formatted-text.js';
 import { TypingIndicator } from './typing-indicator.js';
 
 type AgentBubbleProps = {
@@ -12,7 +13,7 @@ export function AgentBubble({ text, typing }: AgentBubbleProps) {
 
   return (
     <div className="max-w-full rounded-[4px_12px_12px_12px] border border-rule bg-paper px-4 py-3 text-[14.5px] break-words whitespace-pre-wrap text-ink sm:max-w-[600px]">
-      {typing ? <TypingIndicator /> : text}
+      {typing ? <TypingIndicator /> : <FormattedText text={text} />}
     </div>
   );
 }
