@@ -31,10 +31,10 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ## Subtarefas
 
-- [ ] 8.1 Porta `TicketRepository` (todas as consultas recebem `requesterId`) e repositório em memória de teste.
-- [ ] 8.2 `TicketNumberGenerator`.
-- [ ] 8.3 `CreateTicket`, `ComplementTicket`, `ReopenTicket` e `RecordHandoff`, com eventos de histórico e `idempotencyKey`.
-- [ ] 8.4 `TicketsService` implementando todos os métodos de `TicketsApi`, incluindo `assessPriority`, `findDuplicates` e `contactDeadline`, com `overdue`, `dueAt` e `latestEvent` calculados.
+- [x] 8.1 Porta `TicketRepository` (todas as consultas recebem `requesterId`) e repositório em memória de teste.
+- [x] 8.2 `TicketNumberGenerator`.
+- [x] 8.3 `CreateTicket`, `ComplementTicket`, `ReopenTicket` e `RecordHandoff`, com eventos de histórico e `idempotencyKey`.
+- [x] 8.4 `TicketsService` implementando todos os métodos de `TicketsApi`, incluindo `assessPriority`, `findDuplicates` e `contactDeadline`, com `overdue`, `dueAt` e `latestEvent` calculados.
 
 ## Detalhes de implementação
 
@@ -54,9 +54,9 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes de unidade
 
-- [ ] `TicketsService` com chamados de dois solicitantes: listar, consultar, complementar, reabrir e `findDuplicates` nunca devolvem nem alteram chamados do outro; consulta de chamado alheio e inexistente lança o mesmo erro.
-- [ ] `CreateTicket` com a mesma `idempotencyKey` duas vezes devolve o mesmo número.
-- [ ] `ReopenTicket` fora de 7 dias lança `TicketRuleViolationError`; `ComplementTicket` em chamado resolvido é recusado.
+- [x] `TicketsService` com chamados de dois solicitantes: listar, consultar, complementar, reabrir e `findDuplicates` nunca devolvem nem alteram chamados do outro; consulta de chamado alheio e inexistente lança o mesmo erro.
+- [x] `CreateTicket` com a mesma `idempotencyKey` duas vezes devolve o mesmo número.
+- [x] `ReopenTicket` fora de 7 dias lança `TicketRuleViolationError`; `ComplementTicket` em chamado resolvido é recusado.
 
 ## Arquivos relevantes
 
