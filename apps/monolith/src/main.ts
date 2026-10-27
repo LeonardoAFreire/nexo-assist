@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppConfig } from '@nexo/shared/config';
 import { Logger } from '@nexo/shared/logger';
 import cookieParser from 'cookie-parser';
@@ -9,7 +10,9 @@ const GLOBAL_PREFIX = 'api';
 const BODY_LIMIT = '32kb';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(MonolithModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(MonolithModule, {
+    bufferLogs: true,
+  });
   const config = app.get(AppConfig);
   app.useLogger(app.get(Logger));
   app.useBodyParser('json', { limit: BODY_LIMIT });
