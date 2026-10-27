@@ -11,7 +11,7 @@ export function AppShell() {
   }
   const items = navItemsFor(user.role);
   return (
-    <div className="flex h-screen bg-paper text-ink">
+    <div className="flex h-screen flex-col bg-paper text-ink md:flex-row">
       <Sidebar user={user} items={items} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar items={items} />

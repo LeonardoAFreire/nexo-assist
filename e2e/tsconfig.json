@@ -4,7 +4,8 @@
     "noEmit": true,
     "types": ["node"],
     "experimentalDecorators": false,
-    "emitDecoratorMetadata": false
+    "emitDecoratorMetadata": false,
+    "lib": ["ES2022", "DOM"]
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "test-results", "playwright-report"]
