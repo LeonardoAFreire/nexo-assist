@@ -1,7 +1,7 @@
 import type { Database } from '@nexo/shared/database';
 import { and, eq, isNull, lte, or } from 'drizzle-orm';
 import type { AcquireTurnLockInput } from '../core/conversation/conversation-repository.js';
-import { type ConversationRow } from './conversation-mapper.js';
+import type { ConversationRow } from './conversation-mapper.js';
 import { conversationsTable } from './conversations.table.js';
 
 type ReadMark = { conversationId: string; readAt: string };
