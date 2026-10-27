@@ -25,6 +25,7 @@ export function makeTurnContext(overrides: TurnContextOverrides = {}): Collected
     emit: (event) => {
       events.push(event);
     },
+    questionsAllowed: () => true,
     questionAsked: () =>
       events.some((event) => event.type === 'part' && event.part.type === 'quick_options'),
     ...overrides,

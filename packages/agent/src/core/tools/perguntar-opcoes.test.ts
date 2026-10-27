@@ -32,7 +32,7 @@ describe('perguntar_opcoes', () => {
     await tool.execute(input, context);
     const repeated = await tool.execute(input, context);
     expect(events).toHaveLength(1);
-    expect(repeated).toMatchObject({ optionCount: 0 });
+    expect(repeated).toMatchObject({ optionCount: 0, status: 'refused' });
     expect(repeated.note).toContain('Já existe uma pergunta');
   });
 
@@ -51,8 +51,13 @@ describe('perguntar_opcoes', () => {
   it('usa a pergunta como resultado do passo', () => {
     const tool = createPerguntarOpcoesTool();
     const input = { question: 'Quem é afetado?', options: ['a', 'b'] };
-    expect(tool.stepResult(input, { question: input.question, optionCount: 2, note: '' })).toBe(
-      'Quem é afetado?',
-    );
+    expect(
+      tool.stepResult(input, {
+        status: 'asked',
+        question: input.question,
+        optionCount: 2,
+        note: '',
+      }),
+    ).toBe('Quem é afetado?');
   });
 });

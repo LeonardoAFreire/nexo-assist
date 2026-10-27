@@ -2,6 +2,7 @@ import type { AgentTurnInput, Understanding } from '@nexo/contracts';
 import { BUDGET_UNDERSTANDING } from './budget-understanding.js';
 import { BudgetGuard } from './budget-guard.js';
 import { ContextBuilder } from './context-builder.js';
+import { isCriticalReport } from './critical-report.js';
 import { BUDGET_DEGRADATION, type Degradation, toDegradation } from './degradation.js';
 import { HANDOFF_TEXT, requestHandoff } from './fixed-replies.js';
 import { wasImpactAsked } from './impact-history.js';
@@ -51,6 +52,7 @@ export class TurnRunner {
   private async handleTurn(input: AgentTurnInput, turn: TurnSession): Promise<void> {
     const messages = this.contexts.build(input);
     const understanding = await this.understand(messages, turn);
+    turn.markCriticalReport(isCriticalReport(understanding));
     const route = this.policy.decide(understanding);
     if (route.kind === 'handoff') {
       requestHandoff(turn, understanding, route.reason);

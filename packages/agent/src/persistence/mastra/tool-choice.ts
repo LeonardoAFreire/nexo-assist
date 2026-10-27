@@ -1,7 +1,7 @@
 const MAX_FORCED_STEPS = 3;
 const CITATION_TOOL = 'citar_artigo';
 const JSON_OUTPUT_TYPE = 'json';
-const REFUSED_STATUSES = ['rule_violated', 'duplicate_found', 'not_found'];
+const REFUSED_STATUSES = ['rule_violated', 'duplicate_found', 'not_found', 'refused'];
 
 type ToolResult = { toolName: string; output?: unknown };
 type StepWithTools = { toolCalls?: { toolName: string }[]; toolResults?: ToolResult[] };

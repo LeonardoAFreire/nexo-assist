@@ -9,4 +9,5 @@ export type TurnContext = {
   readonly articles: SearchedArticles;
   emit(event: AgentTurnEvent): void;
   questionAsked(): boolean;
+  questionsAllowed(): boolean;
 };

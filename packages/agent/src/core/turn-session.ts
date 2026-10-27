@@ -23,6 +23,7 @@ export class TurnSession {
   readonly metrics: TurnMetrics;
   readonly context: TurnContext;
   readonly startedAt: Date;
+  private criticalReport = false;
 
   constructor(
     input: AgentTurnInput,
@@ -37,7 +38,12 @@ export class TurnSession {
       articles: new SearchedArticles(),
       emit: (event) => this.emit(event),
       questionAsked: () => this.observer.quickOptionsShown,
+      questionsAllowed: () => !this.criticalReport,
     };
+  }
+
+  markCriticalReport(isCritical: boolean): void {
+    this.criticalReport = isCritical;
   }
 
   elapsedMs(): number {

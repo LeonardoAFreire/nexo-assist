@@ -8,6 +8,8 @@ const MIN_OPTIONS = 2;
 const MAX_OPTIONS = 5;
 const AWAITING_ANSWER_NOTE =
   'Aguardando a resposta do funcionário. Encerre o turno sem escrever mais nada.';
+const CRITICAL_NOTE =
+  'Relato crítico: a equipe ou a empresa está parada. Não pergunte mais nada; chame propor_chamado agora com o que já foi dito.';
 const ALREADY_ASKED_NOTE =
   'Já existe uma pergunta com opções neste turno. Não faça outra; encerre o turno sem escrever mais nada.';
 
@@ -19,6 +21,7 @@ const inputSchema = z.strictObject({
     .max(MAX_OPTIONS),
 });
 const outputSchema = z.object({
+  status: z.enum(['asked', 'refused']),
   question: z.string(),
   optionCount: z.number().int(),
   note: z.string(),
@@ -28,15 +31,28 @@ export type PerguntarOpcoesInput = z.infer<typeof inputSchema>;
 export type PerguntarOpcoesOutput = z.infer<typeof outputSchema>;
 
 function askQuestion(input: PerguntarOpcoesInput, context: TurnContext): PerguntarOpcoesOutput {
+  if (!context.questionsAllowed()) {
+    return { status: 'refused', question: input.question, optionCount: 0, note: CRITICAL_NOTE };
+  }
   if (context.questionAsked()) {
-    return { question: input.question, optionCount: 0, note: ALREADY_ASKED_NOTE };
+    return {
+      status: 'refused',
+      question: input.question,
+      optionCount: 0,
+      note: ALREADY_ASKED_NOTE,
+    };
   }
   const options = input.options.map((label, index) => ({ id: `option-${index + 1}`, label }));
   context.emit({
     type: 'part',
     part: { type: 'quick_options', question: input.question, options, answered: false },
   });
-  return { question: input.question, optionCount: options.length, note: AWAITING_ANSWER_NOTE };
+  return {
+    status: 'asked',
+    question: input.question,
+    optionCount: options.length,
+    note: AWAITING_ANSWER_NOTE,
+  };
 }
 
 export function createPerguntarOpcoesTool(): AgentTool<
