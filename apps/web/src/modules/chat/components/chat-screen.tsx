@@ -5,7 +5,7 @@ import { messageKey } from '../hooks/ui-messages.js';
 import { useConversationEvents } from '../hooks/use-conversation-events.js';
 import { type NexoChat, useNexoChat } from '../hooks/use-nexo-chat.js';
 import { useRequestHandoff } from '../hooks/use-request-handoff.js';
-import { ChatFooter } from './chat-footer.js';
+import { ChatFooter, type FooterState } from './chat-footer.js';
 import { ChatThread } from './chat-thread.js';
 import { ConversationStateBanner } from './conversation-state-banner.js';
 
@@ -15,6 +15,10 @@ type ChatScreenProps = {
 
 function isTransferred(conversation: Conversation | null): boolean {
   return conversation?.state === 'waiting_analyst' || conversation?.state === 'with_analyst';
+}
+
+function footerStateOf(chat: NexoChat, conversation: Conversation | null): FooterState {
+  return { busy: chat.busy, streaming: chat.active, transferred: isTransferred(conversation) };
 }
 
 function chatActionsOf(chat: NexoChat): ChatActions {
@@ -50,11 +54,7 @@ export function ChatScreen({ view }: ChatScreenProps) {
       />
       <ChatFooter
         usage={view.usage}
-        state={{
-          busy: chat.busy,
-          streaming: chat.active,
-          transferred: isTransferred(view.conversation),
-        }}
+        state={footerStateOf(chat, view.conversation)}
         rejection={chat.feedback.rejection}
         handoff={{ pending: handoff.isPending, error: handoff.error?.message ?? null }}
         onSend={chat.send}

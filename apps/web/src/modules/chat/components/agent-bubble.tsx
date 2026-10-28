@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useSmoothText } from '../hooks/use-smooth-text.js';
 import { FormattedText } from './formatted-text.js';
 import { TypingIndicator } from './typing-indicator.js';
 
@@ -18,7 +19,9 @@ function StreamingCaret() {
 }
 
 export function AgentBubble({ text, busy, children }: AgentBubbleProps) {
+  const visible = useSmoothText(text);
   const typing = busy && text === '';
+  const writing = visible !== '' && (busy || visible.length < text.length);
   if (!text && !typing && !children) {
     return null;
   }
@@ -26,8 +29,8 @@ export function AgentBubble({ text, busy, children }: AgentBubbleProps) {
     <div className="flex max-w-full flex-col gap-3 rounded-[4px_12px_12px_12px] border border-rule bg-paper px-4 py-3 text-[14.5px] break-words text-ink sm:max-w-[600px]">
       {text || typing ? (
         <div className="whitespace-pre-wrap">
-          {typing ? <TypingIndicator /> : <FormattedText text={text} />}
-          {busy && !typing ? <StreamingCaret /> : null}
+          {typing ? <TypingIndicator /> : <FormattedText text={visible} />}
+          {writing ? <StreamingCaret /> : null}
         </div>
       ) : null}
       {children}

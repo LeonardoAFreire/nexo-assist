@@ -1,11 +1,18 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { agentView, liveText } from '../hooks/agent-view.js';
 import type { NexoUIMessage } from '../types/nexo-ui-message.js';
-import { LiveMessage } from './live-message.js';
+import { AgentMessage } from './agent-message.js';
+import { EmployeeMessage } from './employee-message.js';
 import { PersistedMessage } from './persisted-message.js';
 
 type MessageListProps = {
   messages: NexoUIMessage[];
+  streamingId: string | null;
+};
+
+type MessageItemProps = {
+  message: NexoUIMessage;
   streamingId: string | null;
 };
 
@@ -23,18 +30,25 @@ function isRenderable(message: NexoUIMessage, streamingId: string | null): boole
   return message.role === 'user' || message.parts.length > 0 || message.id === streamingId;
 }
 
-function MessageItem({
-  message,
-  streamingId,
-}: {
-  message: NexoUIMessage;
-  streamingId: string | null;
-}) {
+function MessageItem({ message, streamingId }: MessageItemProps) {
+  const agent = agentView(message, streamingId);
+  if (agent !== null) {
+    return (
+      <AgentMessage
+        messageId={agent.messageId}
+        text={agent.text}
+        steps={agent.steps}
+        parts={agent.parts}
+        decision={agent.decision}
+        busy={agent.busy}
+      />
+    );
+  }
   const persisted = message.metadata?.message;
   if (persisted !== undefined) {
     return <PersistedMessage message={persisted} />;
   }
-  return <LiveMessage message={message} streaming={message.id === streamingId} />;
+  return <EmployeeMessage text={liveText(message)} />;
 }
 
 export function MessageList({ messages, streamingId }: MessageListProps) {

@@ -16,19 +16,10 @@ type ChatThreadProps = {
   onRetry: () => void;
 };
 
-function scrollProgress(messages: NexoUIMessage[]): string {
-  const last = messages.at(-1);
-  const size = last?.parts.reduce((total, part) => total + JSON.stringify(part).length, 0) ?? 0;
-  return `${messages.length}:${size}:${last?.metadata?.message?.id ?? ''}`;
-}
-
 export function ChatThread(props: ChatThreadProps) {
   const { messages, streamingId, busy, error, onPick, onRetry } = props;
   const lastUserId = messages.findLast((message) => message.role === 'user')?.id ?? null;
-  const { ref, atBottom, onScroll, scrollToBottom } = useStickToBottom<HTMLDivElement>(
-    scrollProgress(messages),
-    lastUserId,
-  );
+  const { ref, atBottom, onScroll, scrollToBottom } = useStickToBottom<HTMLDivElement>(lastUserId);
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
       <div
