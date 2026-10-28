@@ -37,7 +37,7 @@ export function createCitarArtigoTool(): AgentTool<CitarArtigoInput, CitarArtigo
   return {
     name: 'citar_artigo',
     description:
-      'Cita para o funcionário um artigo que veio da busca na central de ajuda deste turno, informando se ele se aplica ao caso e por quê.',
+      'Cita para o funcionário um artigo que veio da busca na central de ajuda deste turno, informando se ele se aplica ao caso e por quê. Quando o artigo se aplica, escreva na resposta os passos da solução que ele traz, em poucas linhas. Cite um artigo que não se aplica só quando ele trata do mesmo problema do funcionário (por exemplo, o mesmo erro em outra versão do sistema); artigos sobre outros assuntos não são citados.',
     stepKind: 'cited_article',
     failureLabel: 'avaliou um artigo',
     inputSchema,
