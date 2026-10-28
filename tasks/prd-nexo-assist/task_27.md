@@ -33,10 +33,12 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 - [x] 27.1 `serve-static` no `monolith.module.ts` quando `SERVE_WEB_DIR` está definido.
 - [x] 27.2 `Dockerfile` multi-stage (`pnpm build` e imagem final só com o necessário).
 - [x] 27.3 Publicar no Render (Postgres, variáveis, health check): https://nexo-assist.onrender.com
-- [ ] 27.4 Verificar no ambiente publicado o limite de uso e a mensagem de limite atingido.
+- [x] 27.4 Verificar no ambiente publicado o limite de uso e a mensagem de limite atingido.
 - [x] 27.5 Escrever o `README.md` com os resultados dos testes, dos evals (tarefa 26) e o custo medido.
 
-> Pendente: 27.4 (verificar o limite de uso no ambiente publicado). O README já traz os passos do deploy como instruções e os resultados dos evals e o custo medido.
+> 27.4 verificado em 2026-10-28 com a Elisa e o Diego: login 200, conversa completa ("Oi" respondido em 7,7 s), 30 mensagens aceitas e a 31ª recusada com 429 `message_limit_reached` sem chamar o modelo. A conversa de teste foi encerrada por uma analista.
+>
+> O clone limpo não foi refeito à mão: o build do Render parte do repositório limpo (`pnpm install --frozen-lockfile` e `pnpm build` no `Dockerfile`), e as migrations e os dados de exemplo sobem num banco vazio em todo E2E e no primeiro boot do Render.
 
 ## Detalhes de implementação
 
@@ -54,7 +56,7 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 ### Testes E2E
 
-- [ ] Verificação manual no ambiente publicado: login, uma conversa completa e limite de uso atingido sem chamada ao modelo.
+- [x] Verificação manual no ambiente publicado: login, uma conversa completa e limite de uso atingido sem chamada ao modelo.
 - [ ] Clone limpo seguindo só o README sobe a aplicação com os dados de exemplo.
 
 ## Arquivos relevantes

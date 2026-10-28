@@ -30,7 +30,7 @@ PRD: [`prd.md`](prd.md) · TechSpec: [`techspec.md`](techspec.md)
 - [x] 24.0 `web`: console do analista
 - [x] 25.0 Composição final do monólito e testes E2E
 - [x] 26.0 Evals com o modelo real, relatório e escolha do modelo
-- [ ] 27.0 Deploy e README
+- [x] 27.0 Deploy e README
 
 ## Dependências e paralelismo
 
