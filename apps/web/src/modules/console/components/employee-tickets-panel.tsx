@@ -42,6 +42,7 @@ export function EmployeeTicketsPanel({ conversationId, analystId }: EmployeeTick
   const mode = detail ? attendanceModeOf(detail.conversation, analystId) : null;
   const allowed = mode !== null && ACCESS_MODES.includes(mode);
   const query = useEmployeeTickets(conversationId, allowed);
+  const tickets = allowed && !query.isError ? query.data : undefined;
   const firstName = detail?.conversation.employee.name.split(' ')[0] ?? 'funcionário';
   return (
     <aside
@@ -50,7 +51,7 @@ export function EmployeeTicketsPanel({ conversationId, analystId }: EmployeeTick
     >
       <header className="flex h-16 shrink-0 flex-col justify-center gap-0.5 border-b border-rule pr-3.5 pl-5">
         <h2 className="text-[15.5px] font-semibold text-ink">Chamados da {firstName}</h2>
-        <p className="text-[12.5px] text-ink-3">{countsOf(query.data)}</p>
+        <p className="text-[12.5px] text-ink-3">{countsOf(tickets)}</p>
       </header>
       <div className="flex flex-col gap-8 px-5 pt-6 pb-5">
         {query.isPending && allowed ? (
@@ -59,8 +60,8 @@ export function EmployeeTicketsPanel({ conversationId, analystId }: EmployeeTick
         {mode !== null && !allowed ? (
           <p className="text-[13px] text-ink-3">{RESTRICTED_MESSAGE}</p>
         ) : null}
-        {query.isError ? <PanelError onRetry={() => void query.refetch()} /> : null}
-        {query.data && !query.isError ? <EmployeeTicketsContent tickets={query.data} /> : null}
+        {allowed && query.isError ? <PanelError onRetry={() => void query.refetch()} /> : null}
+        {tickets ? <EmployeeTicketsContent tickets={tickets} /> : null}
       </div>
     </aside>
   );
