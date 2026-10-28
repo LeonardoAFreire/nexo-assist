@@ -10,7 +10,9 @@ describe('TicketChoice', () => {
       title: 'Excel fecha sozinho ao abrir planilhas grandes',
       lastUpdatedAt: '2026-10-21T17:52:00.000Z',
     });
-    render(<TicketChoice ticket={ticket} disabled={false} onChoose={() => undefined} />);
+    render(
+      <TicketChoice ticket={ticket} selected={false} disabled={false} onChoose={() => undefined} />,
+    );
     const choice = screen.getByRole('button', { name: /INC-20298/ });
     expect(choice).toHaveTextContent('Excel fecha sozinho ao abrir planilhas grandes');
     expect(choice).toHaveTextContent('21 out');

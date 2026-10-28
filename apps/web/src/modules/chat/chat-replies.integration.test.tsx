@@ -1,5 +1,5 @@
 import type { ChatMessage, SendMessageRequest } from '@nexo/contracts';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { completedStream } from '@/test/chat-api-mock';
 import { makeTicketDetail } from '@/test/chat-cards-factories';
@@ -77,7 +77,12 @@ describe('opções rápidas (TI-22)', () => {
 });
 
 function selectionMessage(): ChatMessage {
-  const overdue = makeTicketSummary({ number: 'INC-20311', overdue: true, priority: 'medium' });
+  const overdue = makeTicketSummary({
+    number: 'INC-20311',
+    title: 'Notebook lento após atualização',
+    overdue: true,
+    priority: 'medium',
+  });
   const other = makeTicketSummary({ number: 'INC-20400', title: 'Impressora sem toner' });
   return makeChatMessage({
     author: 'agent',
@@ -87,7 +92,7 @@ function selectionMessage(): ChatMessage {
 }
 
 describe('seleção de chamado (TI-23)', () => {
-  it('escolhe um chamado da lista e mostra o card com prazo vencido', async () => {
+  it('escolhe um chamado da lista, mantém a escolha marcada e mostra o card com prazo vencido', async () => {
     const message = selectionMessage();
     const ticket = makeTicketDetail({ number: 'INC-20311', overdue: true });
     const reply = makeChatMessage({
@@ -111,7 +116,10 @@ describe('seleção de chamado (TI-23)', () => {
     await app.user.click(screen.getByRole('button', { name: /INC-20311/ }));
     expect(await thread().findByText('O INC-20311 está acima do prazo.')).toBeVisible();
     expect(log.bodies[0]?.ticketSelection).toEqual({ messageId: message.id, number: 'INC-20311' });
-    expect(screen.queryByRole('list', { name: 'Escolha um chamado' })).not.toBeInTheDocument();
+    expect(log.bodies[0]?.text).toBe('INC-20311 · Notebook lento após atualização');
+    const chosen = within(choices).getByRole('button', { name: /INC-20311/ });
+    expect(chosen).toHaveAttribute('aria-pressed', 'true');
+    expect(within(choices).getByRole('button', { name: /INC-20400/ })).toBeDisabled();
     expect(screen.getAllByText('· prazo vencido').length).toBeGreaterThan(0);
   });
 });
