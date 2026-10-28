@@ -29,11 +29,11 @@ describe('TicketCard', () => {
     expect(screen.getByRole('heading', { name: /notebook lento/i })).toBeInTheDocument();
     expect(screen.getByText('INC-20311')).toBeInTheDocument();
     expect(screen.getByText('Aguardando analista')).toBeInTheDocument();
-    expect(screen.getByText('Prioridade média')).toBeInTheDocument();
+    expect(screen.getByText('Média')).toBeInTheDocument();
     expect(screen.getByText('Hardware')).toBeInTheDocument();
     expect(screen.getByText(/Lentidão geral/)).toBeInTheDocument();
-    expect(screen.getByText(/14\/10\/2026,? 10:20/)).toBeInTheDocument();
-    expect(screen.getByText(/20\/10\/2026,? 10:20/)).toBeInTheDocument();
+    expect(screen.getByText(/14 out,? 10:20/)).toBeInTheDocument();
+    expect(screen.getByText(/há \d+ dias/)).toBeInTheDocument();
   });
 
   it('mostra "prazo vencido" em texto quando o chamado está vencido', () => {

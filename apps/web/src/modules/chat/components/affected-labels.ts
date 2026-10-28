@@ -13,6 +13,12 @@ export const pendingKindLabels = {
   reopen_ticket: 'Reabertura de chamado',
 } as const;
 
+export const pendingKindNames = {
+  create_ticket: 'Novo chamado',
+  complement_ticket: 'Complemento',
+  reopen_ticket: 'Reabertura',
+} as const;
+
 export const actionStatusLabels = {
   pending: 'aguardando confirmação',
   confirmed: 'confirmada',

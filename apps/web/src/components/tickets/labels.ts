@@ -18,7 +18,7 @@ export const priorityLabels: Record<TicketPriority, string> = {
 
 export const categoryLabels: Record<TicketCategory, string> = {
   access: 'Acesso',
-  network_vpn: 'Rede/VPN',
+  network_vpn: 'Rede e VPN',
   hardware: 'Hardware',
   software: 'Software',
   email: 'E-mail',

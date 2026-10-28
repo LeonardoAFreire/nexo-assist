@@ -20,12 +20,13 @@ test('E2E-01: abre um chamado de VPN com erro 809 após confirmar o rascunho', a
   const draft = history(page).getByRole('article', { name: /^Rascunho/ });
   await expect(draft).toContainText(DRAFT_TITLE);
   await expect(draft).toContainText('Só eu');
-  await expect(draft).toContainText('Prioridade alta');
-  await expect(draft).toContainText('Resposta até');
+  await expect(draft).toContainText('Alta');
+  await expect(draft).toContainText('resposta até');
   await expect(draft).toContainText(PROVISIONAL_NUMBER);
   await draft.getByRole('button', { name: /Confirmar/ }).click();
   await expect(history(page).getByText(/Rascunho D-\d+ · confirmada/)).toBeVisible();
   const card = history(page).getByRole('article', { name: DRAFT_TITLE });
   await expect(card).toContainText(DEFINITIVE_NUMBER);
-  await expect(card).toContainText('Prioridade alta');
+  await expect(card).toContainText('Prioridade');
+  await expect(card).toContainText('Alta');
 });

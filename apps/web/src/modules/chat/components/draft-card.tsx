@@ -4,7 +4,7 @@ import { useFocusAfterEdit } from '../hooks/use-focus-after-edit.js';
 import { usePendingAction } from '../hooks/use-pending-action.js';
 import { ActionFrame } from './action-frame.js';
 import { DraftEditForm } from './draft-edit-form.js';
-import { DraftFields } from './draft-fields.js';
+import { DraftBody, DraftFields } from './draft-fields.js';
 
 type DraftCardProps = {
   action: PendingAction;
@@ -26,8 +26,9 @@ export function DraftCard({ action, draft }: DraftCardProps) {
       api={api}
       onEdit={() => setEditing(true)}
       editButtonRef={editButtonRef}
+      fields={<DraftFields draft={draft} />}
     >
-      <DraftFields draft={draft} />
+      <DraftBody draft={draft} />
     </ActionFrame>
   );
 }

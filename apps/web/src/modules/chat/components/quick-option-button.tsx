@@ -16,11 +16,8 @@ export function QuickOptionButton({ option, shortcut, disabled, onPick }: QuickO
       disabled={disabled}
       aria-keyshortcuts={String(shortcut)}
       onClick={() => onPick(option)}
-      className="h-9 rounded-full border-ink/15 bg-paper px-3.5 text-[13.5px] text-ink"
+      className="h-auto rounded-lg border-rule bg-paper px-3 py-[7px] text-[13.5px] font-medium text-ink hover:border-primary hover:bg-primary-soft hover:text-primary-text"
     >
-      <kbd aria-hidden="true" className="rounded bg-desk px-1.5 text-xs font-medium text-ink-3">
-        {shortcut}
-      </kbd>
       {option.label}
     </Button>
   );

@@ -1,43 +1,46 @@
 import type { PendingAction } from '@nexo/contracts';
 import type { ReactNode, Ref } from 'react';
+import { CardBody } from '@/components/tickets/card-body';
+import { CardEyebrow } from '@/components/tickets/card-eyebrow';
+import { CardShell } from '@/components/tickets/card-shell';
+import { StatusDot } from '@/components/tickets/status-dot';
 import { useChatActions } from '../hooks/chat-actions-context.js';
 import { useConfirmShortcut } from '../hooks/use-confirm-shortcut.js';
 import type { PendingActionApi } from '../hooks/use-pending-action.js';
 import { ActionButtons } from './action-buttons.js';
 import { actionTitle } from './action-title.js';
+import { pendingKindNames } from './affected-labels.js';
 
 type ActionFrameProps = {
   action: PendingAction;
   api: PendingActionApi;
   onEdit: (() => void) | null;
   editButtonRef?: Ref<HTMLButtonElement>;
+  fields?: ReactNode;
   children: ReactNode;
 };
 
-function ActionHeader({ title }: { title: string }) {
+function AwaitingConfirmation() {
   return (
-    <header className="flex flex-wrap items-center gap-2">
-      <span className="text-[13px] font-semibold text-ink-2">{title}</span>
-      <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-xs font-medium text-ink-2">
-        Aguardando confirmação
-      </span>
-    </header>
+    <span className="flex items-center gap-1.5 font-medium text-warning-text">
+      <StatusDot className="bg-warning" />
+      Aguardando confirmação
+    </span>
   );
 }
 
-export function ActionFrame({ action, api, onEdit, editButtonRef, children }: ActionFrameProps) {
+export function ActionFrame(props: ActionFrameProps) {
+  const { action, api, onEdit, editButtonRef, fields, children } = props;
   const { busy } = useChatActions();
   const disabled = busy || api.isPending;
   useConfirmShortcut(!disabled, () => api.confirm('shortcut'));
   const title = actionTitle(action);
+  const kind = pendingKindNames[action.kind];
+  const eyebrow = <CardEyebrow kind={kind} reference={title} state={<AwaitingConfirmation />} />;
   return (
-    <article
-      aria-label={title}
-      aria-busy={api.isPending}
-      className="flex max-w-[600px] flex-col gap-3 rounded-2xl border border-primary/30 bg-paper p-4 shadow-sm"
-    >
-      <ActionHeader title={title} />
-      {children}
+    <CardShell label={title} busy={api.isPending}>
+      <CardBody eyebrow={eyebrow}>{children}</CardBody>
+      {fields}
       <ActionButtons
         disabled={disabled}
         onConfirm={() => api.confirm('button')}
@@ -46,10 +49,10 @@ export function ActionFrame({ action, api, onEdit, editButtonRef, children }: Ac
         editButtonRef={editButtonRef}
       />
       {api.errorMessage ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="px-[18px] py-2 text-sm text-destructive">
           {api.errorMessage}
         </p>
       ) : null}
-    </article>
+    </CardShell>
   );
 }

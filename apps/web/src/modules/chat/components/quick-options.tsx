@@ -16,17 +16,19 @@ export function QuickOptions({ messageId, part }: QuickOptionsProps) {
   const keysEnabled = canReply && messageId === latestMessageId;
   useQuickReplyKeys({ options: part.options, enabled: keysEnabled, onPick: pick });
   return (
-    <fieldset className="flex flex-wrap gap-2">
-      <legend className="sr-only">{part.question}</legend>
-      {part.options.map((option: QuickOption, index: number) => (
-        <QuickOptionButton
-          key={option.id}
-          option={option}
-          shortcut={index + 1}
-          disabled={!canReply}
-          onPick={pick}
-        />
-      ))}
+    <fieldset className="m-0 flex min-w-0 flex-col border-0 p-0">
+      <legend className="mb-3 p-0 text-[14.5px] font-semibold text-ink">{part.question}</legend>
+      <div className="flex flex-wrap gap-1.5">
+        {part.options.map((option: QuickOption, index: number) => (
+          <QuickOptionButton
+            key={option.id}
+            option={option}
+            shortcut={index + 1}
+            disabled={!canReply}
+            onPick={pick}
+          />
+        ))}
+      </div>
     </fieldset>
   );
 }

@@ -13,6 +13,6 @@ describe('TicketChoice', () => {
     render(<TicketChoice ticket={ticket} disabled={false} onChoose={() => undefined} />);
     const choice = screen.getByRole('button', { name: /INC-20298/ });
     expect(choice).toHaveTextContent('Excel fecha sozinho ao abrir planilhas grandes');
-    expect(choice).toHaveTextContent('Atualizado em 21/10/2026');
+    expect(choice).toHaveTextContent('21 out');
   });
 });

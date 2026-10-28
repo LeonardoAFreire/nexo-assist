@@ -24,9 +24,9 @@ export function ChatThread({ view, turn, busy, onPick, onRetry }: ChatThreadProp
   return (
     <div
       ref={scrollRef}
-      className="min-h-0 flex-1 overflow-y-auto px-4 pt-7 pb-1 md:px-12 lg:px-32 xl:px-48"
+      className="min-h-0 flex-1 [scrollbar-gutter:stable] overflow-y-auto px-4 pt-7 pb-1 md:px-12 lg:px-32 xl:px-50"
     >
-      <div className="mx-auto flex max-w-3xl flex-col gap-5">
+      <div className="mx-auto flex max-w-[808px] flex-col gap-5">
         {isEmpty ? <EmptyConversation disabled={busy} onPick={onPick} /> : null}
         <MessageList messages={view.timeline} />
         <StreamingTurn turn={turn} />

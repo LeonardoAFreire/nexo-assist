@@ -1,5 +1,5 @@
 import { MESSAGE_TEXT_MAX_LENGTH } from '@nexo/contracts';
-import { SendHorizontal } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useComposerDraft } from '../hooks/use-composer-draft.js';
 import type { RejectedText } from '../hooks/turn-state.js';
@@ -30,8 +30,12 @@ export function MessageComposer(props: MessageComposerProps) {
         onChange={(event) => draft.setText(event.target.value)}
         className="min-w-0 flex-1 bg-transparent text-[14.5px] text-ink outline-none placeholder:text-ink-3 disabled:cursor-not-allowed"
       />
-      <Button type="submit" disabled={!draft.canSend} className="h-9 bg-cta px-3">
-        <SendHorizontal aria-hidden="true" />
+      <Button
+        type="submit"
+        disabled={!draft.canSend}
+        className="h-9 gap-1.5 rounded-md bg-cta px-3 text-[13.5px] font-semibold text-white"
+      >
+        <ArrowUp aria-hidden="true" className="size-3.5" />
         Enviar
       </Button>
     </form>

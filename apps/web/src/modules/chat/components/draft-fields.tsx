@@ -1,28 +1,36 @@
 import type { TicketDraft } from '@nexo/contracts';
+import { CardDescription, CardTitle } from '@/components/tickets/card-body';
+import { CardField, CardFields } from '@/components/tickets/card-fields';
 import { categoryLabels } from '@/components/tickets/labels';
-import { PriorityBadge } from '@/components/tickets/priority-badge';
-import { TicketMeta } from '@/components/tickets/ticket-meta';
-import { formatDateTime } from '@/lib/format-date-time';
+import { PriorityValue } from '@/components/tickets/priority-value';
+import { formatDueTime } from '@/lib/format-date-time';
 import { affectedLabels } from './affected-labels.js';
 
-type DraftFieldsProps = {
+type DraftProps = {
   draft: TicketDraft;
 };
 
-export function DraftFields({ draft }: DraftFieldsProps) {
+export function DraftBody({ draft }: DraftProps) {
   return (
     <>
-      <h3 className="text-[15px] font-semibold text-ink">{draft.title}</h3>
-      <p className="text-sm text-ink-2">{draft.description}</p>
-      <dl className="flex flex-wrap gap-x-6 gap-y-1">
-        <TicketMeta term="Categoria" value={categoryLabels[draft.category]} />
-        <TicketMeta term="Afetados" value={affectedLabels[draft.affected]} />
-      </dl>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <PriorityBadge priority={draft.priority} />
-        <span className="text-xs text-ink-2">Resposta até {formatDateTime(draft.dueAt)}</span>
-      </div>
-      <p className="text-xs text-ink-3">{draft.rule}</p>
+      <CardTitle>{draft.title}</CardTitle>
+      <CardDescription>{draft.description}</CardDescription>
+      <p className="pt-1 text-[12.5px] text-ink-3">{draft.rule}</p>
     </>
+  );
+}
+
+export function DraftFields({ draft }: DraftProps) {
+  return (
+    <CardFields>
+      <CardField label="Categoria">{categoryLabels[draft.category]}</CardField>
+      <CardField label="Prioridade">
+        <PriorityValue priority={draft.priority} />
+        <span className="text-[13.5px] font-normal text-ink-3">
+          · resposta até {formatDueTime(draft.dueAt)}
+        </span>
+      </CardField>
+      <CardField label="Afetados">{affectedLabels[draft.affected]}</CardField>
+    </CardFields>
   );
 }

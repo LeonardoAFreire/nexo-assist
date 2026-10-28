@@ -52,9 +52,9 @@ describe('rascunho de chamado (TI-21)', () => {
     openChat(draftView());
     const card = await screen.findByRole('article', { name: 'Rascunho D-381' });
     expect(card).toHaveTextContent('Aguardando confirmação');
-    expect(card).toHaveTextContent('Prioridade alta');
-    expect(card).toHaveTextContent('Resposta até');
-    expect(within(card).getByText('Afetados:')).toBeVisible();
+    expect(within(card).getByText('Alta')).toBeVisible();
+    expect(card).toHaveTextContent('resposta até');
+    expect(within(card).getByText('Afetados')).toBeVisible();
     expect(within(card).getByText('Só eu')).toBeVisible();
   });
 
@@ -107,7 +107,7 @@ describe('rascunho de chamado (TI-21)', () => {
     await app.user.click(screen.getByRole('button', { name: 'Salvar' }));
     expect(await screen.findByRole('heading', { name: 'Título novo do chamado' })).toBeVisible();
     expect(bodies).toEqual([{ title: 'Título novo do chamado', affected: 'whole_company' }]);
-    expect(screen.getByText('Prioridade crítica')).toBeVisible();
+    expect(screen.getByText('Crítica')).toBeVisible();
   });
 
   it('não envia a edição quando o título é curto demais', async () => {

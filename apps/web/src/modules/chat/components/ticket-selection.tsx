@@ -1,4 +1,5 @@
 import type { TicketSelectionPart, TicketSummary } from '@nexo/contracts';
+import { CardShell } from '@/components/tickets/card-shell';
 import { TicketCard } from '@/components/tickets/ticket-card';
 import { useChatActions } from '../hooks/chat-actions-context.js';
 import { TicketChoice } from './ticket-choice.js';
@@ -21,12 +22,14 @@ export function TicketSelection({ messageId, part }: TicketSelectionProps) {
     }
   };
   return (
-    <ul aria-label="Escolha um chamado" className="flex flex-col gap-2">
-      {part.tickets.map((ticket: TicketSummary) => (
-        <li key={ticket.number}>
-          <TicketChoice ticket={ticket} disabled={busy || messageId === null} onChoose={choose} />
-        </li>
-      ))}
-    </ul>
+    <CardShell>
+      <ul aria-label="Escolha um chamado" className="divide-y divide-rule">
+        {part.tickets.map((ticket: TicketSummary) => (
+          <li key={ticket.number}>
+            <TicketChoice ticket={ticket} disabled={busy || messageId === null} onChoose={choose} />
+          </li>
+        ))}
+      </ul>
+    </CardShell>
   );
 }
