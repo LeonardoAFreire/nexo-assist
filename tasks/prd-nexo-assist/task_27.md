@@ -32,11 +32,11 @@ Lidos o `CLAUDE.md` e todas as rules em `.claude/rules/`. Relevantes:
 
 - [x] 27.1 `serve-static` no `monolith.module.ts` quando `SERVE_WEB_DIR` está definido.
 - [x] 27.2 `Dockerfile` multi-stage (`pnpm build` e imagem final só com o necessário).
-- [ ] 27.3 Configurar o Railway (Postgres, variáveis, health check) e publicar, após confirmação do usuário.
+- [x] 27.3 Publicar no Render (Postgres, variáveis, health check): https://nexo-assist.onrender.com
 - [ ] 27.4 Verificar no ambiente publicado o limite de uso e a mensagem de limite atingido.
 - [x] 27.5 Escrever o `README.md` com os resultados dos testes, dos evals (tarefa 26) e o custo medido.
 
-> Pendente: 27.3 e 27.4 são ações externas (Railway) e aguardam a confirmação do usuário. O README já traz os passos do deploy como instruções e os resultados dos evals e o custo medido.
+> Pendente: 27.4 (verificar o limite de uso no ambiente publicado). O README já traz os passos do deploy como instruções e os resultados dos evals e o custo medido.
 
 ## Detalhes de implementação
 

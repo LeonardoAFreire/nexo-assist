@@ -219,22 +219,31 @@ docker run --rm -p 3000:3000 \
   nexo-assist
 ```
 
-### Passos no Railway
+### Publicado no Render
 
-1. Crie um projeto e adicione o plugin **Postgres** (gerenciado).
-2. Adicione um serviço a partir deste repositório. O Railway detecta o `Dockerfile` e usa o build multi-stage.
-3. Configure as variáveis do serviço (aba Variables):
+Link: https://nexo-assist.onrender.com
+
+- Entre com qualquer usuário da tabela acima e a senha **`senha@1234`**. Em produção o login exige essa senha; localmente qualquer texto não vazio funciona.
+- O plano é gratuito: depois de 15 minutos sem uso o serviço dorme e o **primeiro acesso leva cerca de 1 minuto** para acordar.
+- O banco é o Postgres gratuito do Render, que **expira 30 dias** após a criação. Para um banco permanente, crie um Postgres gerenciado em outro provedor (por exemplo, o Neon) e troque a `DATABASE_URL`: as migrations e os dados de exemplo rodam sozinhos no boot.
+- A chave do OpenRouter e o `JWT_SECRET` ficam só nas variáveis de ambiente do Render. Nada disso vai para o Git.
+
+Passos:
+
+1. Crie um **Postgres** no Render (ou use o de outro provedor) e copie a URL de conexão interna.
+2. Crie um **Web Service** a partir deste repositório. O Render detecta o `Dockerfile` e usa o build multi-stage. Escolha o plano Free.
+3. Configure as variáveis do serviço:
    - `NODE_ENV=production` (já vem na imagem)
-   - `DATABASE_URL`: referência ao Postgres do projeto (`${{Postgres.DATABASE_URL}}`)
+   - `DATABASE_URL`: a URL do Postgres
    - `WEB_ORIGIN`: a URL pública do serviço, com `https://`
    - `JWT_SECRET`: valor aleatório com 32 caracteres ou mais
    - `OPENROUTER_API_KEY`, `LLM_PROVIDER=openrouter`, `LLM_MODEL` e `LLM_ROUTER_MODEL`
    - `LLM_DAILY_BUDGET_USD` e `CHAT_RATE_LIMIT_PER_MINUTE` conforme o orçamento
    - `LOG_LEVEL=info`
    - `SEED_DEMO_DATA=true` para carregar as pessoas, a central de ajuda e os chamados de exemplo
-   - `SEED_USER_PASSWORD=senha@1234` (padrão): a senha que os usuários de exemplo usam no ambiente publicado
+   - `SEED_USER_PASSWORD=senha@1234` (padrão): a senha dos usuários de exemplo no ambiente publicado
    - `SERVE_WEB_DIR=/app/web` (já vem na imagem)
-4. Em Settings, defina o **health check** como `/api/health` e gere um domínio público. O Railway injeta `PORT`.
+4. Defina o **Health Check Path** como `/api/health`. O Render injeta `PORT`.
 5. Faça o deploy, abra o domínio, entre com um usuário de demonstração e confira o fluxo: login, uma conversa completa e o limite de mensagens.
 
 ## O que eu faria com mais tempo
@@ -243,6 +252,5 @@ docker run --rm -p 3000:3000 \
 - **503 prévio para `budget_exhausted`:** hoje o teto diário vira `turn.failed` depois do aceite da mensagem.
 - **Distinguir 429 e 402 do provedor**, hoje ambos viram `agent_unavailable`.
 - **Logs `warn`** para orçamento atingido e para limite de passos.
-- **Estabilizar "chamados bem abertos"** (50% nos evals): endurecer a pergunta de impacto e o registro do compromisso do dia no fluxo de abertura.
 - **`pass^k` no relatório dos evals**, para medir consistência entre execuções e não só a média.
 - Hub de eventos distribuído (`LISTEN/NOTIFY`) para mais de uma instância.
