@@ -25,7 +25,7 @@ export function ChatFooter(props: ChatFooterProps) {
   const limitReached = usage.messagesUsed >= usage.messagesLimit;
   const available = transferred ? TRANSFERRED_PLACEHOLDER : PLACEHOLDER;
   return (
-    <footer className="flex flex-col gap-1.5 overflow-y-hidden [scrollbar-gutter:stable] px-4 pt-2.5 pb-[18px] md:px-12 lg:px-32 xl:px-50">
+    <footer className="flex flex-col gap-1.5 overflow-y-hidden md:[scrollbar-gutter:stable] px-4 pt-2.5 pb-[18px] md:px-12 lg:px-32 xl:px-50">
       <div className="mx-auto flex w-full max-w-[808px] flex-col gap-1.5">
         {limitReached ? (
           <LimitReachedNotice

@@ -28,7 +28,7 @@ export function HandoffSummary({ handoff }: HandoffSummaryProps) {
   return (
     <section
       aria-label="Resumo da transferência"
-      className="rounded-2xl border border-rule bg-desk p-4"
+      className="rounded-xl border border-ink/9 bg-paper p-4 shadow-[0_1px_2px_#1b243112]"
     >
       <h2 className="text-sm font-semibold text-ink">Resumo da transferência</h2>
       <p className="mt-1.5 text-sm text-ink-2">{handoff.summary}</p>

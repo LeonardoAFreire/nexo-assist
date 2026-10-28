@@ -14,7 +14,7 @@ export function ConversationPane({ conversationId, analystId }: ConversationPane
   const query = useConsoleConversation(conversationId);
   useMarkRead(conversationId, query.data?.timeline.at(-1)?.id);
   return (
-    <section aria-label="Conversa" className="flex min-w-0 flex-1 flex-col">
+    <section aria-label="Conversa" className="flex min-w-0 flex-1 flex-col bg-[#eef1f5]">
       {query.isPending ? (
         <output className="p-6 text-sm text-ink-3">Carregando conversa…</output>
       ) : null}

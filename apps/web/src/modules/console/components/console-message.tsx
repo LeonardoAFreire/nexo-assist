@@ -1,56 +1,73 @@
 import type { ChatMessage } from '@nexo/contracts';
-import { DecisionDetails } from '@/components/agent-turn/decision-details';
-import { StepsLine } from '@/components/agent-turn/steps-line';
+import { ArrowRightLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { formatClockTime } from './format-clock-time.js';
+import { ConsoleBubble } from './console-bubble.js';
+import { ConsoleSender } from './console-sender.js';
 import { MessageParts } from './message-parts.js';
 
 const AGENT_NAME = 'Nexo Assist';
+const AGENT_TAG = 'IA';
+const AGENT_TAG_CLASS = 'bg-primary-soft text-primary-text';
+const ANALYST_TAG_CLASS = 'bg-success-soft text-success-text';
 const EMPLOYEE_FALLBACK_NAME = 'Funcionário';
+const FALLBACK_ANALYST_TAG = 'Suporte';
 
 type ConsoleMessageProps = {
   message: ChatMessage;
 };
 
-function authorLabel(message: ChatMessage): string {
-  if (message.author === 'agent') {
-    return AGENT_NAME;
-  }
-  const name = message.authorName ?? EMPLOYEE_FALLBACK_NAME;
-  return message.authorLevel ? `${name} · Suporte ${message.authorLevel}` : name;
-}
-
-function MessageHeader({ message }: ConsoleMessageProps) {
+function SystemMessage({ message }: ConsoleMessageProps) {
   return (
-    <p className="flex items-center gap-1.5 text-xs text-ink-3">
-      <span className="font-semibold text-ink-2">{authorLabel(message)}</span>
-      {message.author === 'agent' ? <span className="rounded bg-desk px-1.5">IA</span> : null}
-      <time dateTime={message.createdAt}>{formatClockTime(message.createdAt)}</time>
-    </p>
+    <div className="flex items-center gap-3 pt-[18px] pb-1">
+      <span aria-hidden="true" className="h-px flex-1 bg-ink/8" />
+      <p className="flex items-center gap-1.5 text-xs font-medium text-ink-3">
+        <ArrowRightLeft aria-hidden="true" className="size-[13px]" />
+        {message.text}
+      </p>
+      <span aria-hidden="true" className="h-px flex-1 bg-ink/8" />
+    </div>
   );
 }
 
-function SystemMessage({ message }: ConsoleMessageProps) {
-  return <p className="py-1 text-center text-xs font-medium text-ink-3">{message.text}</p>;
+function ClientMessage({ message }: ConsoleMessageProps) {
+  return (
+    <div className="flex flex-col items-start gap-1">
+      <ConsoleBubble side="client" createdAt={message.createdAt}>
+        {message.text}
+      </ConsoleBubble>
+      <MessageParts parts={message.parts} />
+    </div>
+  );
+}
+
+function StaffMessage({ message }: ConsoleMessageProps) {
+  const fromAnalyst = message.author === 'analyst';
+  const name = fromAnalyst ? (message.authorName ?? EMPLOYEE_FALLBACK_NAME) : AGENT_NAME;
+  const analystTag = message.authorLevel ? `Suporte ${message.authorLevel}` : FALLBACK_ANALYST_TAG;
+  return (
+    <div className={cn('flex flex-col items-end gap-1')}>
+      <ConsoleSender
+        name={name}
+        tag={fromAnalyst ? analystTag : AGENT_TAG}
+        tagClass={fromAnalyst ? ANALYST_TAG_CLASS : AGENT_TAG_CLASS}
+        steps={message.turn?.steps}
+        decision={message.turn?.decision}
+      />
+      <ConsoleBubble side={fromAnalyst ? 'analyst' : 'agent'} createdAt={message.createdAt}>
+        {message.text}
+      </ConsoleBubble>
+      <MessageParts parts={message.parts} />
+    </div>
+  );
 }
 
 export function ConsoleMessage({ message }: ConsoleMessageProps) {
   if (message.author === 'system') {
     return <SystemMessage message={message} />;
   }
-  const fromAnalyst = message.author === 'analyst';
-  const bubbleClass = fromAnalyst ? 'bg-primary-soft' : 'bg-desk';
-  return (
-    <div className={cn('flex flex-col gap-1.5', fromAnalyst ? 'items-end' : 'items-start')}>
-      <MessageHeader message={message} />
-      <p className={cn('max-w-[75%] rounded-2xl px-3.5 py-2.5 text-sm text-ink', bubbleClass)}>
-        {message.text}
-      </p>
-      <MessageParts parts={message.parts} />
-      {message.turn ? <StepsLine steps={message.turn.steps} /> : null}
-      {message.turn ? (
-        <DecisionDetails decision={message.turn.decision} steps={message.turn.steps} />
-      ) : null}
-    </div>
+  return message.author === 'employee' ? (
+    <ClientMessage message={message} />
+  ) : (
+    <StaffMessage message={message} />
   );
 }

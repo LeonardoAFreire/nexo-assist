@@ -19,7 +19,9 @@ export function CardField({ label, children }: CardFieldProps) {
   return (
     <div className="flex flex-col gap-1">
       <dt className="text-[12.5px] text-ink-3">{label}</dt>
-      <dd className="flex items-center gap-1.5 text-[14.5px] font-medium text-ink">{children}</dd>
+      <dd className="flex flex-wrap items-center gap-x-1.5 text-[14.5px] font-medium text-ink">
+        {children}
+      </dd>
     </div>
   );
 }

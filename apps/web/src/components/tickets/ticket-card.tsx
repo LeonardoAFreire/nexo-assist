@@ -39,11 +39,13 @@ export function TicketCard({ ticket }: TicketCardProps) {
         </CardField>
         <CardField label="Aberto em">{formatShortDateTime(ticket.openedAt)}</CardField>
         <CardField label="Última atualização">
-          <span className={cn(ticket.overdue && 'text-warning-text')}>
+          <span className={cn('whitespace-nowrap', ticket.overdue && 'text-warning-text')}>
             {formatElapsedDays(ticket.lastUpdatedAt)}
           </span>
           {ticket.overdue ? (
-            <span className="text-[13.5px] font-normal text-ink-3">· {OVERDUE_LABEL}</span>
+            <span className="text-[13.5px] font-normal whitespace-nowrap text-ink-3">
+              · {OVERDUE_LABEL}
+            </span>
           ) : null}
         </CardField>
       </CardFields>

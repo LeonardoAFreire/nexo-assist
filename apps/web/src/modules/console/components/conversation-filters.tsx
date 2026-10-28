@@ -25,8 +25,8 @@ type FilterButtonProps = {
 
 function FilterButton({ option, count, pressed, onSelect }: FilterButtonProps) {
   const className = cn(
-    'flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[12.5px] font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
-    pressed ? 'bg-ink text-paper' : 'bg-desk text-ink-2 hover:bg-rule',
+    'flex items-center gap-1 rounded-full px-2 py-1.5 text-[12.5px] font-medium whitespace-nowrap outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+    pressed ? 'bg-primary-soft text-primary-text' : 'bg-desk text-ink-2 hover:bg-rule',
   );
   return (
     <button
@@ -37,14 +37,14 @@ function FilterButton({ option, count, pressed, onSelect }: FilterButtonProps) {
       onClick={() => onSelect(option.value)}
     >
       {option.label}
-      <span className="text-[11.5px] opacity-80">{count}</span>
+      <span className={cn('text-[12.5px] font-semibold', !pressed && 'text-ink-3')}>{count}</span>
     </button>
   );
 }
 
 export function ConversationFilters({ selected, counters, onSelect }: ConversationFiltersProps) {
   return (
-    <fieldset className="flex flex-wrap gap-1.5">
+    <fieldset className="flex flex-wrap gap-1">
       <legend className="sr-only">Filtros de conversas</legend>
       {FILTER_OPTIONS.map((option: FilterOption) => (
         <FilterButton
