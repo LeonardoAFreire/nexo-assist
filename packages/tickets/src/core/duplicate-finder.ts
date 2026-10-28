@@ -1,7 +1,7 @@
 import { ticketSummarySchema } from '@nexo/contracts';
 import type { DuplicateCheck, TicketCategory, TicketSummary } from '@nexo/contracts';
 import { REOPEN_WINDOW_DAYS, type ReopenPolicy } from './reopen-policy.js';
-import { areTextsSimilar } from './text-similarity.js';
+import { areTextsSimilar, sharedTokenCount } from './text-similarity.js';
 import type { TicketRecord } from './ticket-record.js';
 
 export type DuplicateSearch = {
@@ -17,11 +17,14 @@ const OPEN_MATCH_RULE =
 const NO_MATCH_RULE = 'nenhum chamado semelhante: pode abrir um novo chamado';
 const EXPIRED_RULE = `chamado resolvido há mais de ${REOPEN_WINDOW_DAYS} dias: abrir um novo chamado citando o anterior`;
 
+const SAME_CATEGORY_MIN_SHARED_TOKENS = 1;
+
 function isSimilar(ticket: TicketRecord, search: DuplicateSearch): boolean {
+  const ticketText = `${ticket.title} ${ticket.description}`;
   if (ticket.category === search.category) {
-    return true;
+    return sharedTokenCount(ticketText, search.text) >= SAME_CATEGORY_MIN_SHARED_TOKENS;
   }
-  return areTextsSimilar(`${ticket.title} ${ticket.description}`, search.text);
+  return areTextsSimilar(ticketText, search.text);
 }
 
 function toSummary(ticket: TicketRecord): TicketSummary {

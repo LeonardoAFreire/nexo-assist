@@ -25,6 +25,15 @@ const STOPWORDS = new Set([
   'estou',
   'tenho',
   'consigo',
+  'desde',
+  'ontem',
+  'hoje',
+  'erro',
+  'problema',
+  'apos',
+  'ainda',
+  'depois',
+  'quando',
 ]);
 
 export function normalizeText(text: string): string {
@@ -38,8 +47,11 @@ export function significantTokens(text: string): Set<string> {
   return new Set(tokens);
 }
 
-export function areTextsSimilar(first: string, second: string): boolean {
+export function sharedTokenCount(first: string, second: string): number {
   const secondTokens = significantTokens(second);
-  const shared = [...significantTokens(first)].filter((token: string) => secondTokens.has(token));
-  return shared.length >= MIN_SHARED_TOKENS;
+  return [...significantTokens(first)].filter((token: string) => secondTokens.has(token)).length;
+}
+
+export function areTextsSimilar(first: string, second: string): boolean {
+  return sharedTokenCount(first, second) >= MIN_SHARED_TOKENS;
 }

@@ -66,6 +66,29 @@ describe('DuplicateFinder', () => {
     expect(finder.find(search).openMatches).toHaveLength(1);
   });
 
+  it('não trata como mesmo problema outro defeito da mesma categoria', () => {
+    const ticket = makeTicket({
+      category: 'hardware',
+      title: 'Notebook lento após atualização do Windows',
+      description: 'Lentidão geral desde a atualização de 15/10.',
+    });
+    const search = makeSearch([ticket], {
+      category: 'hardware',
+      text: 'Teclado com teclas falhando\nAlgumas teclas não respondem.',
+    });
+    expect(finder.find(search).openMatches).toEqual([]);
+  });
+
+  it('não junta problemas diferentes só por termos genéricos como desde e Windows', () => {
+    const ticket = makeTicket({
+      category: 'hardware',
+      title: 'Notebook lento após atualização do Windows',
+      description: 'Lentidão geral desde a atualização de 15/10.',
+    });
+    const text = 'A VPN não conecta desde ontem e apresenta o erro 809. Sistema: Windows 11.';
+    expect(finder.find(makeSearch([ticket], { text })).openMatches).toEqual([]);
+  });
+
   it('ignora chamado de outra categoria e de texto diferente', () => {
     const ticket = makeTicket({
       category: 'email',
