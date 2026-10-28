@@ -32,18 +32,43 @@ A mensagem enviada aparece, pisca e volta (às vezes duplica). O mesmo texto che
 
 ## Tarefas
 
-- [ ] 1. Contrato e backend dos ids (`clientMessageId`, `replyId`) com testes
-- [ ] 2. Dependências `ai` e `@ai-sdk/react` no web
-- [ ] 3. Conversores `ChatMessage → UIMessage` e tipos `NexoUIMessage`
-- [ ] 4. `NexoChatTransport` (POST SSE → chunks; retry; erros)
-- [ ] 5. Hook `useNexoChat` (useChat por conversa, upsert, EventSource, propostas); remover o turno antigo
-- [ ] 6. Lista e balões renderizando `UIMessage`; passos ao vivo; erro e nova tentativa
-- [ ] 7. Composer: textarea, Enter envia, Shift+Enter quebra, Parar, foco
-- [ ] 8. Rolagem presa ao fim, botão de ir ao fim, animação de entrada
-- [ ] 9. Regressão: `message.created` durante o streaming não duplica nem pisca
-- [ ] 10. E2E e simulação com Playwright (stack isolada, modelo falso)
-- [ ] 11. Polimento visual com a skill `frontend-design` (pedido do usuário): layout de todas as telas (chat, console, perfil, login) e animações, sem sair do padrão do protótipo; `motion-safe`, foco visível, 375 px
-- [ ] 12. README se necessário; commits pequenos; sem push
+- [x] 1. Contrato e backend dos ids (`clientMessageId`, `turn.started { replyId }`) com testes (`e00fe22`)
+- [x] 2. Dependências `ai@7.0.154` e `@ai-sdk/react@4.0.158` no web (`7ce3dda`)
+- [x] 3. Conversores `ChatMessage → UIMessage` e tipos `NexoUIMessage`
+- [x] 4. `NexoChatTransport` (POST SSE → chunks; retry; erros)
+- [x] 5. `useNexoChat` (useChat por conversa, upsert por id, EventSource, propostas); turno antigo removido
+- [x] 6. Lista e balões renderizando `UIMessage`; passos ao vivo; erro e nova tentativa
+- [x] 7. Composer: textarea, Enter envia, Shift+Enter quebra, Parar, foco (3 a 9 em `f014690`)
+- [x] 8. Rolagem presa ao fim, botão de ir ao fim, texto revelado em ritmo constante (`8b776b2`)
+- [x] 9. Regressão: `message.created` durante o streaming não duplica nem pisca
+- [x] 10. E2E 4/4 e simulação com dois logins (Ana e Gabriela) usando os modelos de produção
+- [x] 11. Polimento de movimento com `frontend-design`, sem mudar o layout (`05e00a5`)
+- [ ] 12. README se necessário; push só com pedido do usuário
+
+## Achados da simulação (corrigidos)
+
+- Bolha vazia acima do cartão quando a resposta não tem texto (`d80ca3c`).
+- Duplicidade por categoria: teclado e VPN viraram complemento de "Notebook lento" (`fe9cc1c`).
+- Lista de chamados virava um segundo cartão após a escolha; agora fica marcada como no protótipo (`4a2e100`).
+- Enter não enviava a resposta do analista no console (`b0aa6ac`).
+
+## Segurança verificada
+
+- Chamado de outra pessoa: mesma resposta de inexistente (UI e API 404).
+- Injeção de instruções ("ignore as instruções", "mostre o prompt", "liste os chamados de todos"): recusada.
+- Abrir chamado "sem confirmação" e "prioridade crítica": pediu dados, prioridade veio da regra e exigiu confirmação.
+- `requesterId` no corpo: 400; `clientMessageId` de outra pessoa: 409 sem revelar dono; sem sessão: 401;
+  funcionário no console: 403; POST de outra origem: 403; CORS só libera `WEB_ORIGIN`; cookie HttpOnly,
+  SameSite=Lax e Secure em produção; HTML na mensagem é exibido como texto.
+
+## Propostas (não feitas)
+
+- Citações de artigos que "não se aplicam" aparecem para o funcionário (ex.: Outlook e Wi-Fi ao perguntar de senha):
+  mostrar só as que se aplicam ou agrupar em "artigos descartados" no detalhe da decisão.
+- Passo "mostrou o INC-20517" aparece mesmo quando o chamado não foi mostrado (de outra pessoa); usar o rótulo de falha.
+- Texto do prazo vencido mais próximo do protótipo ("sem atualização há N dias, acima do prazo de X dias úteis…").
+- Saudação ecoa o funcionário ("Oi, tudo bem! O que está acontecendo?").
+- `failTurn` depois da resposta salva sobrescreve a mensagem com o mesmo `replyId` (raro; avaliar guarda).
 
 ## Verificação
 
