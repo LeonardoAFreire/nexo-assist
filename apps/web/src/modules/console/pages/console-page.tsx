@@ -19,12 +19,12 @@ export function ConsolePage({ analystId }: ConsolePageProps) {
       {conversationId ? (
         <>
           <ConversationPane
-            key={conversationId}
+            key={`conversation-${conversationId}`}
             conversationId={conversationId}
             analystId={analystId}
           />
           <EmployeeTicketsPanel
-            key={conversationId}
+            key={`tickets-${conversationId}`}
             conversationId={conversationId}
             analystId={analystId}
           />
