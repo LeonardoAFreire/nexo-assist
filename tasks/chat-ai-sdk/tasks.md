@@ -43,7 +43,7 @@ A mensagem enviada aparece, pisca e volta (às vezes duplica). O mesmo texto che
 - [x] 9. Regressão: `message.created` durante o streaming não duplica nem pisca
 - [x] 10. E2E 4/4 e simulação com dois logins (Ana e Gabriela) usando os modelos de produção
 - [x] 11. Polimento de movimento com `frontend-design`, sem mudar o layout (`05e00a5`)
-- [ ] 12. README se necessário; push só com pedido do usuário
+- [x] 12. README revisado contra o PDF (visibilidade das decisões, AI SDK no chat, persistência, duplicidade, evals, trade-offs); push pedido pelo usuário
 
 ## Achados da simulação (corrigidos)
 
@@ -61,14 +61,13 @@ A mensagem enviada aparece, pisca e volta (às vezes duplica). O mesmo texto che
   funcionário no console: 403; POST de outra origem: 403; CORS só libera `WEB_ORIGIN`; cookie HttpOnly,
   SameSite=Lax e Secure em produção; HTML na mensagem é exibido como texto.
 
-## Propostas (não feitas)
+## Propostas feitas depois
 
-- Citações de artigos que "não se aplicam" aparecem para o funcionário (ex.: Outlook e Wi-Fi ao perguntar de senha):
-  mostrar só as que se aplicam ou agrupar em "artigos descartados" no detalhe da decisão.
-- Passo "mostrou o INC-20517" aparece mesmo quando o chamado não foi mostrado (de outra pessoa); usar o rótulo de falha.
-- Texto do prazo vencido mais próximo do protótipo ("sem atualização há N dias, acima do prazo de X dias úteis…").
-- Saudação ecoa o funcionário ("Oi, tudo bem! O que está acontecendo?").
-- `failTurn` depois da resposta salva sobrescreve a mensagem com o mesmo `replyId` (raro; avaliar guarda).
+- Citações de artigos sem relação deixaram de aparecer; artigo que se aplica traz os passos (`5ef9f3b`).
+- Passo de chamado não encontrado vira "procurou o ..." (`0120fce`).
+- Prazo vencido explicado em código: dias sem atualização e prioridade (`170544c`).
+- Saudação não repete a fala do funcionário (`5ef9f3b`).
+- Falha depois da resposta salva não a sobrescreve mais (`4eb4c2d`).
 
 ## Verificação
 

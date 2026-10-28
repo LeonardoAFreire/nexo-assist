@@ -84,7 +84,11 @@ Invariantes, aplicadas por `pnpm check:boundaries`:
 - Cada domínio acessa apenas as suas tabelas (um schema por domínio no Postgres, com Drizzle).
 - Dentro de um domínio, o fluxo é `http -> core <- persistence`: o `core` guarda as regras e não conhece HTTP nem banco.
 
-O `chat` orquestra a conversa e decide **no código** se a mensagem vai para o agent, para o analista ou para uma ação determinística (confirmar rascunho, escolher uma opção). Os eventos do turno chegam ao navegador por SSE. O sistema de chamados é tratado como **legado**: tem um injetor de falhas configurável (`TICKETS_OUTAGE_MODE`), e quem o consome usa timeout, nova tentativa com espera e uma resposta degradada definida no código.
+O `chat` orquestra a conversa e decide **no código** se a mensagem vai para o agent, para o analista ou para uma ação determinística (confirmar rascunho, escolher uma opção). Os eventos do turno chegam ao navegador por SSE.
+
+No navegador, o chat do funcionário usa o **`useChat` do AI SDK** (`ai` e `@ai-sdk/react`) com um transporte próprio (`NexoChatTransport`): ele faz o POST no endpoint SSE do turno e converte cada evento em chunks do AI SDK (texto em trechos, passos e cartões como data parts, a mensagem salva como metadado no fim). Assim o backend, o agent e os evals mantêm o mesmo protocolo. O `useChat` é a única fonte das mensagens da tela, e os ids valem de ponta a ponta: o navegador gera o id da mensagem do funcionário (`clientMessageId`) e o servidor anuncia o id da resposta no início do turno (`turn.started`). Como a mesma mensagem também chega pelo canal de eventos da conversa (mensagens do analista, transferência), atualizar por id é o que impede a mensagem de piscar ou aparecer duas vezes.
+
+Conversas, mensagens, chamados e o estado de cada conversa (com o agent, aguardando ou com um analista) ficam no Postgres e sobrevivem a um reinício; ao subir, a API libera turnos que ficaram pela metade e registra a falha para o funcionário tentar de novo. O sistema de chamados é tratado como **legado**: tem um injetor de falhas configurável (`TICKETS_OUTAGE_MODE`), e quem o consome usa timeout, nova tentativa com espera e uma resposta degradada definida no código.
 
 ## Como o agent decide
 
@@ -98,34 +102,46 @@ Princípios que valem mais que o prompt:
 
 - **O modelo só propõe; o código escreve.** As tools de escrita produzem apenas propostas (rascunho, complemento, reabertura). O chamado só é criado ou alterado quando a confirmação chega pelo botão, por uma opção rápida ou por uma frase afirmativa reconhecida no código, com `idempotencyKey`. "Zero escritas sem confirmação" é uma propriedade do código.
 - **Regras do service desk ficam no `core` de `tickets`**, cobertas por testes determinísticos: matriz de prioridade, prazos em horas úteis, vencimento, janela de reabertura de 7 dias e deduplicação. O modelo extrai fatos; o código calcula a prioridade e o prazo e devolve o motivo exibido ao usuário.
-- **Duplicidade:** `propor_chamado` recusa quando há chamado aberto equivalente. O modelo só segue citando explicitamente que não é duplicado, e isso aparece nas regras da decisão.
-- **Transferência:** acontece a pedido do funcionário ou por baixa confiança do entendimento, e também por escolha do modelo quando o caso exige um analista (tool `transferir_para_analista`). Uma prioridade crítica no rascunho transfere no mesmo turno. **Chamado vencido** não transfere sozinho: o código avisa que o prazo passou e oferece falar com um analista (como na Tela 3 do protótipo); a conversa só vai para a fila se o funcionário aceitar. A conversa vai para a fila do console, com resumo, histórico e a decisão do agent; o analista assume, responde e devolve ao agent.
+- **Duplicidade:** `propor_chamado` recusa quando há chamado aberto sobre o **mesmo problema** e o agent propõe complementar esse chamado. "Mesmo problema" é decidido no código pelo texto: na mesma categoria basta um termo relevante em comum, em outra categoria são dois, e termos genéricos ("desde", "erro", "Windows" sozinho) não contam. O modelo só segue citando explicitamente que não é duplicado, e isso aparece nas regras da decisão.
+- **Transferência:** acontece a pedido do funcionário ou por baixa confiança do entendimento, e também por escolha do modelo quando o caso exige um analista (tool `transferir_para_analista`). Uma prioridade crítica no rascunho transfere no mesmo turno. **Chamado vencido** não transfere sozinho: o código diz há quantos dias o chamado está sem atualização, de qual prioridade passou o prazo, e oferece falar com um analista (como na Tela 3 do protótipo); a conversa só vai para a fila se o funcionário aceitar. A conversa vai para a fila do console, com resumo, histórico e a decisão do agent; o analista assume, responde e devolve ao agent.
 - **Privacidade:** o `requesterId` vem sempre da sessão, nunca de argumento escolhido pelo modelo. Chamados de outro funcionário respondem como "não encontrado", indistinguível de "sem permissão". O contexto enviado ao modelo só contém dados do funcionário da conversa e da central de ajuda.
 - **Texto é dado, não instrução.** Mensagens, artigos e chamados não executam ações fora das tools registradas; as tools validam argumentos e autorização no código.
+
+### Visibilidade das decisões
+
+O PDF chama esta de a parte mais importante do desafio. Acima de cada resposta aparece a linha de passos executados ("consultou seus chamados", "buscou na central de ajuda", "classificou a prioridade"), atualizada ao vivo enquanto o agent trabalha. A seta ao lado abre o **detalhe da decisão**, com:
+
+- **O que entendeu:** intenção e dados extraídos (chamado, sistema operacional, impacto).
+- **Ação tomada** e **confiança** (alta, média ou baixa, em porcentagem).
+- **Motivo**, escrito para o funcionário.
+- **Regras aplicadas**, vindas do código (prioridade e prazo, duplicidade, reabertura, prazo vencido).
+- **Passos executados**, com o resultado de cada um, falhas e novas tentativas.
+
+O analista vê o mesmo detalhe no console, além do resumo da transferência. Os passos e as regras saem da execução real das tools, não do texto do modelo.
 
 ## Qualidade
 
 ### Testes
 
-`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **760 testes, todos passando**.
+`pnpm test` roda os testes de unidade e de integração (Vitest, Testing Library e MSW no front; PGlite, o Postgres em WebAssembly, no back, então não dependem de Docker nem de chave). Última execução completa: **801 testes, todos passando**.
 
 | Pacote            | Testes |
 | ----------------- | ------ |
-| `@nexo/contracts` | 24     |
+| `@nexo/contracts` | 25     |
 | `@nexo/shared`    | 47     |
 | `@nexo/identity`  | 25     |
-| `@nexo/tickets`   | 95     |
+| `@nexo/tickets`   | 97     |
 | `@nexo/knowledge` | 22     |
-| `@nexo/agent`     | 235    |
-| `@nexo/chat`      | 231    |
+| `@nexo/agent`     | 241    |
+| `@nexo/chat`      | 245    |
 | `@nexo/monolith`  | 11     |
-| `@nexo/web`       | 68     |
+| `@nexo/web`       | 88     |
 
 `pnpm e2e` roda quatro jornadas no navegador com Playwright (abertura de chamado, chamado de terceiro, transferência para o analista e o chat em 375 px), contra um banco `nexo_e2e` próprio e o modelo roteirizado. É preciso ter o Postgres do `docker compose` no ar e instalar o Chromium uma vez (`pnpm --filter @nexo/e2e exec playwright install chromium`).
 
 ### Evals
 
-Os evals medem o **modelo real** e custam dinheiro; por isso nunca rodam em `pnpm test` nem no CI. São 18 cenários (resolução pela central, abertura de chamado, duplicidade, reabertura, chamado de terceiro, injeção de instrução, fora de escopo, pedido de analista, entre outros), pontuados pelo resultado e pelo estado, não por um caminho fixo de tools nem por texto exato. Cada cenário tem um roteiro de ensaio que passa em todos os critérios, o que prova que o gabarito é satisfazível.
+Os evals medem o **modelo real** e custam dinheiro; por isso nunca rodam em `pnpm test` nem no CI. São 19 cenários (saudação sem assunto, resolução pela central, abertura de chamado, duplicidade, reabertura, chamado de terceiro, injeção de instrução, fora de escopo, pedido de analista, entre outros), pontuados pelo resultado e pelo estado, não por um caminho fixo de tools nem por texto exato. Cada cenário tem um roteiro de ensaio que passa em todos os critérios, o que prova que o gabarito é satisfazível.
 
 ```bash
 pnpm --filter @nexo/agent eval                              # rodada completa
@@ -154,6 +170,8 @@ Rodada final, com `openai/gpt-6-luna` como modelo de resposta e `deepseek/deepse
 - **Custo médio por turno:** US$ 0,0009. Para 10 mensagens, a estimativa é de US$ 0,0092 (meta de US$ 0,02, dentro).
 - **Variação entre rodadas:** com 2 execuções por cenário (36 turnos) o resultado oscilou de 33 a 35 aprovados entre rodadas, por critérios de texto (`erro-809-windows-10`: o modelo às vezes pergunta "isso resolveu?" antes de escrever o passo do artigo; `status-sem-numero`) e por falhas transitórias do provedor (`agent_unavailable`, que agora deixam um aviso no log). Por isso a rodada final usa 5 execuções por cenário. Os dois cenários que ainda falham de vez em quando são esses de resolução.
 - O que mudou desde a rodada anterior (DeepSeek, 34/36, chamados bem abertos em 50%): a pergunta "quem é afetado" passou a ser garantida pelo código; cada intenção só encerra o turno depois de uma tool finalizadora (propor, perguntar, transferir ou apresentar o chamado), porque o modelo às vezes escrevia o "rascunho" em texto, sem chamar a tool, e inventava prazo; em relato crítico (equipe ou empresa parada e impedimento de trabalhar) o código recusa a pergunta e manda propor o chamado; e a tool de transferência não aceita mais o motivo "vencido", que só se aplica quando o funcionário aceita a oferta.
+
+Depois dessa rodada entrou o cenário `saudacao-sem-assunto` (uma saudação ia para o analista por baixa confiança; agora 3/3) e mudaram as instruções de citação de artigo e de prazo vencido. Os cenários afetados foram medidos de novo com o mesmo par de modelos: `erro-809-windows-10` subiu de 0/3 para 3/3 ao pedir que o agent escreva os passos do artigo que se aplica; `erro-809-windows-11`, `horario-atendimento`, `chamado-vencido`, `pedido-ambiguo`, `saudacao-sem-assunto` e `chamado-alheio` seguem aprovados.
 
 <!-- evals:end -->
 
@@ -186,6 +204,8 @@ O custo por turno é registrado em `agent.runs`, a partir do usage accounting do
 - **Duas chamadas ao modelo por mensagem** (roteador e laço) em troca de decisões de transferência testáveis sem modelo. O primeiro passo aparece em ~3 s e o primeiro texto em **p50 de 4,6 s e p95 de 9,9 s**, dentro da meta revista do PRD (5 s e 10 s) e acima da original (2 s). É um trade-off assumido e registrado.
 - **Tool obrigatória até a finalizadora** (`toolChoice: required` no `prepareStep`): garante que o agent nunca escreva um "rascunho" ou uma "proposta" em texto sem a tool; a exigência cai com ação pendente e após três passos.
 - **Postgres com um schema por domínio e Drizzle**, em vez de um banco sem serviço (SQLite): a regra "cada domínio só acessa as próprias tabelas" fica visível no banco e o deploy cabe num Postgres gerenciado. Custa um `docker compose up -d`. Nos testes, PGlite dá Postgres de verdade sem Docker.
+- **`useChat` com transporte próprio**, em vez de trocar o backend para o protocolo de stream do AI SDK: o protocolo SSE do turno, os testes do backend e os evals ficaram iguais, e a conversão para chunks é uma função pura testada.
+- **Texto revelado no cliente**, em vez do `smoothStream` no servidor: o modelo passa segundos nas tools e depois entrega a resposta em poucos décimos de segundo. A bolha revela o texto num ritmo constante (até ~1 s), sem mudar a latência medida nos evals; com `prefers-reduced-motion` o texto aparece de uma vez.
 - **SSE em vez de WebSocket:** o tráfego é quase todo servidor para cliente, passa por proxies HTTP comuns e usa o cookie de sessão. O hub de eventos é em memória, então vale para uma instância; a evolução é `LISTEN/NOTIFY`.
 - **Tickets dentro do monólito, como "legado":** o agent só o consome por interface, com decorador resiliente. Virar app dedicada exige apenas trocar o provedor do token por um cliente HTTP.
 - **Limite de 100 linhas por arquivo e de 30 por função**, imposto pelo linter, em troca de muitos arquivos pequenos.
@@ -248,7 +268,8 @@ Passos:
 
 ## O que eu faria com mais tempo
 
-- **Roteador híbrido com o Jev** (TypeSafe), um modelo de decisão estruturada com cerca de 0,4 s por classificação, para `intent` e `confidence`. Atacaria a latência do primeiro trecho, hoje o principal custo.
+- **Testar o Jev (TypeSafe) como segunda opinião da confiança**, a parte que decide transferir. Ele devolve escolhas com probabilidade em 70 a 500 ms, mas não gera texto, então não substitui o `understand`, que precisa de resumo, motivo e extração de dados. O **Jev Router** não serve aqui: troca o modelo a cada pedido e cobra o preço do modelo escolhido, o que invalida os evals e o teto de custo.
+- **Prazos do Anexo A na frase de prazo vencido** ("acima do prazo de 3 dias úteis"): hoje a tabela fica só no domínio de chamados e a frase cita a prioridade sem o número de dias.
 - **503 prévio para `budget_exhausted`:** hoje o teto diário vira `turn.failed` depois do aceite da mensagem.
 - **Distinguir 429 e 402 do provedor**, hoje ambos viram `agent_unavailable`.
 - **Logs `warn`** para orçamento atingido e para limite de passos.
