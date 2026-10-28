@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { ChatMessage, ChatStreamEvent, MessageUsage } from '@nexo/contracts';
 import type { Conversation } from '../conversation/conversation.js';
 import type { EmployeeTurnDeps } from './employee-turn-deps.js';
@@ -56,13 +57,18 @@ export function buildFailedMessage(input: FailedMessageInput): ChatMessage {
   };
 }
 
+async function failedMessageId(deps: EmployeeTurnDeps, replyId: string): Promise<string> {
+  const savedReply = await deps.messages.findById(replyId);
+  return savedReply === null ? replyId : randomUUID();
+}
+
 export async function failTurn(
   deps: EmployeeTurnDeps,
   input: FailedTurnInput,
 ): Promise<ChatStreamEvent> {
   const { conversation, failure } = input;
   const message = buildFailedMessage({
-    id: input.replyId,
+    id: await failedMessageId(deps, input.replyId),
     conversationId: conversation.id,
     text: failure.message,
     createdAt: deps.clock.now().toISOString(),

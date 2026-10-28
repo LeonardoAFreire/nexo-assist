@@ -139,6 +139,28 @@ describe('SendEmployeeMessage: id da resposta anunciado em turn.started', () => 
     expect(created).toContain(replyId);
   });
 
+  it('preserva a resposta já gravada quando o turno falha depois de salvá-la', async () => {
+    const fixture = makeTurnFixture();
+    const conversation = await seedConversation(fixture, { state: 'agent' });
+    const buildView = fixture.turnDeps.views.build.bind(fixture.turnDeps.views);
+    fixture.turnDeps.views.build = async (current) => {
+      if ((await agentMessages(fixture, conversation.id)).length > 0) {
+        throw new Error('banco indisponível');
+      }
+      return buildView(current);
+    };
+    fixture.agent.enqueue([completedEvent('Seu chamado foi atualizado.')]);
+    const events = await send(fixture, 'Atualize meu chamado');
+    const replyId = startedReplyId(events);
+    expect(events.at(-1)?.event).toBe('turn.failed');
+    expect(await fixture.messages.findById(replyId)).toMatchObject({
+      status: 'complete',
+      text: 'Seu chamado foi atualizado.',
+    });
+    const replies = await agentMessages(fixture, conversation.id);
+    expect(replies.map((message) => message.status)).toEqual(['complete', 'failed']);
+  });
+
   it('mantém o id na resposta que transfere para o analista', async () => {
     const fixture = makeTurnFixture();
     const conversation = await seedConversation(fixture, { state: 'agent' });
