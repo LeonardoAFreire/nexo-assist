@@ -1,6 +1,5 @@
 import type { AgentDecision, AgentStep, MessagePart } from '@nexo/contracts';
-import { DecisionDetails } from '@/components/agent-turn/decision-details';
-import { StepsLine } from '@/components/agent-turn/steps-line';
+import { AgentTurnHeader } from '@/components/agent-turn/agent-turn-header';
 import { AgentBubble } from './agent-bubble.js';
 import { MessageParts } from './message-parts.js';
 
@@ -28,14 +27,10 @@ export function AgentMessage(props: AgentMessageProps) {
   );
   return (
     <article aria-label="Nexo Assist" aria-busy={busy} className="flex flex-col gap-1.5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className="text-[12.5px] font-semibold text-ink">Nexo Assist</span>
-        <StepsLine steps={steps} />
-      </div>
+      <AgentTurnHeader steps={steps} decision={decision} />
       {options.length === 0 ? bubble : null}
       <MessageParts messageId={messageId} parts={others} />
       {options.length > 0 ? bubble : null}
-      {decision ? <DecisionDetails decision={decision} steps={steps} /> : null}
     </article>
   );
 }

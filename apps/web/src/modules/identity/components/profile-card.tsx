@@ -1,5 +1,6 @@
 import { Lock } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { CARD_SURFACE_CLASS } from '@/components/tickets/card-shell';
 
 type ProfileCardProps = {
   name: string;
@@ -22,7 +23,7 @@ function ProfileRow({ term, children }: ProfileRowProps) {
 
 export function ProfileCard({ name, email }: ProfileCardProps) {
   return (
-    <dl className="rounded-2xl border border-ink/10 bg-paper shadow-sm">
+    <dl className={CARD_SURFACE_CLASS}>
       <ProfileRow term="Nome">
         <span className="text-[14.5px] font-medium text-ink">{name}</span>
       </ProfileRow>

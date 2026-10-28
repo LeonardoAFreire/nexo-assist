@@ -1,4 +1,8 @@
 import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+
+export const CARD_SURFACE_CLASS =
+  'overflow-hidden rounded-2xl border border-ink/9 bg-paper shadow-[0_1px_2px_#1b24310d,0_6px_18px_#1b24310a]';
 
 type CardShellProps = {
   label?: string;
@@ -13,7 +17,7 @@ export function CardShell({ label, labelledBy, busy, children }: CardShellProps)
       aria-label={label}
       aria-labelledby={labelledBy}
       aria-busy={busy}
-      className="w-full overflow-hidden rounded-2xl border border-ink/9 bg-paper shadow-[0_1px_2px_#1b24310d,0_6px_18px_#1b24310a]"
+      className={cn('w-full', CARD_SURFACE_CLASS)}
     >
       {children}
     </article>

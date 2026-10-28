@@ -1,4 +1,5 @@
 import { KeyRound, Mail, RotateCcwKey } from 'lucide-react';
+import { CARD_SURFACE_CLASS } from '@/components/tickets/card-shell';
 import { Button } from '@/components/ui/button';
 
 type PasswordCardProps = {
@@ -27,10 +28,7 @@ function PasswordRow() {
 
 export function PasswordCard({ email }: PasswordCardProps) {
   return (
-    <section
-      aria-labelledby="password-title"
-      className="overflow-hidden rounded-2xl border border-ink/10 bg-paper shadow-sm"
-    >
+    <section aria-labelledby="password-title" className={CARD_SURFACE_CLASS}>
       <PasswordRow />
       <p className="flex items-center gap-2 border-t border-rule bg-desk px-6 py-3 text-[13px] text-ink-3">
         <Mail aria-hidden="true" className="size-3.5" />
