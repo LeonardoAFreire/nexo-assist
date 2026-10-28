@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { Clock } from '../clock/clock.js';
 import type { Conversation } from '../conversation/conversation.js';
 import type { ConversationRepository } from '../conversation/conversation-repository.js';
@@ -34,6 +35,7 @@ export class RecoverInterruptedTurns {
     }
     await this.deps.messages.save(
       buildFailedMessage({
+        id: randomUUID(),
         conversationId: conversation.id,
         text: new AgentTurnFailedError('agent_unavailable', true).message,
         createdAt: this.deps.clock.now().toISOString(),

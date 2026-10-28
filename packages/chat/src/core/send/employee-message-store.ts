@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { MessageUsage } from '@nexo/contracts';
 import type { Conversation } from '../conversation/conversation.js';
 import { buildEmployeeMessage } from './employee-message.js';
@@ -6,6 +7,7 @@ import type { EmployeeTurnDeps } from './employee-turn-deps.js';
 import type { EmployeeSession, TurnContext } from './turn-context.js';
 
 export type StoreEmployeeMessageInput = {
+  messageId: string;
   conversation: Conversation;
   session: EmployeeSession;
   resolved: ResolvedText;
@@ -19,6 +21,7 @@ export class EmployeeMessageStore {
   async store(input: StoreEmployeeMessageInput): Promise<TurnContext> {
     const createdAt = this.deps.clock.now().toISOString();
     const message = buildEmployeeMessage({
+      id: input.messageId,
       conversationId: input.conversation.id,
       authorName: input.session.userName,
       text: input.resolved.text,
@@ -36,6 +39,7 @@ export class EmployeeMessageStore {
       session: input.session,
       conversation,
       employeeMessage: message,
+      replyId: randomUUID(),
       agentText: input.resolved.agentText,
       usage: {
         messagesUsed: input.usage.messagesUsed,

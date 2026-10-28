@@ -67,7 +67,11 @@ describe('TI-04: identidade só da sessão', () => {
   it('usa o funcionário da sessão e não deixa um usuário ver a conversa de outro', async () => {
     app.agent.enqueue([completedEvent('Olá, Ana.')]);
     const events = await ana.send('Oi, preciso de ajuda');
-    expect(events.map((event) => event.event)).toEqual(['message.accepted', 'turn.completed']);
+    expect(events.map((event) => event.event)).toEqual([
+      'message.accepted',
+      'turn.started',
+      'turn.completed',
+    ]);
     expect(app.agent.inputs.at(-1)?.requester).toMatchObject({ id: ANA.id, name: ANA.name });
     const own = await ana.json<EmployeeConversationView>('GET', '/conversations/current');
     const foreign = await bruno.json<EmployeeConversationView>('GET', '/conversations/current');
@@ -96,6 +100,7 @@ describe('TI-05: turno por SSE', () => {
     const events = await bruno.send('Qual o status do meu chamado?');
     expect(events.map((event) => event.event)).toEqual([
       'message.accepted',
+      'turn.started',
       'turn.step',
       'turn.text-delta',
       'turn.text-delta',
@@ -113,11 +118,15 @@ describe('TI-05: turno por SSE', () => {
     const carla = chatClient(app, await app.sessionCookie(DEMO_EMPLOYEES[2]!.id));
     app.agent.enqueue([{ type: 'failed', code: 'agent_unavailable', retryable: true }]);
     const failed = await carla.send('Preciso de ajuda com a VPN');
-    expect(failed.map((event) => event.event)).toEqual(['message.accepted', 'turn.failed']);
-    expect(failed[1]?.data).toMatchObject({ retryable: true });
+    expect(failed.map((event) => event.event)).toEqual([
+      'message.accepted',
+      'turn.started',
+      'turn.failed',
+    ]);
+    expect(failed[2]?.data).toMatchObject({ retryable: true });
     app.agent.enqueue([completedEvent('Agora deu certo.')]);
     const retried = await carla.stream('/conversations/current/turns/retry', { body: {} });
-    expect(retried.map((event) => event.event)).toEqual(['turn.completed']);
+    expect(retried.map((event) => event.event)).toEqual(['turn.started', 'turn.completed']);
     const view = await carla.json<EmployeeConversationView>('GET', '/conversations/current');
     expect(view.body.usage.messagesUsed).toBe(1);
   });
@@ -161,5 +170,34 @@ describe('TI-15: excesso por minuto', () => {
     expect(limited.agent.inputs).toHaveLength(3);
     expect(otherUser.map((event) => event.event)).toContain('turn.completed');
     await limited.close();
+  });
+});
+
+describe('ids de ponta a ponta no turno', () => {
+  const clientMessageId = '5d0c9a7e-2f4b-4c1d-8e3a-6b7f9d1c2e4a';
+
+  it('usa o id do cliente na mensagem e anuncia o id da resposta antes de concluir', async () => {
+    app.agent.enqueue([completedEvent('Pode deixar.')]);
+    const events = await ana.send('Mais uma dúvida', { clientMessageId });
+    expect(events[0]?.data).toMatchObject({ message: { id: clientMessageId } });
+    const started = events.find((event) => event.event === 'turn.started');
+    const completed = events.at(-1)?.data as { message: { id: string } };
+    expect(started?.data).toEqual({ replyId: completed.message.id });
+  });
+
+  it('recusa id repetido com 409 igual para o dono e para outro funcionário', async () => {
+    const calls = app.agent.inputs.length;
+    const own = await ana.json('POST', MESSAGES, { text: 'de novo', clientMessageId });
+    const other = await bruno.json('POST', MESSAGES, { text: 'meu', clientMessageId });
+    expect([own.status, other.status]).toEqual([409, 409]);
+    expect(errorCode(own.body)).toBe('invalid_conversation_state');
+    expect(other.body).toEqual(own.body);
+    expect(app.agent.inputs).toHaveLength(calls);
+  });
+
+  it('recusa id do cliente que não é UUID', async () => {
+    const { status, body } = await ana.json('POST', MESSAGES, { text: 'oi', clientMessageId: 'x' });
+    expect(status).toBe(400);
+    expect(errorCode(body)).toBe('validation_error');
   });
 });

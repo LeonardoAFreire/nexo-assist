@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import type { AgentTurnEvent, ChatMessage, ChatStreamEvent, HandoffInfo } from '@nexo/contracts';
 import { collectTicketNumbers, extractTicketNumbers } from '../handoff/collect-ticket-numbers.js';
 import type { EmployeeTurnDeps } from './employee-turn-deps.js';
@@ -59,7 +58,7 @@ export class AgentTurnFinisher {
     state: TurnAccumulator,
   ): ChatMessage {
     return {
-      id: randomUUID(),
+      id: context.replyId,
       conversationId: context.conversation.id,
       author: 'agent',
       authorName: null,

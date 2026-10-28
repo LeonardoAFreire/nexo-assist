@@ -1,7 +1,9 @@
+import { randomUUID } from 'node:crypto';
 import type { ChatMessage, ChatStreamEvent } from '@nexo/contracts';
 import { ChatRuleError } from '../errors/chat-rule.error.js';
 import type { EmployeeTurnDeps } from './employee-turn-deps.js';
 import { EmployeeTurnRunner } from './employee-turn-runner.js';
+import { turnStarted } from './turn-completion.js';
 import type { EmployeeSession, TurnContext } from './turn-context.js';
 import { TurnLock } from './turn-lock.js';
 
@@ -34,11 +36,12 @@ export class RetryEmployeeTurn {
       session: input.session,
       conversation,
       employeeMessage,
+      replyId: randomUUID(),
       agentText: employeeMessage.text,
       usage: { messagesUsed: usage.messagesUsed, messagesLimit: usage.messagesLimit },
       signal: input.signal,
     };
-    return this.runner.runLocked(context, []);
+    return this.runner.runLocked(context, [turnStarted(context.replyId)]);
   }
 
   private async failedTurnRequest(conversationId: string): Promise<ChatMessage> {

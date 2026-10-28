@@ -1,7 +1,7 @@
-import { randomUUID } from 'node:crypto';
 import type { ChatMessage } from '@nexo/contracts';
 
 export type EmployeeMessageInput = {
+  id: string;
   conversationId: string;
   authorName: string;
   text: string;
@@ -10,7 +10,7 @@ export type EmployeeMessageInput = {
 
 export function buildEmployeeMessage(input: EmployeeMessageInput): ChatMessage {
   return {
-    id: randomUUID(),
+    id: input.id,
     conversationId: input.conversationId,
     author: 'employee',
     authorName: input.authorName,

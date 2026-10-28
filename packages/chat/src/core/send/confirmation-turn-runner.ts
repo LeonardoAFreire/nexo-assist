@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import type { ChatMessage, ChatStreamEvent, PendingActionKind } from '@nexo/contracts';
 import type { PendingActionRecord } from '../pending-actions/pending-action-record.js';
 import type { EmployeeTurnDeps } from './employee-turn-deps.js';
@@ -48,6 +47,7 @@ export class ConfirmationTurnRunner {
         conversation: context.conversation,
         actionId: pending.id,
         via: 'text',
+        messageId: context.replyId,
       });
       return result.message;
     } catch (error: unknown) {
@@ -57,7 +57,7 @@ export class ConfirmationTurnRunner {
 
   private cancellationMessage(context: TurnContext, kind: PendingActionKind): ChatMessage {
     return {
-      id: randomUUID(),
+      id: context.replyId,
       conversationId: context.conversation.id,
       author: 'agent',
       authorName: null,

@@ -7,10 +7,18 @@ describe('sendMessageRequestSchema', () => {
   it('aceita o exemplo da TechSpec e preenche os padrões', () => {
     const result = sendMessageRequestSchema.parse({ text: 'Qual o status do meu chamado?' });
     expect(result).toEqual({
+      clientMessageId: null,
       text: 'Qual o status do meu chamado?',
       quickReply: null,
       ticketSelection: null,
     });
+  });
+
+  it('aceita o id gerado pelo cliente e recusa id fora do formato uuid', () => {
+    const accepted = sendMessageRequestSchema.parse({ clientMessageId: MESSAGE_ID, text: 'oi' });
+    expect(accepted.clientMessageId).toBe(MESSAGE_ID);
+    const invalid = sendMessageRequestSchema.safeParse({ clientMessageId: 'abc', text: 'oi' });
+    expect(invalid.success).toBe(false);
   });
 
   it('recusa requesterId enviado no corpo', () => {

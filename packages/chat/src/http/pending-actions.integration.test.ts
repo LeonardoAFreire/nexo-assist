@@ -138,6 +138,7 @@ describe('TI-07: confirmação por texto', () => {
     const events = await ana.send('sim, pode abrir');
     expect(events.map((event) => event.event)).toEqual([
       'message.accepted',
+      'turn.started',
       'turn.step',
       'turn.completed',
     ]);
@@ -155,7 +156,11 @@ describe('TI-07: confirmação por texto', () => {
     const other = await bruno.send('na verdade é no Wi-Fi');
     const cancel = await bruno.send('cancelar');
     expect(other.at(-1)?.event).toBe('turn.completed');
-    expect(cancel.map((event) => event.event)).toEqual(['message.accepted', 'turn.completed']);
+    expect(cancel.map((event) => event.event)).toEqual([
+      'message.accepted',
+      'turn.started',
+      'turn.completed',
+    ]);
     expect(app.tickets.created.size).toBe(created);
     const view = await bruno.json<EmployeeConversationView>('GET', '/conversations/current');
     expect(view.body.conversation?.pendingAction).toBeNull();
@@ -282,11 +287,12 @@ describe('TI-16: indisponibilidade do legado', () => {
     const events = await carla.send('Quais são meus chamados?');
     expect(events.map((event) => event.event)).toEqual([
       'message.accepted',
+      'turn.started',
       'turn.step',
       'turn.part',
       'turn.completed',
     ]);
-    expect(events[1]?.data).toMatchObject({ step: { status: 'failed' } });
+    expect(events[2]?.data).toMatchObject({ step: { status: 'failed' } });
     const saved = messageOf(events);
     expect(saved.turn?.steps[0]?.status).toBe('failed');
     expect(saved.parts[0]).toMatchObject({ type: 'quick_options' });

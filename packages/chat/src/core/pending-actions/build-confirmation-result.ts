@@ -10,6 +10,7 @@ export type ConfirmPendingActionResult = {
 };
 
 export type ConfirmationContext = {
+  messageId: string;
   record: PendingActionRecord;
   via: ConfirmationChannel;
   written: TicketWriteResult;
@@ -34,6 +35,7 @@ export function buildConfirmationResult(context: ConfirmationContext): ConfirmPe
     durationMs: finishedAt.getTime() - context.startedAt.getTime(),
   });
   const message = buildConfirmationMessage({
+    id: context.messageId,
     conversationId: record.conversationId,
     kind: record.kind,
     ticket: written.ticket,

@@ -26,7 +26,8 @@ const PROPOSAL: AgentTurnEvent = {
 
 function makeInput(text: string, overrides: Partial<SendEmployeeMessageInput> = {}) {
   const signal = new AbortController().signal;
-  return { session: SESSION, text, quickReply: null, ticketSelection: null, signal, ...overrides };
+  const base = { clientMessageId: null, quickReply: null, ticketSelection: null };
+  return { ...base, session: SESSION, text, signal, ...overrides };
 }
 
 async function send(
@@ -55,7 +56,12 @@ describe('SendEmployeeMessage: confirmação e cancelamento por texto', () => {
     const events = await send(fixture, 'sim, pode abrir');
     expect(fixture.agent.inputs).toHaveLength(1);
     expect(fixture.tickets.writes).toHaveLength(1);
-    expect(eventNames(events)).toEqual(['message.accepted', 'turn.step', 'turn.completed']);
+    expect(eventNames(events)).toEqual([
+      'message.accepted',
+      'turn.started',
+      'turn.step',
+      'turn.completed',
+    ]);
     expect((await lastAgentMessage(fixture))?.parts[0]?.type).toBe('ticket_card');
     const conversation = await fixture.conversations.findActiveByEmployee(ANA.id);
     expect(await fixture.actions.findPendingByConversation(conversation?.id ?? '')).toBeNull();
@@ -202,9 +208,9 @@ describe('SendEmployeeMessage: contexto do agent e nova tentativa', () => {
     const retry = new RetryEmployeeTurn(fixture.turnDeps);
     const signal = new AbortController().signal;
     const events = await collectEvents(await retry.execute({ session: SESSION, signal }));
-    expect(eventNames(events)).toEqual(['turn.completed']);
+    expect(eventNames(events)).toEqual(['turn.started', 'turn.completed']);
     expect(fixture.agent.inputs[1]?.userMessage).toBe('Oi');
-    expect(events[0]).toMatchObject({ data: { usage: { messagesUsed: 1 } } });
+    expect(events[1]).toMatchObject({ data: { usage: { messagesUsed: 1 } } });
   });
 
   it('recusa refazer quando a última resposta não falhou', async () => {

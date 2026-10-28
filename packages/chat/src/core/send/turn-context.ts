@@ -11,6 +11,7 @@ export type TurnContext = {
   session: EmployeeSession;
   conversation: Conversation;
   employeeMessage: ChatMessage;
+  replyId: string;
   agentText: string;
   usage: MessageUsage;
   signal: AbortSignal;

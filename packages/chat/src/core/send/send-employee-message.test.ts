@@ -22,7 +22,8 @@ function makeInput(
   overrides: Partial<SendEmployeeMessageInput> = {},
 ): SendEmployeeMessageInput {
   const signal = new AbortController().signal;
-  return { session: SESSION, text, quickReply: null, ticketSelection: null, signal, ...overrides };
+  const base = { clientMessageId: null, quickReply: null, ticketSelection: null };
+  return { ...base, session: SESSION, text, signal, ...overrides };
 }
 
 async function send(
@@ -57,7 +58,12 @@ describe('SendEmployeeMessage: turno com o agent', () => {
       completedEvent('Você tem 1 chamado.'),
     ]);
     const events = await send(fixture, 'Qual o status do meu chamado?');
-    expect(eventNames(events)).toEqual(['message.accepted', 'turn.step', 'turn.completed']);
+    expect(eventNames(events)).toEqual([
+      'message.accepted',
+      'turn.started',
+      'turn.step',
+      'turn.completed',
+    ]);
     expect(fixture.agent.inputs[0]).toMatchObject({
       requester: { id: ANA.id, name: ANA.name },
       userMessage: 'Qual o status do meu chamado?',
@@ -149,7 +155,7 @@ describe('SendEmployeeMessage: turno com o agent', () => {
     const controller = new AbortController();
     controller.abort();
     const events = await send(fixture, 'Oi', { signal: controller.signal });
-    expect(eventNames(events)).toEqual(['message.accepted', 'turn.failed']);
+    expect(eventNames(events)).toEqual(['message.accepted', 'turn.started', 'turn.failed']);
   });
 });
 

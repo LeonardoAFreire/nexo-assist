@@ -11,6 +11,7 @@ export const chatStreamEventSchema = z.discriminatedUnion('event', [
     event: z.literal('message.accepted'),
     data: z.object({ message: chatMessageSchema, usage: messageUsageSchema }),
   }),
+  z.object({ event: z.literal('turn.started'), data: z.object({ replyId: z.uuid() }) }),
   z.object({ event: z.literal('turn.step'), data: z.object({ step: agentStepSchema }) }),
   z.object({ event: z.literal('turn.text-delta'), data: z.object({ delta: z.string() }) }),
   z.object({ event: z.literal('turn.part'), data: z.object({ part: messagePartSchema }) }),

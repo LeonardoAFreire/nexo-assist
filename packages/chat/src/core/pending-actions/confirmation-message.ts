@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import type { AgentTurn, ChatMessage, PendingActionKind, TicketDetail } from '@nexo/contracts';
 
 const TEXT_BY_KIND: Record<PendingActionKind, (ticketNumber: string) => string> = {
@@ -8,6 +7,7 @@ const TEXT_BY_KIND: Record<PendingActionKind, (ticketNumber: string) => string> 
 };
 
 export type ConfirmationMessageInput = {
+  id: string;
   conversationId: string;
   kind: PendingActionKind;
   ticket: TicketDetail;
@@ -17,7 +17,7 @@ export type ConfirmationMessageInput = {
 
 export function buildConfirmationMessage(input: ConfirmationMessageInput): ChatMessage {
   return {
-    id: randomUUID(),
+    id: input.id,
     conversationId: input.conversationId,
     author: 'agent',
     authorName: null,

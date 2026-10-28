@@ -6,6 +6,7 @@ import {
 } from './accept-employee-message.js';
 import type { EmployeeTurnDeps } from './employee-turn-deps.js';
 import { EmployeeTurnRunner } from './employee-turn-runner.js';
+import { turnStarted } from './turn-completion.js';
 
 export type { SendEmployeeMessageInput };
 
@@ -32,7 +33,7 @@ export class SendEmployeeMessage {
     if (paused !== null) {
       return skippedStream(acceptedEvent, paused);
     }
-    return this.runner.runLocked(context, [acceptedEvent]);
+    return this.runner.runLocked(context, [acceptedEvent, turnStarted(context.replyId)]);
   }
 }
 

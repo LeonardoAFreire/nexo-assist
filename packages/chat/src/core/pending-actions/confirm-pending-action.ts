@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { ConfirmationChannel } from '@nexo/contracts';
 import type { ResiliencePolicy } from '@nexo/shared/resilience';
 import type { Clock } from '../clock/clock.js';
@@ -29,6 +30,7 @@ export type ConfirmPendingActionDeps = {
 
 export type ConfirmPendingActionInput = PendingActionTarget & {
   via: ConfirmationChannel;
+  messageId?: string;
 };
 
 export class ConfirmPendingAction {
@@ -40,6 +42,7 @@ export class ConfirmPendingAction {
     const written = await this.write(input, record);
     const finishedAt = this.deps.clock.now();
     const result = buildConfirmationResult({
+      messageId: input.messageId ?? randomUUID(),
       record,
       via: input.via,
       written,

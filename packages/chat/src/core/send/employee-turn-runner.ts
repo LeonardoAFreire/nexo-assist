@@ -39,7 +39,8 @@ export class EmployeeTurnRunner {
       yield* this.route(context);
     } catch (error: unknown) {
       const failure = describeFailure(error);
-      yield await failTurn(this.deps, { conversation: context.conversation, failure });
+      const { conversation, replyId } = context;
+      yield await failTurn(this.deps, { conversation, replyId, failure });
     }
   }
 
