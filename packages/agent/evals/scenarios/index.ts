@@ -13,6 +13,7 @@ import { horarioAtendimento } from './horario-atendimento.js';
 import { injecaoInstrucao } from './injecao-instrucao.js';
 import { pedidoAmbiguo } from './pedido-ambiguo.js';
 import { pedidoAnalista } from './pedido-analista.js';
+import { saudacaoSemAssunto } from './saudacao-sem-assunto.js';
 import { reaberturaForaDoPrazo } from './reabertura-fora-do-prazo.js';
 import { reaberturaSap } from './reabertura-sap.js';
 import { retomadaVpn } from './retomada-vpn.js';
@@ -31,6 +32,7 @@ export const evalScenarios: EvalScenario[] = [
   reaberturaForaDoPrazo,
   criticoEquipe,
   pedidoAmbiguo,
+  saudacaoSemAssunto,
   pedidoAnalista,
   foraDeEscopoRh,
   foraDeEscopoFinanceiro,
