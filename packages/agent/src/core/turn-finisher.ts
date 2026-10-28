@@ -41,8 +41,9 @@ export class TurnFinisher {
       requestHandoff(turn, input.understanding, 'critical');
       turn.say(CRITICAL_HANDOFF_TEXT);
     }
-    if (turn.observer.overdueShown && !turn.observer.quickOptionsShown) {
-      offerOverdueOptions(turn);
+    const overdue = turn.observer.overdueTicket;
+    if (overdue !== null && !turn.observer.quickOptionsShown) {
+      offerOverdueOptions(turn, overdue);
     }
     if (isMissingImpact(turn, input)) {
       askImpact(turn);

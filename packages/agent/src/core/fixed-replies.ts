@@ -1,4 +1,5 @@
-import type { HandoffReason, QuickOption, Understanding } from '@nexo/contracts';
+import type { HandoffReason, QuickOption, TicketDetail, Understanding } from '@nexo/contracts';
+import { OVERDUE_QUESTION, overdueSentence } from './overdue-reply.js';
 import { HANDOFF_REASON_LABELS, HANDOFF_STEP_LABEL } from './tools/transferir-para-analista.js';
 import type { TurnSession } from './turn-session.js';
 
@@ -9,7 +10,6 @@ export const HANDOFF_TEXT =
 export const CRITICAL_HANDOFF_TEXT =
   'Como o impacto é crítico, também vou transferir você para um analista, que receberá o resumo do caso.';
 const DEGRADED_QUESTION = 'Como prefere seguir?';
-const OVERDUE_QUESTION = 'O que você gostaria de fazer com este chamado vencido?';
 const PERCENT = 100;
 const TRAILING_PUNCTUATION = /[.\s]+$/;
 
@@ -52,7 +52,8 @@ export function replyDegraded(turn: TurnSession): void {
   offerOptions(turn, DEGRADED_QUESTION, DEGRADED_OPTIONS);
 }
 
-export function offerOverdueOptions(turn: TurnSession): void {
+export function offerOverdueOptions(turn: TurnSession, ticket: TicketDetail): void {
+  turn.say(overdueSentence(ticket, turn.context.clock.now()));
   offerOptions(turn, OVERDUE_QUESTION, OVERDUE_OPTIONS);
 }
 

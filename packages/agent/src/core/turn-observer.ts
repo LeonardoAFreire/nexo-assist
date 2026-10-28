@@ -1,4 +1,4 @@
-import type { AgentTurnEvent, TicketDraft } from '@nexo/contracts';
+import type { AgentTurnEvent, TicketDetail, TicketDraft } from '@nexo/contracts';
 
 type HandoffRequest = Extract<AgentTurnEvent, { type: 'handoff-requested' }>;
 
@@ -6,7 +6,7 @@ export class TurnObserver {
   text = '';
   firstTokenMs: number | null = null;
   handoff: HandoffRequest | null = null;
-  overdueShown = false;
+  overdueTicket: TicketDetail | null = null;
   quickOptionsShown = false;
   criticalDraft: TicketDraft | null = null;
   private proposed = false;
@@ -37,7 +37,9 @@ export class TurnObserver {
 
   private watchPart(part: Extract<AgentTurnEvent, { type: 'part' }>['part']): void {
     this.quickOptionsShown ||= part.type === 'quick_options';
-    this.overdueShown ||= part.type === 'ticket_card' && part.ticket.overdue;
+    if (part.type === 'ticket_card' && part.ticket.overdue) {
+      this.overdueTicket ??= part.ticket;
+    }
     this.resolvedByContent ||=
       part.type === 'ticket_card' ||
       part.type === 'ticket_selection' ||
