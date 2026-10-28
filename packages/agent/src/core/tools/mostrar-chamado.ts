@@ -37,21 +37,25 @@ function describeResult(output: MostrarChamadoOutput): string {
   return output.overdue ? 'chamado vencido' : 'chamado exibido';
 }
 
+function stepLabelFor(input: MostrarChamadoInput, output: MostrarChamadoOutput): string {
+  if (output.status === 'not_found') {
+    return `procurou o ${input.number}`;
+  }
+  return output.overdue ? `consultou o SLA do ${input.number}` : `mostrou o ${input.number}`;
+}
+
 export function createMostrarChamadoTool(
   deps: MostrarChamadoDeps,
 ): AgentTool<MostrarChamadoInput, MostrarChamadoOutput> {
   return {
     name: 'mostrar_chamado',
     description:
-      'Mostra ao funcionário o cartão de um dos próprios chamados, com status, prazo e se está vencido. Use quando ele citar o número ou se referir a um chamado já mencionado na conversa. Se devolver overdue verdadeiro, diga em uma frase que o prazo venceu e encerre a resposta, sem fazer perguntas.',
+      'Mostra ao funcionário o cartão de um dos próprios chamados, com status, prazo e se está vencido. Use quando ele citar o número ou se referir a um chamado já mencionado na conversa. Se devolver overdue verdadeiro, não escreva mais nada: o sistema explica o prazo vencido e oferece as opções.',
     stepKind: 'viewed_ticket',
     failureLabel: 'mostrou um chamado',
     inputSchema,
     outputSchema,
-    stepLabel: (input, output) =>
-      output.status === 'shown' && output.overdue
-        ? `consultou o SLA do ${input.number}`
-        : `mostrou o ${input.number}`,
+    stepLabel: (input, output) => stepLabelFor(input, output),
     stepResult: (_input, output) => describeResult(output),
     rules: (_input, output) => (output.status === 'shown' && output.overdue ? [OVERDUE_RULE] : []),
     execute: (input, context) => showTicket(deps.tickets, input, context),

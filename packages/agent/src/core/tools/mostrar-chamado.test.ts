@@ -49,6 +49,12 @@ describe('mostrar_chamado', () => {
     expect(tool.stepResult(input, { status: 'not_found' })).toBe('chamado não encontrado');
   });
 
+  it('não diz que mostrou um chamado que não encontrou entre os do funcionário', () => {
+    const tool = makeTool();
+    const input = { number: 'INC-20517' };
+    expect(tool.stepLabel(input, { status: 'not_found' })).toBe('procurou o INC-20517');
+  });
+
   it('registra a regra de prazo vencido só quando o chamado está vencido', () => {
     const tool = makeTool();
     const input = { number: 'INC-20311' };
