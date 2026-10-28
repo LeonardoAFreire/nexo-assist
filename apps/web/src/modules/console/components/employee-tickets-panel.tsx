@@ -31,7 +31,10 @@ function countsOf(tickets: ConsoleEmployeeTickets | undefined): string {
     return '';
   }
   const open = tickets.fromConversation.length + tickets.others.open.length;
-  return `${open} abertos · ${tickets.others.closed.length} encerrados`;
+  const closed = tickets.others.closed.length;
+  const openLabel = open === 1 ? 'aberto' : 'abertos';
+  const closedLabel = closed === 1 ? 'encerrado' : 'encerrados';
+  return `${open} ${openLabel} · ${closed} ${closedLabel}`;
 }
 
 export function EmployeeTicketsPanel({ conversationId, analystId }: EmployeeTicketsPanelProps) {

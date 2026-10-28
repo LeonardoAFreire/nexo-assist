@@ -1,4 +1,5 @@
 import type { SessionUser } from '@nexo/contracts';
+import { PanelLeftClose } from 'lucide-react';
 import { NavLink } from 'react-router';
 import { NexoMark } from '@/components/nexo-mark';
 import { cn } from '@/lib/utils';
@@ -8,6 +9,7 @@ import { SidebarUser } from './sidebar-user';
 type SidebarProps = {
   user: SessionUser;
   items: readonly NavItem[];
+  onCollapse?: () => void;
 };
 
 const LINK_BASE =
@@ -21,7 +23,22 @@ function linkClassName({ isActive }: { isActive: boolean }): string {
   return cn(LINK_BASE, LINK_FOCUS, state);
 }
 
-export function Sidebar({ user, items }: SidebarProps) {
+function CollapseButton({ onCollapse }: { onCollapse: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-label="Recolher menu"
+      aria-expanded
+      title="Recolher menu"
+      onClick={onCollapse}
+      className="ml-auto flex size-7 items-center justify-center rounded-md text-ink-3 outline-none hover:bg-desk hover:text-ink focus-visible:ring-3 focus-visible:ring-ring/50"
+    >
+      <PanelLeftClose aria-hidden="true" className="size-4" />
+    </button>
+  );
+}
+
+export function Sidebar({ user, items, onCollapse }: SidebarProps) {
   return (
     <aside className="flex w-full shrink-0 items-center gap-1.5 border-b border-rule bg-paper px-2 py-2 md:w-58 md:flex-col md:items-stretch md:gap-0 md:border-r md:border-b-0 md:px-3.5 md:pt-5 md:pb-3.5">
       <div className="flex items-center gap-2.5 px-2">
@@ -29,6 +46,7 @@ export function Sidebar({ user, items }: SidebarProps) {
         <span className="hidden text-base font-bold tracking-tight text-ink sm:inline">
           Nexo Assist
         </span>
+        {onCollapse ? <CollapseButton onCollapse={onCollapse} /> : null}
       </div>
       <nav aria-label="Principal" className="flex gap-0.5 md:mt-[22px] md:flex-col">
         {items.map((item: NavItem) => (
