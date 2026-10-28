@@ -54,6 +54,17 @@ describe('console do analista (TI-28)', () => {
     expect(screen.getByText('O agent está atendendo esta conversa')).toBeVisible();
   });
 
+  it('envia a resposta com Enter e quebra a linha com Shift+Enter', async () => {
+    const [, app] = await openAna();
+    await app.user.click(await screen.findByRole('button', { name: 'Assumir atendimento' }));
+    const reply = await screen.findByRole('textbox', { name: /resposta ao funcionário/i });
+    await app.user.type(reply, 'Oi, Ana.{Shift>}{Enter}{/Shift}Já estou vendo.');
+    expect(reply).toHaveValue('Oi, Ana.\nJá estou vendo.');
+    await app.user.type(reply, '{Enter}');
+    expect(await screen.findByText(/Já estou vendo\./)).toBeVisible();
+    await waitFor(() => expect(reply).toHaveValue(''));
+  });
+
   it('encerra o atendimento assumido', async () => {
     const [, app] = await openAna();
     await app.user.click(await screen.findByRole('button', { name: 'Assumir atendimento' }));

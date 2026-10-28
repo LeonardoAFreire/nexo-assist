@@ -1,4 +1,4 @@
-import { type FormEvent, type KeyboardEvent, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import type { RejectedText } from '../types/nexo-ui-message.js';
 
 export type ComposerDraft = {
@@ -6,7 +6,6 @@ export type ComposerDraft = {
   canSend: boolean;
   setText: (text: string) => void;
   submit: (event: FormEvent<HTMLFormElement>) => void;
-  onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
 };
 
 export type ComposerDraftInput = {
@@ -14,10 +13,6 @@ export type ComposerDraftInput = {
   rejection: RejectedText | null;
   onSend: (text: string) => void;
 };
-
-function isSendKey(event: KeyboardEvent<HTMLTextAreaElement>): boolean {
-  return event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing;
-}
 
 export function useComposerDraft({
   blocked,
@@ -38,20 +33,9 @@ export function useComposerDraft({
       setText('');
     }
   };
-  return { text, canSend, setText, ...submitHandlers(send) };
-}
-
-function submitHandlers(send: () => void): Pick<ComposerDraft, 'submit' | 'onKeyDown'> {
-  return {
-    submit: (event) => {
-      event.preventDefault();
-      send();
-    },
-    onKeyDown: (event) => {
-      if (isSendKey(event)) {
-        event.preventDefault();
-        send();
-      }
-    },
+  const submit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    send();
   };
+  return { text, canSend, setText, submit };
 }

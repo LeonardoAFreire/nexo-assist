@@ -1,6 +1,7 @@
 import { MESSAGE_TEXT_MAX_LENGTH } from '@nexo/contracts';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { submitOnEnter } from '@/lib/submit-on-enter';
 import { useComposerForm } from '../hooks/use-composer-form.js';
 
 const SEND_FAILED_MESSAGE = 'Não foi possível enviar a mensagem. Tente de novo.';
@@ -23,6 +24,7 @@ function ReplyField({ value, onChange }: ReplyFieldProps) {
       maxLength={MESSAGE_TEXT_MAX_LENGTH}
       value={value}
       onChange={(event) => onChange(event.target.value)}
+      onKeyDown={submitOnEnter}
       className="max-h-32 min-h-11 flex-1 resize-none rounded-xl bg-desk px-3.5 py-3 text-[14.5px] text-ink [field-sizing:content] outline-none placeholder:text-ink-3 focus-visible:ring-3 focus-visible:ring-ring/40"
     />
   );

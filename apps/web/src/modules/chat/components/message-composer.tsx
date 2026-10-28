@@ -1,4 +1,5 @@
 import { MESSAGE_TEXT_MAX_LENGTH } from '@nexo/contracts';
+import { submitOnEnter } from '@/lib/submit-on-enter';
 import { useComposerDraft } from '../hooks/use-composer-draft.js';
 import type { RejectedText } from '../types/nexo-ui-message.js';
 import { ComposerAction } from './composer-action.js';
@@ -29,7 +30,7 @@ export function MessageComposer(props: MessageComposerProps) {
         maxLength={MESSAGE_TEXT_MAX_LENGTH}
         placeholder={placeholder}
         onChange={(event) => draft.setText(event.target.value)}
-        onKeyDown={draft.onKeyDown}
+        onKeyDown={submitOnEnter}
         className="field-sizing-content max-h-40 min-h-9 min-w-0 flex-1 resize-none bg-transparent py-[7px] text-[14.5px] leading-[1.45] text-ink outline-none placeholder:text-ink-3 disabled:cursor-not-allowed"
       />
       <ComposerAction streaming={streaming} canSend={draft.canSend} onStop={onStop} />
