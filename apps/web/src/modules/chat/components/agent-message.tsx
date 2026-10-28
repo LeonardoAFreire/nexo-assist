@@ -22,7 +22,7 @@ export function AgentMessage(props: AgentMessageProps) {
   const others = parts.filter((part: MessagePart) => !isQuickOptions(part));
   const bubble = (
     <AgentBubble text={text} busy={busy}>
-      <MessageParts messageId={messageId} parts={options} />
+      {options.length > 0 ? <MessageParts messageId={messageId} parts={options} /> : null}
     </AgentBubble>
   );
   return (
