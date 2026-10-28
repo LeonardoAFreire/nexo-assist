@@ -1,43 +1,38 @@
 import { MESSAGE_TEXT_MAX_LENGTH } from '@nexo/contracts';
-import { ArrowUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useComposerDraft } from '../hooks/use-composer-draft.js';
-import type { RejectedText } from '../hooks/turn-state.js';
+import type { RejectedText } from '../types/nexo-ui-message.js';
+import { ComposerAction } from './composer-action.js';
 
 type MessageComposerProps = {
-  disabled: boolean;
+  locked: boolean;
+  waiting: boolean;
+  streaming: boolean;
   placeholder: string;
   rejection: RejectedText | null;
   onSend: (text: string) => void;
+  onStop: () => void;
 };
 
 export function MessageComposer(props: MessageComposerProps) {
-  const { disabled, placeholder, rejection, onSend } = props;
-  const draft = useComposerDraft(disabled, onSend, rejection);
+  const { locked, waiting, streaming, placeholder, rejection, onSend, onStop } = props;
+  const draft = useComposerDraft({ blocked: locked || waiting, rejection, onSend });
   return (
     <form
       onSubmit={draft.submit}
-      className="flex h-12 items-center gap-2 rounded-xl border border-ink/12 bg-paper pr-1.5 pl-4 focus-within:ring-3 focus-within:ring-ring/40"
+      className="flex items-end gap-2 rounded-xl border border-ink/12 bg-paper py-1.5 pr-1.5 pl-4 transition-shadow duration-200 focus-within:border-ink/20 focus-within:ring-3 focus-within:ring-ring/40"
     >
-      <input
-        type="text"
+      <textarea
         aria-label="Mensagem para o Nexo"
-        autoComplete="off"
+        rows={1}
         value={draft.text}
-        disabled={disabled}
+        disabled={locked}
         maxLength={MESSAGE_TEXT_MAX_LENGTH}
         placeholder={placeholder}
         onChange={(event) => draft.setText(event.target.value)}
-        className="min-w-0 flex-1 bg-transparent text-[14.5px] text-ink outline-none placeholder:text-ink-3 disabled:cursor-not-allowed"
+        onKeyDown={draft.onKeyDown}
+        className="field-sizing-content max-h-40 min-h-9 min-w-0 flex-1 resize-none bg-transparent py-[7px] text-[14.5px] leading-[1.45] text-ink outline-none placeholder:text-ink-3 disabled:cursor-not-allowed"
       />
-      <Button
-        type="submit"
-        disabled={!draft.canSend}
-        className="h-9 gap-1.5 rounded-md bg-cta px-3 text-[13.5px] font-semibold text-white"
-      >
-        <ArrowUp aria-hidden="true" className="size-3.5" />
-        Enviar
-      </Button>
+      <ComposerAction streaming={streaming} canSend={draft.canSend} onStop={onStop} />
     </form>
   );
 }

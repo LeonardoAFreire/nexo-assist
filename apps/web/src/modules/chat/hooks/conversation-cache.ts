@@ -1,17 +1,6 @@
-import type { ChatMessage, ChatStreamEvent, EmployeeConversationView } from '@nexo/contracts';
+import type { EmployeeConversationView } from '@nexo/contracts';
 import type { QueryClient } from '@tanstack/react-query';
 import { chatKeys } from './chat-keys.js';
-
-function withoutFailedTail(timeline: ChatMessage[]): ChatMessage[] {
-  const last = timeline.at(-1);
-  const hasFailedTail = last?.author === 'agent' && last.status === 'failed';
-  return hasFailedTail ? timeline.slice(0, -1) : timeline;
-}
-
-export function appendUnique(timeline: ChatMessage[], message: ChatMessage): ChatMessage[] {
-  const others = timeline.filter((current: ChatMessage) => current.id !== message.id);
-  return [...others, message];
-}
 
 export function updateView(
   queryClient: QueryClient,
@@ -22,25 +11,6 @@ export function updateView(
   );
 }
 
-export function applyEventToCache(queryClient: QueryClient, event: ChatStreamEvent): void {
-  if (event.event === 'message.accepted') {
-    const { message, usage } = event.data;
-    updateView(queryClient, (view) => ({
-      ...view,
-      usage,
-      timeline: appendUnique(view.timeline, message),
-    }));
-  }
-  if (event.event === 'turn.completed') {
-    const { message, conversation, usage } = event.data;
-    updateView(queryClient, (view) => ({
-      ...view,
-      conversation,
-      usage,
-      timeline: appendUnique(withoutFailedTail(view.timeline), message),
-    }));
-  }
-  if (event.event === 'turn.skipped') {
-    void queryClient.invalidateQueries({ queryKey: chatKeys.conversation });
-  }
+export function invalidateConversation(queryClient: QueryClient): void {
+  void queryClient.invalidateQueries({ queryKey: chatKeys.conversation });
 }

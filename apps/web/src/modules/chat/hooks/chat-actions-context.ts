@@ -1,13 +1,19 @@
-import type { SendMessageRequest } from '@nexo/contracts';
 import { createContext, useContext } from 'react';
+import type { ReplyRequest, TimelineUpdater } from '../types/nexo-ui-message.js';
 
 export type ChatActions = {
   busy: boolean;
   latestMessageId: string | null;
-  reply: (request: SendMessageRequest) => void;
+  reply: (request: ReplyRequest) => void;
+  updateTimeline: TimelineUpdater;
 };
 
-const idleActions: ChatActions = { busy: true, latestMessageId: null, reply: () => undefined };
+const idleActions: ChatActions = {
+  busy: true,
+  latestMessageId: null,
+  reply: () => undefined,
+  updateTimeline: () => undefined,
+};
 
 export const ChatActionsContext = createContext<ChatActions>(idleActions);
 

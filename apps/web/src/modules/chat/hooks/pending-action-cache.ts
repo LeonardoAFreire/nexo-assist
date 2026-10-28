@@ -7,7 +7,14 @@ import type {
   TicketDetail,
 } from '@nexo/contracts';
 import type { QueryClient } from '@tanstack/react-query';
-import { appendUnique, updateView } from './conversation-cache.js';
+import type { TimelineUpdater } from '../types/nexo-ui-message.js';
+import { updateView } from './conversation-cache.js';
+import { appendUnique } from './ui-messages.js';
+
+export type ActionCacheTargets = {
+  queryClient: QueryClient;
+  updateTimeline: TimelineUpdater;
+};
 
 function replaceInPart(part: MessagePart, action: PendingAction): MessagePart {
   const isTarget = part.type === 'pending_action' && part.action.id === action.id;
@@ -25,15 +32,17 @@ function nextPendingAction(current: PendingAction | null, action: PendingAction)
   return action.status === 'pending' ? action : null;
 }
 
-export function applyActionUpdate(queryClient: QueryClient, action: PendingAction): void {
-  updateView(queryClient, (view) => ({
+export function applyActionUpdate(targets: ActionCacheTargets, action: PendingAction): void {
+  updateView(targets.queryClient, (view) => ({
     ...view,
     conversation: view.conversation && {
       ...view.conversation,
       pendingAction: nextPendingAction(view.conversation.pendingAction, action),
     },
-    timeline: view.timeline.map((message) => replaceInMessage(message, action)),
   }));
+  targets.updateTimeline((timeline) =>
+    timeline.map((message) => replaceInMessage(message, action)),
+  );
 }
 
 function resultTicket(outcome: ChatTurnOutcome): TicketDetail | null {
@@ -47,18 +56,15 @@ export type ConfirmedInput = {
   outcome: ChatTurnOutcome;
 };
 
-export function applyConfirmation(queryClient: QueryClient, input: ConfirmedInput): void {
+export function applyConfirmation(targets: ActionCacheTargets, input: ConfirmedInput): void {
   const { action, via, outcome } = input;
-  applyActionUpdate(queryClient, {
+  applyActionUpdate(targets, {
     ...action,
     status: 'confirmed',
     confirmedVia: via,
     resolvedAt: outcome.message.createdAt,
     resultTicket: resultTicket(outcome),
   });
-  updateView(queryClient, (view) => ({
-    ...view,
-    conversation: outcome.conversation,
-    timeline: appendUnique(view.timeline, outcome.message),
-  }));
+  updateView(targets.queryClient, (view) => ({ ...view, conversation: outcome.conversation }));
+  targets.updateTimeline((timeline) => appendUnique(timeline, outcome.message));
 }

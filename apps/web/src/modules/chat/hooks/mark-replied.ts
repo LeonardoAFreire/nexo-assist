@@ -1,13 +1,7 @@
-import type {
-  ChatMessage,
-  ChatStreamEvent,
-  MessagePart,
-  SendMessageRequest,
-} from '@nexo/contracts';
-import type { QueryClient } from '@tanstack/react-query';
-import { updateView } from './conversation-cache.js';
+import type { ChatMessage, MessagePart } from '@nexo/contracts';
+import type { ReplyRequest, TimelineUpdate } from '../types/nexo-ui-message.js';
 
-function markPart(part: MessagePart, request: SendMessageRequest): MessagePart {
+function markPart(part: MessagePart, request: ReplyRequest): MessagePart {
   if (part.type === 'quick_options' && request.quickReply) {
     return { ...part, answered: true };
   }
@@ -17,7 +11,7 @@ function markPart(part: MessagePart, request: SendMessageRequest): MessagePart {
   return part;
 }
 
-function markMessage(message: ChatMessage, request: SendMessageRequest): ChatMessage {
+function markMessage(message: ChatMessage, request: ReplyRequest): ChatMessage {
   const targetId = request.quickReply?.messageId ?? request.ticketSelection?.messageId;
   if (message.id !== targetId) {
     return message;
@@ -25,21 +19,6 @@ function markMessage(message: ChatMessage, request: SendMessageRequest): ChatMes
   return { ...message, parts: message.parts.map((part) => markPart(part, request)) };
 }
 
-export function markReplied(queryClient: QueryClient, request: SendMessageRequest): void {
-  updateView(queryClient, (view) => ({
-    ...view,
-    timeline: view.timeline.map((message) => markMessage(message, request)),
-  }));
-}
-
-export async function* afterAccepted(
-  stream: AsyncGenerator<ChatStreamEvent>,
-  onAccepted: () => void,
-): AsyncGenerator<ChatStreamEvent> {
-  for await (const event of stream) {
-    if (event.event === 'message.accepted') {
-      onAccepted();
-    }
-    yield event;
-  }
+export function markReplied(request: ReplyRequest): TimelineUpdate {
+  return (timeline: ChatMessage[]) => timeline.map((message) => markMessage(message, request));
 }

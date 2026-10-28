@@ -1,7 +1,10 @@
 import type { Conversation, EmployeeConversationView } from '@nexo/contracts';
-import { ChatActionsContext } from '../hooks/chat-actions-context.js';
+import { type ChatActions, ChatActionsContext } from '../hooks/chat-actions-context.js';
+import { currentTurnError } from '../hooks/current-turn-error.js';
+import { messageKey } from '../hooks/ui-messages.js';
+import { useConversationEvents } from '../hooks/use-conversation-events.js';
+import { type NexoChat, useNexoChat } from '../hooks/use-nexo-chat.js';
 import { useRequestHandoff } from '../hooks/use-request-handoff.js';
-import { useSendMessage } from '../hooks/use-send-message.js';
 import { ChatFooter } from './chat-footer.js';
 import { ChatThread } from './chat-thread.js';
 import { ConversationStateBanner } from './conversation-state-banner.js';
@@ -14,23 +17,48 @@ function isTransferred(conversation: Conversation | null): boolean {
   return conversation?.state === 'waiting_analyst' || conversation?.state === 'with_analyst';
 }
 
+function chatActionsOf(chat: NexoChat): ChatActions {
+  const last = chat.messages.at(-1);
+  const latestMessageId = last ? messageKey(last) : null;
+  return {
+    busy: chat.busy,
+    latestMessageId,
+    reply: chat.reply,
+    updateTimeline: chat.updateTimeline,
+  };
+}
+
+function streamingIdOf(chat: NexoChat): string | null {
+  const last = chat.messages.at(-1);
+  return chat.active && last?.role === 'assistant' ? last.id : null;
+}
+
 export function ChatScreen({ view }: ChatScreenProps) {
-  const { turn, send, reply, retry } = useSendMessage();
+  const chat = useNexoChat(view);
   const handoff = useRequestHandoff();
-  const busy = turn.status === 'streaming' || view.turnInProgress;
-  const latestMessageId = view.timeline.at(-1)?.id ?? null;
+  useConversationEvents(chat.updateTimeline);
   return (
-    <ChatActionsContext value={{ busy, latestMessageId, reply }}>
+    <ChatActionsContext value={chatActionsOf(chat)}>
       <ConversationStateBanner conversation={view.conversation} />
-      <ChatThread view={view} turn={turn} busy={busy} onPick={send} onRetry={retry} />
+      <ChatThread
+        messages={chat.messages}
+        streamingId={streamingIdOf(chat)}
+        busy={chat.busy}
+        error={currentTurnError(chat.messages, chat.feedback, chat.active)}
+        onPick={chat.send}
+        onRetry={chat.retry}
+      />
       <ChatFooter
         usage={view.usage}
-        busy={busy}
-        transferred={isTransferred(view.conversation)}
-        rejection={turn.rejection}
-        handoffPending={handoff.isPending}
-        handoffError={handoff.error?.message ?? null}
-        onSend={send}
+        state={{
+          busy: chat.busy,
+          streaming: chat.active,
+          transferred: isTransferred(view.conversation),
+        }}
+        rejection={chat.feedback.rejection}
+        handoff={{ pending: handoff.isPending, error: handoff.error?.message ?? null }}
+        onSend={chat.send}
+        onStop={chat.stop}
         onHandoff={() => handoff.mutate()}
       />
     </ChatActionsContext>

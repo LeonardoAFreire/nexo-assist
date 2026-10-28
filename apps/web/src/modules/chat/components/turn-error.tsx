@@ -1,6 +1,6 @@
 import { RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { TurnError as TurnErrorState } from '../hooks/turn-state.js';
+import type { TurnError as TurnErrorState } from '../types/nexo-ui-message.js';
 
 type TurnErrorProps = {
   error: TurnErrorState;

@@ -24,7 +24,7 @@ describe('FormattedText', () => {
 
 describe('AgentBubble', () => {
   it('mostra a resposta do agent sem os asteriscos do negrito', () => {
-    render(<AgentBubble text="Está **aguardando analista**." typing={false} />);
+    render(<AgentBubble text="Está **aguardando analista**." busy={false} />);
     expect(document.body.textContent).toBe('Está aguardando analista.');
   });
 });

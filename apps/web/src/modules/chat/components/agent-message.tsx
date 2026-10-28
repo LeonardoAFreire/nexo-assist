@@ -21,7 +21,7 @@ export function AgentMessage(props: AgentMessageProps) {
   const options = parts.filter(isQuickOptions);
   const others = parts.filter((part: MessagePart) => !isQuickOptions(part));
   const bubble = (
-    <AgentBubble text={text} typing={busy && text === ''}>
+    <AgentBubble text={text} busy={busy}>
       <MessageParts messageId={messageId} parts={options} />
     </AgentBubble>
   );
