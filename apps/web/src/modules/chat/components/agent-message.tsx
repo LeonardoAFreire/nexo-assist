@@ -27,9 +27,9 @@ export function AgentMessage(props: AgentMessageProps) {
   );
   return (
     <article aria-label="Nexo Assist" aria-busy={busy} className="flex flex-col gap-1.5">
-      <AgentTurnHeader steps={steps} decision={decision} />
+      <AgentTurnHeader steps={steps} decision={decision} live={busy} />
       {options.length === 0 ? bubble : null}
-      <MessageParts messageId={messageId} parts={others} />
+      <MessageParts messageId={messageId} parts={others} animate={busy} />
       {options.length > 0 ? bubble : null}
     </article>
   );

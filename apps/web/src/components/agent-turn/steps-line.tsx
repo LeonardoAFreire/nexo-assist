@@ -5,13 +5,25 @@ import { formatAttempts, STEP_FAILED_LABEL } from './labels.js';
 
 type StepsLineProps = {
   steps: AgentStep[];
+  live?: boolean;
 };
 
-function StepItem({ step }: { step: AgentStep }) {
+type StepItemProps = {
+  step: AgentStep;
+  live: boolean;
+};
+
+function StepItem({ step, live }: StepItemProps) {
   const failed = step.status === 'failed';
   const attempts = formatAttempts(step.attempts);
   return (
-    <li className={cn('flex items-center gap-[5px]', failed && 'text-destructive')}>
+    <li
+      className={cn(
+        'flex items-center gap-[5px]',
+        failed && 'text-destructive',
+        live && 'motion-safe:animate-rise',
+      )}
+    >
       <Check aria-hidden="true" className="size-3" />
       <span>
         {step.label}
@@ -22,7 +34,7 @@ function StepItem({ step }: { step: AgentStep }) {
   );
 }
 
-export function StepsLine({ steps }: StepsLineProps) {
+export function StepsLine({ steps, live = false }: StepsLineProps) {
   if (steps.length === 0) {
     return null;
   }
@@ -33,7 +45,7 @@ export function StepsLine({ steps }: StepsLineProps) {
       className="flex flex-wrap gap-x-3 gap-y-1 text-[12.5px] text-ink-3"
     >
       {steps.map((step: AgentStep) => (
-        <StepItem key={step.id} step={step} />
+        <StepItem key={step.id} step={step} live={live} />
       ))}
     </ul>
   );

@@ -30,7 +30,7 @@ export function ConversationStateBanner({ conversation }: ConversationStateBanne
   return (
     <output aria-live="polite" className="block">
       {content ? (
-        <div className="flex items-center gap-3 border-b border-rule bg-primary-soft px-4 py-2.5 md:px-12 lg:px-32 xl:px-48">
+        <div className="flex items-center gap-3 border-b border-rule bg-primary-soft px-4 py-2.5 md:px-12 lg:px-32 xl:px-48 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 motion-safe:duration-300">
           <Headset aria-hidden="true" className="size-4 shrink-0 text-primary-text" />
           <p className="mx-auto flex w-full max-w-3xl flex-wrap gap-x-3 text-sm text-ink">
             <span className="font-semibold">{content.title}</span>

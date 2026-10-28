@@ -1,5 +1,6 @@
 import type { MessagePart } from '@nexo/contracts';
 import { TicketCard } from '@/components/tickets/ticket-card';
+import { cn } from '@/lib/utils';
 import { ArticleCitation } from './article-citation.js';
 import { PendingActionCard } from './pending-action-card.js';
 import { QuickOptions } from './quick-options.js';
@@ -8,6 +9,7 @@ import { TicketSelection } from './ticket-selection.js';
 type MessagePartsProps = {
   messageId: string | null;
   parts: MessagePart[];
+  animate?: boolean;
 };
 
 type PartViewProps = {
@@ -32,8 +34,10 @@ function PartView({ messageId, part }: PartViewProps) {
   }
 }
 
-export function MessageParts({ messageId, parts }: MessagePartsProps) {
+export function MessageParts({ messageId, parts, animate = false }: MessagePartsProps) {
   return parts.map((part: MessagePart, index: number) => (
-    <PartView key={`${part.type}-${index}`} messageId={messageId} part={part} />
+    <div key={`${part.type}-${index}`} className={cn(animate && 'motion-safe:animate-rise')}>
+      <PartView messageId={messageId} part={part} />
+    </div>
   ));
 }

@@ -1,4 +1,4 @@
-const DOT_DELAYS = ['0ms', '150ms', '300ms'];
+const DOT_DELAYS = ['[--typing-delay:0ms]', '[--typing-delay:140ms]', '[--typing-delay:280ms]'];
 
 export function TypingIndicator() {
   return (
@@ -8,8 +8,7 @@ export function TypingIndicator() {
         <span
           key={delay}
           aria-hidden="true"
-          style={{ animationDelay: delay }}
-          className="size-1.5 rounded-full bg-ink-3 motion-safe:animate-pulse"
+          className={`size-1.5 rounded-full bg-ink-3 motion-safe:animate-typing ${delay}`}
         />
       ))}
     </span>

@@ -7,16 +7,17 @@ import { StepsLine } from './steps-line.js';
 type AgentTurnHeaderProps = {
   steps: AgentStep[];
   decision: AgentDecision | null;
+  live?: boolean;
 };
 
-export function AgentTurnHeader({ steps, decision }: AgentTurnHeaderProps) {
+export function AgentTurnHeader({ steps, decision, live = false }: AgentTurnHeaderProps) {
   const [expanded, setExpanded] = useState(false);
   const bodyId = useId();
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="text-[12.5px] font-semibold text-ink">Nexo Assist</span>
-        <StepsLine steps={steps} />
+        <StepsLine steps={steps} live={live} />
         {decision ? (
           <DecisionToggle
             expanded={expanded}

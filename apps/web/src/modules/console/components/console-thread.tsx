@@ -1,4 +1,6 @@
 import type { ChatMessage } from '@nexo/contracts';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 import { ConsoleMessage } from './console-message.js';
 import { dayKeyOf, formatDayLabel } from './day-label.js';
 
@@ -20,10 +22,14 @@ function DayPill({ isoDate }: { isoDate: string }) {
 }
 
 export function ConsoleThread({ timeline }: ConsoleThreadProps) {
+  const [initialIds] = useState(() => new Set(timeline.map((message) => message.id)));
   return (
     <ol aria-label="Histórico da conversa" aria-live="polite" className="flex flex-col gap-4">
       {timeline.map((message: ChatMessage, index: number) => (
-        <li key={message.id}>
+        <li
+          key={message.id}
+          className={cn(!initialIds.has(message.id) && 'motion-safe:animate-rise')}
+        >
           {startsNewDay(timeline, index) ? <DayPill isoDate={message.createdAt} /> : null}
           <ConsoleMessage message={message} />
         </li>

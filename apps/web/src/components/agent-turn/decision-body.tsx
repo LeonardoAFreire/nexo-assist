@@ -41,7 +41,10 @@ function RulesSection({ rules }: { rules: string[] }) {
 
 export function DecisionBody({ id, decision, steps }: DecisionBodyProps) {
   return (
-    <div id={id} className="flex flex-col gap-3 rounded-xl border border-rule bg-desk p-3">
+    <div
+      id={id}
+      className="flex flex-col gap-3 rounded-xl border border-rule bg-desk p-3 motion-safe:animate-rise [--rise-duration:260ms]"
+    >
       <UnderstoodSection understood={decision.understood} />
       <DecisionSection title="Ação tomada">{decision.action.label}</DecisionSection>
       <DecisionSection title="Confiança">

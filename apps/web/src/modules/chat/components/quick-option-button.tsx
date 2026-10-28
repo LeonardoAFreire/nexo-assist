@@ -16,7 +16,7 @@ export function QuickOptionButton({ option, shortcut, disabled, onPick }: QuickO
       disabled={disabled}
       aria-keyshortcuts={String(shortcut)}
       onClick={() => onPick(option)}
-      className="h-auto rounded-lg border-rule bg-paper px-3 py-[7px] text-[13.5px] font-medium text-ink hover:border-primary hover:bg-primary-soft hover:text-primary-text"
+      className="h-auto rounded-lg border-rule bg-paper px-3 py-[7px] text-[13.5px] font-medium text-ink transition-[background-color,border-color,color,transform] duration-150 hover:border-primary hover:bg-primary-soft hover:text-primary-text motion-safe:active:scale-[0.97]"
     >
       {option.label}
     </Button>
