@@ -234,7 +234,7 @@ docker run --rm -p 3000:3000 \
   -e WEB_ORIGIN=http://localhost:3000 \
   -e JWT_SECRET=<segredo-aleatorio-com-32-ou-mais-caracteres> \
   -e OPENROUTER_API_KEY=<sua-chave> \
-  -e LLM_MODEL=deepseek/deepseek-v4-flash-0731 \
+  -e LLM_MODEL=openai/gpt-6-luna \
   -e LLM_ROUTER_MODEL=deepseek/deepseek-v4-flash-0731 \
   nexo-assist
 ```
@@ -268,10 +268,23 @@ Passos:
 
 ## O que eu faria com mais tempo
 
+Qualidade das decisões:
+
+- **`pass^k` no relatório dos evals.** Hoje o relatório mostra a taxa média. O `pass^k` do [τ-bench](https://arxiv.org/abs/2406.12045) mede a chance de as k execuções de um cenário passarem todas, que é a pergunta certa para atendimento: o agent acerta sempre, e não só na média? As metas de 100% (confirmação, privacidade, escopo) já são lidas assim; faltaria calcular e exibir o número.
+- **Pontuar conversas reais, não só cenários.** Os [scorers do Mastra](https://mastra.ai/docs/evals/overview) (`@mastra/evals`) avaliam uma amostra dos turnos de produção (resposta fiel ao artigo citado, transferência justificada) e gravam a nota. As conversas transferidas por baixa confiança viram candidatas a cenário novo de eval.
 - **Testar o Jev (TypeSafe) como segunda opinião da confiança**, a parte que decide transferir. Ele devolve escolhas com probabilidade em 70 a 500 ms, mas não gera texto, então não substitui o `understand`, que precisa de resumo, motivo e extração de dados. O **Jev Router** não serve aqui: troca o modelo a cada pedido e cobra o preço do modelo escolhido, o que invalida os evals e o teto de custo.
+- **Busca híbrida na central de ajuda.** Hoje a busca é full-text em português, sem acento e com peso maior no título, o que basta para 8 artigos. Com uma central maior, somaria embeddings (`pgvector`) e fundiria os dois rankings por [RRF](https://docs.railway.com/guides/hybrid-search-postgres-pgvector), para casar sinônimos ("a internet caiu" com o artigo de rede) sem perder códigos exatos como "erro 809", em que o full-text é melhor.
 - **Prazos do Anexo A na frase de prazo vencido** ("acima do prazo de 3 dias úteis"): hoje a tabela fica só no domínio de chamados e a frase cita a prioridade sem o número de dias.
-- **503 prévio para `budget_exhausted`:** hoje o teto diário vira `turn.failed` depois do aceite da mensagem.
-- **Distinguir 429 e 402 do provedor**, hoje ambos viram `agent_unavailable`.
-- **Logs `warn`** para orçamento atingido e para limite de passos.
-- **`pass^k` no relatório dos evals**, para medir consistência entre execuções e não só a média.
-- Hub de eventos distribuído (`LISTEN/NOTIFY`) para mais de uma instância.
+
+Latência e custo:
+
+- **Prompt caching.** Cada turno reenvia cerca de 13 mil tokens de instruções e schemas das tools, que não mudam. O OpenRouter [repassa o cache do provedor](https://openrouter.ai/docs/features/prompt-caching) e mantém o mesmo provedor entre pedidos para aproveitá-lo. Antes de adotar, mediria os `cached_tokens` do usage, porque o desconto varia por provedor e uma troca de provedor perde o cache.
+- **Menos chamadas em sequência.** O turno faz em média quatro chamadas ao modelo, de ~1,2 s cada. Um atalho sem modelo para saudação e agradecimento, ou o roteador fundido ao primeiro passo do laço, tiraria uma delas; isso muda a arquitetura e exigiria refazer os evals.
+
+Operação:
+
+- **Rastreamento por passo.** Traços OpenTelemetry com as [convenções de GenAI](https://langfuse.com/docs/opentelemetry) (modelo, tokens, custo e duração de cada chamada e tool), exportados para um Langfuse próprio ou para o [tracing do Mastra](https://mastra.ai/observability). O texto das mensagens e dos chamados ficaria fora dos traços.
+- **Retomar a resposta depois de recarregar a página.** O `useChat` aceita [`resume: true`](https://ai-sdk.dev/docs/ai-sdk-ui/chatbot-resume-streams), mas exige guardar o stream do turno no servidor (Redis, no pacote `resumable-stream`). Hoje, quem recarrega no meio de um turno vê a resposta só quando ele termina.
+- **Mais de uma instância.** O hub de eventos é em memória. Com `LISTEN/NOTIFY`, cada instância [mantém uma conexão dedicada](https://neon.com/guides/pub-sub-listen-notify) ao Postgres e repassa os eventos aos seus clientes SSE; essa conexão não pode passar pelo pooler.
+- **Erros mais precisos:** 503 antes do aceite quando o teto diário acabou (hoje vira `turn.failed` depois do aceite), 429 e 402 do provedor separados (hoje ambos viram `agent_unavailable`) e logs `warn` para orçamento atingido e limite de passos.
+- **Hospedagem sem espera e sem prazo.** O plano gratuito do Render [dorme após 15 minutos](https://render.com/articles/platforms-with-a-real-free-tier-for-developers-in-2026.md) e acorda em ~1 minuto, e o Postgres dele expira em 30 dias. O plano pago de entrada do Render (~US$ 7 por mês) não dorme, e o [Neon gratuito](https://neon.com/pricing) dá 0,5 GB e 100 horas de computação por mês, suspendendo o banco sem uso.
