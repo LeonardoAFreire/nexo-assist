@@ -24,7 +24,7 @@ const CONFIG_VALUES: Record<string, unknown> = {
   SESSION_REMEMBER_DAYS: 7,
   WEB_ORIGIN,
   NODE_ENV: 'test',
-  SEED_USER_PASSWORD: 'senha@1234',
+  SEED_USER_PASSWORD: 'senha-de-teste',
 };
 
 let testDatabase: TestDatabase;

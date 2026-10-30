@@ -16,7 +16,7 @@ import { IdentityModule } from './identity.module.js';
 import { usersTable } from './persistence/users.table.js';
 
 const WEB_ORIGIN = 'http://localhost:5173';
-const DEFAULT_PASSWORD = 'senha@1234';
+const DEFAULT_PASSWORD = 'senha-de-teste';
 const ANA = DEMO_PEOPLE[0]!;
 const CONFIG_VALUES: Record<string, unknown> = {
   JWT_SECRET: 'segredo-de-teste-com-pelo-menos-32-caracteres',

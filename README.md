@@ -18,7 +18,7 @@ pnpm dev
 - O front sobe em http://localhost:5173 e a API em http://localhost:3000/api.
 - As migrations e os dados de exemplo (pessoas, central de ajuda e chamados) rodam sozinhos no boot da API.
 - **Antes do `pnpm dev`, abra o `.env` e preencha `OPENROUTER_API_KEY`.** A chave é obrigatória quando `LLM_PROVIDER=openrouter`; sem ela a API recusa a subir. Para rodar sem chave, troque para `LLM_PROVIDER=scripted`: um modelo roteirizado, determinístico, usado também nos testes. Ele só serve para conhecer a interface e é recusado em produção.
-- Fora de produção, a senha de demonstração é qualquer texto não vazio. Com `NODE_ENV=production` (a imagem Docker e o deploy), o login exige a senha padrão do seed, `senha@1234` (`SEED_USER_PASSWORD`), guardada com hash bcrypt. Entre com um dos usuários abaixo.
+- Fora de produção, a senha de demonstração é qualquer texto não vazio. Com `NODE_ENV=production` (a imagem Docker e o deploy), o login exige a senha definida em `SEED_USER_PASSWORD`, guardada com hash bcrypt; a configuração recusa a senha de exemplo do `.env.example`, e trocar a variável troca a senha de todos no próximo boot. Entre com um dos usuários abaixo.
 
 | Perfil      | Nome           | E-mail                       | Observação       |
 | ----------- | -------------- | ---------------------------- | ---------------- |
@@ -243,7 +243,7 @@ docker run --rm -p 3000:3000 \
 
 Link: https://nexo-assist.onrender.com
 
-- Entre com qualquer usuário da tabela acima e a senha **`senha@1234`**. Em produção o login exige essa senha; localmente qualquer texto não vazio funciona.
+- Entre com qualquer usuário da tabela acima. A senha do ambiente publicado não fica no repositório: ela é enviada junto com o link. Localmente qualquer texto não vazio funciona.
 - O plano é gratuito: depois de 15 minutos sem uso o serviço dorme e o **primeiro acesso leva cerca de 1 minuto** para acordar.
 - O banco é o Postgres gratuito do Render, que **expira 30 dias** após a criação. Para um banco permanente, crie um Postgres gerenciado em outro provedor (por exemplo, o Neon) e troque a `DATABASE_URL`: as migrations e os dados de exemplo rodam sozinhos no boot.
 - A chave do OpenRouter e o `JWT_SECRET` ficam só nas variáveis de ambiente do Render. Nada disso vai para o Git.
@@ -261,7 +261,7 @@ Passos:
    - `LLM_DAILY_BUDGET_USD` e `CHAT_RATE_LIMIT_PER_MINUTE` conforme o orçamento
    - `LOG_LEVEL=info`
    - `SEED_DEMO_DATA=true` para carregar as pessoas, a central de ajuda e os chamados de exemplo
-   - `SEED_USER_PASSWORD=senha@1234` (padrão): a senha dos usuários de exemplo no ambiente publicado
+   - `SEED_USER_PASSWORD`: a senha dos usuários de exemplo no ambiente publicado, obrigatória em produção e diferente da de exemplo
    - `SERVE_WEB_DIR=/app/web` (já vem na imagem)
 4. Defina o **Health Check Path** como `/api/health`. O Render injeta `PORT`.
 5. Faça o deploy, abra o domínio, entre com um usuário de demonstração e confira o fluxo: login, uma conversa completa e o limite de mensagens.

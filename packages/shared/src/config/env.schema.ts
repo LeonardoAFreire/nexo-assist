@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { envFields } from './env.fields.js';
+import { envFields, PUBLIC_SEED_PASSWORDS } from './env.fields.js';
 
 const PLACEHOLDER_SECRET_PATTERN = /change-me|changeme|example|segredo-de-teste/i;
 
@@ -22,6 +22,9 @@ function validateConditionals(env: EnvInput, context: z.RefinementCtx): void {
   }
   if (isProduction && PLACEHOLDER_SECRET_PATTERN.test(env.JWT_SECRET)) {
     addIssue(context, 'JWT_SECRET', 'o segredo de exemplo não é permitido em produção');
+  }
+  if (isProduction && PUBLIC_SEED_PASSWORDS.includes(env.SEED_USER_PASSWORD)) {
+    addIssue(context, 'SEED_USER_PASSWORD', 'a senha pública não é permitida em produção');
   }
 }
 

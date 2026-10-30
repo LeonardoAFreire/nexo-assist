@@ -2,7 +2,13 @@ import { z } from 'zod';
 
 const MIN_SECRET_LENGTH = 32;
 const DEFAULT_PORT = 3000;
-const DEFAULT_SEED_PASSWORD = 'senha@1234';
+const DEFAULT_SEED_PASSWORD = 'senha-local-de-exemplo';
+const LEAKED_SEED_PASSWORD = 'senha@1234';
+
+export const PUBLIC_SEED_PASSWORDS: readonly string[] = [
+  DEFAULT_SEED_PASSWORD,
+  LEAKED_SEED_PASSWORD,
+];
 const DEFAULT_MODEL = 'openai/gpt-4o-mini';
 const DEFAULT_CONFIDENCE_THRESHOLD = 0.6;
 const DEFAULT_DAILY_BUDGET_USD = 2;

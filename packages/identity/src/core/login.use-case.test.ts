@@ -9,7 +9,7 @@ import type { UserRecord } from './user-record.js';
 
 const SESSION_EXPIRATION = new Date('2026-01-01T08:00:00.000Z');
 const ANA_EMAIL = 'ana.souza@nexo.com.br';
-const DEFAULT_PASSWORD = 'senha@1234';
+const DEFAULT_PASSWORD = 'senha-de-teste';
 
 const fakeHasher: PasswordHasher = {
   hash: async (plain) => `hash:${plain}`,

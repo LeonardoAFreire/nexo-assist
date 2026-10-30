@@ -6,6 +6,7 @@ const validEnv = {
   JWT_SECRET: 'a'.repeat(32),
   DATABASE_URL: 'postgres://nexo:nexo@localhost:5432/nexo',
   OPENROUTER_API_KEY: 'chave-ficticia',
+  SEED_USER_PASSWORD: 'senha-propria-do-deploy',
 };
 
 function failedPaths(raw: Record<string, unknown>): string[] {
@@ -92,6 +93,19 @@ describe('envSchema', () => {
     expect(failedPaths({ ...production, JWT_SECRET: placeholder })).toEqual(['JWT_SECRET']);
     expect(failedPaths({ ...production, JWT_SECRET: strongSecret })).toEqual([]);
     expect(failedPaths({ ...validEnv, JWT_SECRET: placeholder })).toEqual([]);
+  });
+
+  it('recusa em produção a senha padrão e a que ficou pública, e aceita uma senha própria', () => {
+    const { SEED_USER_PASSWORD: _removed, ...withoutPassword } = validEnv;
+    const production = { ...withoutPassword, NODE_ENV: 'production' };
+    expect(failedPaths(production)).toEqual(['SEED_USER_PASSWORD']);
+    expect(failedPaths({ ...production, SEED_USER_PASSWORD: 'senha@1234' })).toEqual([
+      'SEED_USER_PASSWORD',
+    ]);
+    expect(failedPaths({ ...production, SEED_USER_PASSWORD: 'senha-propria-do-deploy' })).toEqual(
+      [],
+    );
+    expect(failedPaths({ ...validEnv, SEED_USER_PASSWORD: 'senha@1234' })).toEqual([]);
   });
 
   it('rejeita limites fora do intervalo', () => {
