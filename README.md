@@ -6,11 +6,26 @@ Este repositório é a solução do desafio técnico (documento-fonte em `docs/D
 
 ## Como rodar
 
+### Só com Docker (um comando)
+
+Pré-requisito: Docker. Não precisa de Node nem de pnpm.
+
+```bash
+docker compose up --build
+```
+
+- Abra http://localhost:8080 (use `localhost`, não `127.0.0.1`: a API só aceita pedidos da origem configurada). A primeira vez leva alguns minutos para construir a imagem.
+- O Compose sobe o Postgres e o app (API e front no mesmo serviço). As migrations e os dados de exemplo rodam sozinhos no boot.
+- **Sem `.env`, o app usa o modelo roteirizado** (`LLM_PROVIDER=scripted`): determinístico, sem chave, bom para conhecer a interface. Para o modelo real, crie um `.env` com `LLM_PROVIDER=openrouter` e `OPENROUTER_API_KEY=<sua-chave>`; o Compose lê o arquivo sozinho. `APP_PORT` troca a porta.
+- Para parar: `docker compose down` (os dados ficam no volume; `docker compose down -v` apaga tudo).
+
+### Desenvolvimento
+
 Pré-requisitos: Node 22 ou superior, pnpm 10 (o `packageManager` do repositório fixa a versão; `corepack enable` resolve) e Docker para o Postgres local.
 
 ```bash
 cp .env.example .env
-docker compose up -d
+docker compose up -d postgres
 pnpm install
 pnpm dev
 ```
@@ -18,7 +33,10 @@ pnpm dev
 - O front sobe em http://localhost:5173 e a API em http://localhost:3000/api.
 - As migrations e os dados de exemplo (pessoas, central de ajuda e chamados) rodam sozinhos no boot da API.
 - **Antes do `pnpm dev`, abra o `.env` e preencha `OPENROUTER_API_KEY`.** A chave é obrigatória quando `LLM_PROVIDER=openrouter`; sem ela a API recusa a subir. Para rodar sem chave, troque para `LLM_PROVIDER=scripted`: um modelo roteirizado, determinístico, usado também nos testes. Ele só serve para conhecer a interface e é recusado em produção.
-- Fora de produção, a senha de demonstração é qualquer texto não vazio. Com `NODE_ENV=production` (a imagem Docker e o deploy), o login exige a senha definida em `SEED_USER_PASSWORD`, guardada com hash bcrypt; a configuração recusa a senha de exemplo do `.env.example`, e trocar a variável troca a senha de todos no próximo boot. Entre com um dos usuários abaixo.
+
+### Senha
+
+Localmente (no Docker e no `pnpm dev`), a senha de demonstração é qualquer texto não vazio. Com `NODE_ENV=production` (o deploy), o login exige a senha definida em `SEED_USER_PASSWORD`, guardada com hash bcrypt; a configuração recusa a senha de exemplo do `.env.example`, e trocar a variável troca a senha de todos no próximo boot. Entre com um dos usuários abaixo.
 
 | Perfil      | Nome           | E-mail                       | Observação       |
 | ----------- | -------------- | ---------------------------- | ---------------- |
